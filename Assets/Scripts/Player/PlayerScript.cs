@@ -1,60 +1,122 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Game.Input;
 
-/// <summary>
-/// The class all player scripts inherit from
-/// </summary>
-public class PlayerScript : MonoBehaviour
+namespace Game.Player
 {
-    //-- Component references
-    internal Rigidbody rb;
-    internal MeshRenderer mr;
-    internal BoxCollider boxCol;
-
     /// <summary>
-    /// Start is called before the first frame update
+    /// The class all player scripts inherit from
     /// </summary>
-    public virtual void Start()
+    public class PlayerScript : MonoBehaviour
     {
-        GetComponents();
+        //-- Input
+        internal Key clickKey;
 
+        //-- Component references
+        internal PlayerMain p;
+        internal Rigidbody rb;
+        internal MeshRenderer mr;
+        internal BoxCollider boxCol;
 
-    }
-
-    /// <summary>
-    /// Gets components
-    /// </summary>
-    private void GetComponents()
-    {
-        rb = GetChildComponent<Rigidbody>();
-        mr = GetChildComponent<MeshRenderer>();
-        boxCol = GetChildComponent<BoxCollider>();
-    }
-
-    /// <summary>
-    /// Same as GetComponent<>(), but if the method return null, GetComponentInChildren() is used instead
-    /// </summary>
-    public T GetChildComponent<T>()
-    {
-        // Get component regularly
-        T component = GetComponent<T>();
-
-        // If it's null, get component in children
-        if (component == null)
+        /// <summary>
+        /// Shortcut for setting and getting "rb.velocity.y"
+        /// </summary>
+        public float YVelocity
         {
-            component = GetComponentInChildren<T>();
+            set
+            {
+                rb.velocity = new Vector3(rb.velocity.x, value, rb.velocity.z);
+            }
+            get
+            {
+                return rb.velocity.y;
+            }
         }
 
-        return component;
-    }
+        /// <summary>
+        /// Shortcut for getting "onGround"
+        /// </summary>
+        public bool OnGround
+        {
+            get
+            {
+                return p.movement.onGround;
+            }
+        }
 
-    /// <summary>
-    /// Update is called once per frame
-    /// </summary>
-    public virtual void Update()
-    {
-        
+        /// <summary>
+        /// Start is called before the first frame update
+        /// </summary>
+        public virtual void Start()
+        {
+            // Get input key
+            clickKey = PlayerInput.GetKey("Click");
+
+            GetComponents();
+        }
+
+        /// <summary>
+        /// Gets components
+        /// </summary>
+        private void GetComponents()
+        {
+            p = GetChildComponent<PlayerMain>();
+            rb = GetChildComponent<Rigidbody>();
+            mr = GetChildComponent<MeshRenderer>();
+            boxCol = GetChildComponent<BoxCollider>();
+        }
+
+        /// <summary>
+        /// Same as GetComponent<>(), but if the method return null, GetComponentInChildren() is used instead
+        /// </summary>
+        public T GetChildComponent<T>()
+        {
+            // Get component regularly
+            T component = GetComponent<T>();
+
+            // If it's null, use get component in children
+            if (component.Equals(null))
+            {
+                component = GetComponentInChildren<T>();
+            }
+
+            return component;
+        }
+
+        /// <summary>
+        /// Update is called once per frame
+        /// </summary>
+        public virtual void Update()
+        {
+            // Loop through all press modes (there are only 3)
+            foreach (PressMode mode in System.Enum.GetValues(typeof(PressMode)))
+            {
+                // Check if the key is pressed with this press mode
+                if (clickKey.Pressed(mode))
+                {
+                    // Call on click with this press mode
+                    OnClick(mode);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Fixed Update is called once per physics frame
+        /// </summary>
+        public virtual void FixedUpdate()
+        {
+
+        }
+
+        /// <summary>
+        /// OnClick is called when the player presses the main gameplay button. <para/>
+        /// <paramref name="mode"/> determines whether the button was just pressed, held or just released.
+        /// </summary>
+        public virtual void OnClick(PressMode mode)
+        {
+
+        }
     }
 }
 
@@ -62,32 +124,43 @@ public class PlayerScript : MonoBehaviour
 // # Template #
 // ############
 /*
- 
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// 
-/// </summary>
-public class INSERTNAME : PlayerScript
+namespace Game.Player
 {
-    
-    
     /// <summary>
-    /// Start is called before the first frame update
+    /// 
     /// </summary>
-    public override void Start()
+    public class INSERTNAME : PlayerScript
     {
-        base.Start();
-    }
 
-    /// <summary>
-    /// Update is called once per frame
-    /// </summary>
-    public override void Update()
-    {
-        base.Update();
+
+        /// <summary>
+        /// Start is called before the first frame update
+        /// </summary>
+        public override void Start()
+        {
+            base.Start();
+        }
+
+        /// <summary>
+        /// Update is called once per frame
+        /// </summary>
+        public override void Update()
+        {
+            base.Update();
+        }
+
+        /// <summary>
+        /// Fixed Update is called once per physics frame
+        /// </summary>
+        public override void FixedUpdate()
+        {
+            base.FixedUpdate();
+        }
     }
 }
  */

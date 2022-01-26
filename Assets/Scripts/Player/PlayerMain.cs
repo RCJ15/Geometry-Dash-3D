@@ -1,57 +1,81 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Game.Input;
 
-/// <summary>
-/// This script contains a reference to all the other player scripts and acts as a communicator between them. <para/>
-/// Also has crucial player methods like Win() and Die()
-/// </summary>
-public class PlayerMain : PlayerScript
+namespace Game.Player
 {
-    internal PlayerMovement movement;
-    internal PlayerColors colors;
-    internal PlayerMesh mesh;
-    internal PlayerGamemodeHandler gamemode;
-
     /// <summary>
-    /// Start is called before the first frame update
+    /// This script contains a reference to all the other player scripts and acts as a communicator between them. <para/>
+    /// Also has crucial player methods like Win() and Die()
     /// </summary>
-    public override void Start()
+    public class PlayerMain : PlayerScript
     {
-        base.Start();
+        //-- Instance
+        public static PlayerMain instance;
 
-        GetPlayerScripts();
-    }
+        //-- Other player scripts
+        internal PlayerMovement movement;
+        internal PlayerInput input;
+        internal PlayerColors colors;
+        internal PlayerMesh mesh;
+        internal PlayerGamemodeHandler gamemode;
 
-    private void GetPlayerScripts()
-    {
-        movement = GetChildComponent<PlayerMovement>();
-        colors = GetChildComponent<PlayerColors>();
-        mesh = GetChildComponent<PlayerMesh>();
-        gamemode = GetChildComponent<PlayerGamemodeHandler>();
-    }
+        /// <summary>
+        /// Awake is called when the script instance is being loaded
+        /// </summary>
+        private void Awake()
+        {
+            // Set instance
+            instance = this;
+        }
 
-    /// <summary>
-    /// Update is called once per frame
-    /// </summary>
-    public override void Update()
-    {
-        base.Update();
-    }
+        /// <summary>
+        /// Start is called before the first frame update
+        /// </summary>
+        public override void Start()
+        {
+            base.Start();
 
-    /// <summary>
-    /// Win
-    /// </summary>
-    public void Win()
-    {
+            GetPlayerScripts();
+        }
 
-    }
+        /// <summary>
+        /// Gets all player scripts and stores them in their respective variables
+        /// </summary>
+        private void GetPlayerScripts()
+        {
+            movement = GetChildComponent<PlayerMovement>();
+            input = GetChildComponent<PlayerInput>();
+            colors = GetChildComponent<PlayerColors>();
+            mesh = GetChildComponent<PlayerMesh>();
+            gamemode = GetChildComponent<PlayerGamemodeHandler>();
+        }
 
-    /// <summary>
-    /// Die
-    /// </summary>
-    public void Die()
-    {
+        /// <summary>
+        /// Update is called once per frame
+        /// </summary>
+        public override void Update()
+        {
+            base.Update();
 
+
+        }
+
+        /// <summary>
+        /// Win
+        /// </summary>
+        public void Win()
+        {
+
+        }
+
+        /// <summary>
+        /// Die
+        /// </summary>
+        public void Die()
+        {
+
+        }
     }
 }

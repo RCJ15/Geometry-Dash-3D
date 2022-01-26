@@ -4,12 +4,15 @@ TextureImporter:
   internalIDToNameTable:
   - first:
       213: 4280217090745282659
-    second: Basic Block Top
+    second: Basic Block Side
   - first:
       213: 2124726819536085080
     second: Basic Block Side
   - first:
       213: -872968434926901882
+    second: Basic Block Sides
+  - first:
+      213: 4132013342753021832
     second: Basic Block Bottom
   externalObjects: {}
   serializedVersion: 11
@@ -50,7 +53,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -116,7 +119,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 244
+        y: 0
         width: 122
         height: 122
       alignment: 0
@@ -136,8 +139,8 @@ TextureImporter:
       name: Basic Block Side
       rect:
         serializedVersion: 2
-        x: 0
-        y: 122
+        x: 122
+        y: 0
         width: 122
         height: 122
       alignment: 0
@@ -149,27 +152,6 @@ TextureImporter:
       bones: []
       spriteID: 850a13bf8cb8c7d10800000000000000
       internalID: 2124726819536085080
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Basic Block Bottom
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 122
-        height: 122
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 685ad0865d792e3f0800000000000000
-      internalID: -872968434926901882
       vertices: []
       indices: 
       edges: []
