@@ -47,7 +47,7 @@ namespace Game.Player
             // Add torque whilst in the air
             if (!OnGround)
             {
-                rb.AddTorque(new Vector3(0, 0, -10), ForceMode.Force);
+                rb.AddTorque(-10 * Vector3.forward, ForceMode.Force);
             }
         }
 
@@ -72,7 +72,7 @@ namespace Game.Player
                 case PressMode.hold:
 
                     YVelocity = jumpHeight;
-                    //rb.AddTorque(new Vector3(0, 0, -2 * Mathf.Deg2Rad), ForceMode.VelocityChange);
+                    rb.AddTorque(-2 * Vector3.forward, ForceMode.VelocityChange);
 
                     break;
             }

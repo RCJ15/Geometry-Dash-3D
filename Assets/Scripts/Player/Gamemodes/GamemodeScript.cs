@@ -15,9 +15,31 @@ namespace Game.Player
         [HideInInspector] public Rigidbody rb;
 
         /// <summary>
+        /// Shortcut for getting transform
+        /// </summary>
+        internal Transform transform
+        {
+            get
+            {
+                return gh.transform;
+            }
+        }
+
+        /// <summary>
+        /// Shortcut for getting gameObject
+        /// </summary>
+        internal GameObject gameObject
+        {
+            get
+            {
+                return gh.gameObject;
+            }
+        }
+
+        /// <summary>
         /// Shortcut for setting and getting "rb.velocity.y"
         /// </summary>
-        public float YVelocity
+        internal float YVelocity
         {
             set
             {
@@ -32,7 +54,7 @@ namespace Game.Player
         /// <summary>
         /// Shortcut for getting "onGround"
         /// </summary>
-        public bool OnGround
+        internal bool OnGround
         {
             get
             {

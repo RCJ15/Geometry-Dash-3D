@@ -21,8 +21,7 @@ namespace Game.Player
             //-- The main gameplay button
             new Key("Click",
                 Key.NewKeys(KeyboardKey.UpArrow, KeyboardKey.W, KeyboardKey.LeftMouseButton, KeyboardKey.Space, KeyboardKey.Return, KeyboardKey.KeypadEnter),
-                Key.NewKeys(GamepadKey.AButton, GamepadKey.BButton, GamepadKey.XButton, GamepadKey.YButton),
-                3),
+                Key.NewKeys(GamepadKey.AButton, GamepadKey.BButton, GamepadKey.XButton, GamepadKey.YButton)),
 
             //-- Other
             new Key("Pause",

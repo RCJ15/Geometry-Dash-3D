@@ -101,6 +101,7 @@ namespace Game.Player
                     break;
 
                 default:
+                    speed = 0;
                     break;
             }
         }
@@ -108,6 +109,7 @@ namespace Game.Player
 
     public enum GameSpeed
     {
+        none = -2,
         slowSpeed = -1,
         normalSpeed = 0,
         doubleSpeed = 1,
