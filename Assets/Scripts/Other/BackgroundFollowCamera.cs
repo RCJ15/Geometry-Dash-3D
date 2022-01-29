@@ -37,7 +37,9 @@ public class BackgroundFollowCamera : MonoBehaviour
     private Vector3 startPos;
     private Vector3 pieceOffset;
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Start is called before the first frame update
+    /// </summary>
     void Start()
     {
         // Set the start position
@@ -120,7 +122,9 @@ public class BackgroundFollowCamera : MonoBehaviour
         Destroy(backgroundObjectToCopy);
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Update is called once per frame
+    /// </summary>
     void Update()
     {
         // Set the position to follow the camera (with steps)

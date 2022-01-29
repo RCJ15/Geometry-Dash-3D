@@ -2,17 +2,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerDeath : MonoBehaviour
+namespace Game.Player
 {
-    // Start is called before the first frame update
-    void Start()
+    /// <summary>
+    /// 
+    /// </summary>
+    public class PlayerDeath : PlayerScript
     {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+
+        /// <summary>
+        /// Start is called before the first frame update
+        /// </summary>
+        public override void Start()
+        {
+            base.Start();
+        }
+
+        /// <summary>
+        /// Update is called once per frame
+        /// </summary>
+        public override void Update()
+        {
+            base.Update();
+        }
+
+        /// <summary>
+        /// Fixed Update is called once per physics frame
+        /// </summary>
+        public override void FixedUpdate()
+        {
+            base.FixedUpdate();
+        }
     }
 }

@@ -1,0 +1,116 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8640320174684988092
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8640320174684988094}
+  - component: {fileID: 8640320174684988093}
+  m_Layer: 0
+  m_Name: Sound Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8640320174684988094
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8640320174684988092}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8640320174684988093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8640320174684988092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 076e5f11c42776947938dfed15a0afb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sounds:
+  - name: Achievement
+    clip: {fileID: 8300000, guid: 29d09b00561ae514c93e97b9c5956958, type: 3}
+    soundVolume: 1
+    pitchSlider: 1
+  - name: Buy Item
+    clip: {fileID: 8300000, guid: e8867f7abe0d9344eaee2482cf6c4c06, type: 3}
+    soundVolume: 1
+    pitchSlider: 1
+  - name: Chest Click
+    clip: {fileID: 8300000, guid: 693462f1dc349a64ab756efe8690d010, type: 3}
+    soundVolume: 1
+    pitchSlider: 1
+  - name: Chest Land
+    clip: {fileID: 8300000, guid: fdc69680fac2a804c8cb905dfb177e95, type: 3}
+    soundVolume: 1
+    pitchSlider: 1
+  - name: Counter
+    clip: {fileID: 8300000, guid: 7a697159dc2228a48a313c866cee5f00, type: 3}
+    soundVolume: 1
+    pitchSlider: 1
+  - name: Key Get
+    clip: {fileID: 8300000, guid: ecca95414756b0c45912778f3e518d95, type: 3}
+    soundVolume: 1
+    pitchSlider: 1
+  - name: Mana Orb Get
+    clip: {fileID: 8300000, guid: 21ba37e5580a37f4eab9c5c4e1a592bc, type: 3}
+    soundVolume: 1
+    pitchSlider: 1
+  - name: Mana Orbs Explode
+    clip: {fileID: 8300000, guid: e7531a24e6c1df34ab63c4f0764343ec, type: 3}
+    soundVolume: 1
+    pitchSlider: 1
+  - name: Play Level
+    clip: {fileID: 8300000, guid: a458d3235961e2145a68ccd447606c78, type: 3}
+    soundVolume: 1
+    pitchSlider: 1
+  - name: Player Explode
+    clip: {fileID: 8300000, guid: 7f0e98fade683694fabf2ebe779bd721, type: 3}
+    soundVolume: 1
+    pitchSlider: 1
+  - name: Player Win
+    clip: {fileID: 8300000, guid: 121bd4ecd882a4245a23a4bf582600c8, type: 3}
+    soundVolume: 1
+    pitchSlider: 1
+  - name: Quit Level
+    clip: {fileID: 8300000, guid: f1edde76311423943a833df827b4f456, type: 3}
+    soundVolume: 1
+    pitchSlider: 1
+  - name: Rare Item Get
+    clip: {fileID: 8300000, guid: 72bc6118d4bec6e4bad79055bd1840b6, type: 3}
+    soundVolume: 1
+    pitchSlider: 1
+  - name: Recieve Coin
+    clip: {fileID: 8300000, guid: 27a00c49093193547a60938f76d962f5, type: 3}
+    soundVolume: 1
+    pitchSlider: 1
+  - name: Recieve Stars
+    clip: {fileID: 8300000, guid: 63f56be4ac40f934382f1e584bd9b195, type: 3}
+    soundVolume: 1
+    pitchSlider: 1
+  - name: Special Item Get
+    clip: {fileID: 8300000, guid: a3ef64a8f779214429bccce0c34c0463, type: 3}
+    soundVolume: 1
+    pitchSlider: 1
+  soundGroups: []
+  maxSounds: 20
+  soundEffectMixer: {fileID: 3151925576109640895, guid: fef739d45b4773644aa3d080ea60b5d4, type: 2}
+  haveAutoNaming: 1
+  fancyAutoNaming: 1
+  audioClipQueue: []

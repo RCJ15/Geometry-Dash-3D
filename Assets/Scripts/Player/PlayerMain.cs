@@ -17,7 +17,6 @@ namespace Game.Player
         //-- Other player scripts
         internal PlayerMovement movement;
         internal PlayerInput input;
-        internal PlayerColors colors;
         internal PlayerMesh mesh;
         internal PlayerGamemodeHandler gamemode;
 
@@ -47,7 +46,6 @@ namespace Game.Player
         {
             movement = GetChildComponent<PlayerMovement>();
             input = GetChildComponent<PlayerInput>();
-            colors = GetChildComponent<PlayerColors>();
             mesh = GetChildComponent<PlayerMesh>();
             gamemode = GetChildComponent<PlayerGamemodeHandler>();
         }

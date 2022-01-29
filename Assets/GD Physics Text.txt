@@ -1,6 +1,0 @@
-Travel speed (Blocks per second)
-0.5X speed: 8.4
-1X speed: 10.25
-2X speed: 12.8
-3X speed: 15.625
-4X speed: 18.73

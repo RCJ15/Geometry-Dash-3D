@@ -17,7 +17,9 @@ public class FollowPlayer : MonoBehaviour
 
     private Vector3 startPos;
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Start is called before the first frame update
+    /// </summary>
     void Start()
     {
         // Set the start position
@@ -27,7 +29,9 @@ public class FollowPlayer : MonoBehaviour
         player = PlayerMain.instance.transform;
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Update is called once per frame
+    /// </summary>
     void Update()
     {
         // The new position this object will move to

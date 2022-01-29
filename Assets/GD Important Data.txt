@@ -1,0 +1,14 @@
+Basic Colors (Hexadecimal):
+Player 1 = 7AF701
+Player 2 = 04F3F7
+Background 1 = 1D5CBB
+Background 2 = 2573EC
+Ground 1 = 0066FF
+Ground 2 = 005AE5
+
+Travel speed (Blocks per second)
+0.5X speed: 8.4
+1X speed: 10.25
+2X speed: 12.8
+3X speed: 15.625
+4X speed: 18.73

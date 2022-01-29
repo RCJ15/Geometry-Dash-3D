@@ -9,12 +9,18 @@ public class KillObjectsAfterTime : MonoBehaviour
     public bool unscaledTime;
     public bool killThisObject;
 
+    /// <summary>
+    /// Start is called before the first frame update
+    /// </summary>
     void Start()
     {
-        StartCoroutine(despawn());
+        StartCoroutine(Despawn());
     }
 
-    IEnumerator despawn()
+    /// <summary>
+    /// Starts a timer that'll destroy objects when it runs out
+    /// </summary>
+    private IEnumerator Despawn()
     {
         if (unscaledTime)
         {
@@ -24,10 +30,15 @@ public class KillObjectsAfterTime : MonoBehaviour
         {
             yield return new WaitForSeconds(lifetime);
         }
+
         foreach (GameObject g in objectsToKill)
         {
             Destroy(g);
         }
-        if (killThisObject) { Destroy(gameObject); }
+
+        if (killThisObject)
+        {
+            Destroy(gameObject);
+        }
     }
 }
