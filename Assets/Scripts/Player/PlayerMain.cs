@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Game.Input;
+using Game.CustomInput;
 
 namespace Game.Player
 {
@@ -18,7 +18,23 @@ namespace Game.Player
         internal PlayerMovement movement;
         internal PlayerInput input;
         internal PlayerMesh mesh;
+        internal PlayerWin win;
+        internal PlayerDeath death;
+        internal PlayerSpawn spawn;
+        internal PlayerCamera cam;
         internal PlayerGamemodeHandler gamemode;
+
+        internal bool dead;
+        public delegate void OnDeathEvent();
+        public event OnDeathEvent OnDeath;
+
+        public delegate void OnRespawnEvent();
+        public event OnRespawnEvent OnRespawn;
+
+        // Start values
+        internal Vector3 startPos;
+        internal Vector3 startScale;
+        internal Quaternion startRotation;
 
         /// <summary>
         /// Awake is called when the script instance is being loaded
@@ -27,6 +43,11 @@ namespace Game.Player
         {
             // Set instance
             instance = this;
+
+            // Set start values
+            startPos = transform.position;
+            startScale = transform.localScale;
+            startRotation = transform.rotation;
         }
 
         /// <summary>
@@ -47,6 +68,10 @@ namespace Game.Player
             movement = GetChildComponent<PlayerMovement>();
             input = GetChildComponent<PlayerInput>();
             mesh = GetChildComponent<PlayerMesh>();
+            win = GetChildComponent<PlayerWin>();
+            death = GetChildComponent<PlayerDeath>();
+            spawn = GetChildComponent<PlayerSpawn>();
+            cam = GetChildComponent<PlayerCamera>();
             gamemode = GetChildComponent<PlayerGamemodeHandler>();
         }
 
@@ -61,19 +86,28 @@ namespace Game.Player
         }
 
         /// <summary>
-        /// Win
+        /// Invokes the OnDeath event cuz p.OnDeath?.Invoke() won't work outside of this script
         /// </summary>
-        public void Win()
+        public void InvokeDeathEvent()
         {
+            p.dead = true;
 
+            OnDeath?.Invoke();
         }
 
         /// <summary>
-        /// Die
+        /// Invokes the OnRespawn event cuz p.OnRespawn?.Invoke() won't work outside of this script
         /// </summary>
-        public void Die()
+        public void InvokeRespawnEvent()
         {
+            p.dead = false;
 
+            // Reset transform
+            transform.position = startPos;
+            transform.localScale = startScale;
+            transform.rotation = startRotation;
+
+            OnRespawn?.Invoke();
         }
     }
 }

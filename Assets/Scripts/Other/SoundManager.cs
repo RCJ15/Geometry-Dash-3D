@@ -307,7 +307,7 @@ public class SoundManagerEditor : Editor
 
         base.OnInspectorGUI();
 
-        // If the GUI has changed then repaint the scene
+        // If the GUI has changed, then trigger OnChange()
         if (EditorGUI.EndChangeCheck())
         {
             OnChange();

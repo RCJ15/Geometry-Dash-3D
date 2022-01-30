@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Game.Player;
 
-namespace Game.Input
+namespace Game.CustomInput
 {
     /// <summary>
     /// Is the enum for any press mode when taking input.

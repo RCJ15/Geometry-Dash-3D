@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Game.Input;
+using Game.CustomInput;
 
 namespace Game.Player
 {
@@ -48,17 +48,6 @@ namespace Game.Player
             get
             {
                 return gh.YVelocity;
-            }
-        }
-
-        /// <summary>
-        /// Shortcut for getting "onGround"
-        /// </summary>
-        internal bool OnGround
-        {
-            get
-            {
-                return gh.OnGround;
             }
         }
 

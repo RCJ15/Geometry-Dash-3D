@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Game.Input;
+using Game.CustomInput;
 
 namespace Game.Player
 {
@@ -31,17 +31,6 @@ namespace Game.Player
             get
             {
                 return rb.velocity.y;
-            }
-        }
-
-        /// <summary>
-        /// Shortcut for getting "onGround"
-        /// </summary>
-        public bool OnGround
-        {
-            get
-            {
-                return p.movement.onGround;
             }
         }
 

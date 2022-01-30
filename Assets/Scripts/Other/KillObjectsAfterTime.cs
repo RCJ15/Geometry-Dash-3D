@@ -7,7 +7,7 @@ public class KillObjectsAfterTime : MonoBehaviour
     public float lifetime;
     public GameObject[] objectsToKill = new GameObject[] { };
     public bool unscaledTime;
-    public bool killThisObject;
+    public bool killThisObject = true;
 
     /// <summary>
     /// Start is called before the first frame update

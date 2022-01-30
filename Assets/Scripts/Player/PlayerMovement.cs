@@ -9,22 +9,17 @@ namespace Game.Player
     /// </summary>
     public class PlayerMovement : PlayerScript
     {
-        // Multiplier 10.95813172043011
-        // For this website https://gdforum.freeforums.net/thread/48749/p1kachu-presents-physics-geometry-dash
-
         //-- Speed constants (Blocks per second)
-        public const float slowSpeed = 8.4f;
-        public const float normalSpeed = 10.25f;
-        public const float doubleSpeed = 12.8f;
-        public const float tripleSpeed = 15.625f;
-        public const float quadrupleSpeed = 18.73f;
+        // Numbers from: https://gdforum.freeforums.net/thread/55538/easy-speed-maths-numbers-speeds?page=1
+        public const float slowSpeed = 8.36820083682f; // Actual multiplier: 0.80648535564x
+        public const float normalSpeed = 10.3761348898f; // Actual multiplier: 1x
+        public const float doubleSpeed = 12.9032258065f; // Actual multiplier: 1.2435483871x
+        public const float tripleSpeed = 15.5945419103f; // Actual multiplier: 1.5029239766x
+        public const float quadrupleSpeed = 19.1846522782f; // Actual multiplier: 1.8489208633x
 
         [Header("Stats")]
         [SerializeField] private GameSpeed currentSpeed;
         public static float speed;
-
-        public bool onGround;
-        public LayerMask groundLayer;
 
         public float terminalVelocity = 28.4f;
 
@@ -41,6 +36,9 @@ namespace Game.Player
 
             // Set target X start point
             targetX = transform.position.x;
+
+            // Subscribe to the on respawn event
+            p.OnRespawn += OnRespawn;
         }
 
         /// <summary>
@@ -49,9 +47,6 @@ namespace Game.Player
         public override void Update()
         {
             base.Update();
-
-            // Set onGround
-            onGround = Physics.OverlapBox(transform.position, transform.localScale / 2 + (Vector3.one / 15), transform.rotation, groundLayer).Length >= 1;
 
             // Move the player
             targetX += Time.deltaTime * speed;
@@ -64,10 +59,8 @@ namespace Game.Player
         {
             base.FixedUpdate();
 
-            // Lerp towards target X
-            float newX = Mathf.Lerp(transform.position.x, targetX, 0.5f);
-
-            transform.position = new Vector3(newX, transform.position.y, transform.position.z);
+            // Go towards target X
+            transform.position = new Vector3(targetX, transform.position.y, transform.position.z);
 
             // Clamp Y velocity between terminal velocity
             YVelocity = Mathf.Clamp(YVelocity, -terminalVelocity, terminalVelocity);
@@ -104,6 +97,19 @@ namespace Game.Player
                     speed = 0;
                     break;
             }
+        }
+
+        /// <summary>
+        /// Is called when the player respawns
+        /// </summary>
+        private void OnRespawn()
+        {
+            // Reset the target X
+            targetX = p.startPos.x;
+
+            // Reset rigidbody components aswell
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
         }
     }
 

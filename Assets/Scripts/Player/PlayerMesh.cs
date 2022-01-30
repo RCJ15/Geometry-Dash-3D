@@ -9,7 +9,7 @@ namespace Game.Player
     /// </summary>
     public class PlayerMesh : PlayerScript
     {
-
+        [SerializeField] private GameObject meshOutline;
 
         /// <summary>
         /// Start is called before the first frame update
@@ -33,6 +33,15 @@ namespace Game.Player
         public override void FixedUpdate()
         {
             base.FixedUpdate();
+        }
+
+        /// <summary>
+        /// Toggles the mesh on/off based on <paramref name="enable"/>
+        /// </summary>
+        public void ToggleMesh(bool enable)
+        {
+            mr.enabled = enable;
+            meshOutline.SetActive(enable);
         }
     }
 }

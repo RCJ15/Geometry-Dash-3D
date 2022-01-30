@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Game.Input;
+using Game.CustomInput;
 
 namespace Game.Player
 {
@@ -11,7 +11,21 @@ namespace Game.Player
     [System.Serializable]
     public class CubeGamemode : GamemodeScript
     {
-        public float jumpHeight = 18.6f;
+        // Jump numbers from: https://www.youtube.com/watch?v=srkwnM5mRX8
+
+        [Header("Jumping")]
+        [SerializeField] private float jumpHeight = 20f;
+        [SerializeField] private float jumpCooldown = 0.2f;
+        private float jumpCooldownTimer;
+
+        [Header("Ground Detection")]
+        [SerializeField] private float groundDetectSize = 0.45f;
+        public LayerMask groundLayer;
+
+        [HideInInspector] public bool onGround;
+        private bool landedOnGround;
+
+        // Time in the air is 0.44 seconds
 
         /// <summary>
         /// OnEnable is called when the gamemode is switched to this gamemode
@@ -35,6 +49,25 @@ namespace Game.Player
         public override void Update()
         {
             base.Update();
+
+            // Decrease the jump cooldown whilst it's above 0
+            if (jumpCooldownTimer > 0)
+            {
+                jumpCooldownTimer -= Time.deltaTime;
+            }
+
+            // Detect if the player is on the ground
+            onGround = Physics.OverlapBox(transform.position, Vector3.one * groundDetectSize, transform.rotation, groundLayer).Length >= 1;
+
+            // Detects if the player has landed
+            if (!landedOnGround && onGround)
+            {
+                landedOnGround = true;
+            }
+            else if (landedOnGround && !onGround)
+            {
+                landedOnGround = false;
+            }
         }
 
         /// <summary>
@@ -44,10 +77,15 @@ namespace Game.Player
         {
             base.FixedUpdate();
 
+
             // Add torque whilst in the air
-            if (!OnGround)
+            if (!onGround)
             {
-                rb.AddTorque(-10 * Vector3.forward, ForceMode.Force);
+                rb.AddTorque(-180 / 0.4f * Mathf.Deg2Rad * Vector3.forward, ForceMode.VelocityChange);
+            }
+            else
+            {
+
             }
         }
 
@@ -59,8 +97,8 @@ namespace Game.Player
         {
             base.OnClick(mode);
 
-            // Can't jump if not on ground
-            if (!OnGround)
+            // Can't jump if not on ground or the jump is on cooldown
+            if (!onGround || jumpCooldownTimer > 0)
             {
                 return;
             }
@@ -68,11 +106,19 @@ namespace Game.Player
             // Check the press mode
             switch (mode)
             {
-                // The button was just pressed
+                // The button was held down
                 case PressMode.hold:
 
                     YVelocity = jumpHeight;
-                    rb.AddTorque(-2 * Vector3.forward, ForceMode.VelocityChange);
+
+                    // Reset the jump cooldown
+                    jumpCooldownTimer = jumpCooldown;
+
+                    Debug.Log("JUMPED");
+
+                    float force = -350 * Mathf.Deg2Rad;
+
+                    rb.AddTorque(force * Vector3.forward, ForceMode.Impulse);
 
                     break;
             }

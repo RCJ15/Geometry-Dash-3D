@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.EventSystems;
-using Game.Input;
+using Game.CustomInput;
 using Game.Player;
 
 public class CustomInputModule : PointerInputModule
