@@ -93,7 +93,7 @@ LineRenderer:
   m_Positions: []
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.025
+    widthMultiplier: 0.03
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -160,6 +160,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   points: 15
   ringSize: 2
+  lookAtCamera: 1
   updateMode: 2
 --- !u!95 &1724722748292280669
 Animator:

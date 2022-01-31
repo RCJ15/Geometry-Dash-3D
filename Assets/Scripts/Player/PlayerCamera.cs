@@ -10,20 +10,23 @@ namespace Game.Player
     /// </summary>
     public class PlayerCamera : PlayerScript
     {
+        //-- Instance
         private static PlayerCamera instance;
         
         private Camera cam;
 
-        [Header("Cinemachine")]
-        [SerializeField] private CinemachineVirtualCamera cinemachineCam;
-        private CinemachineBasicMultiChannelPerlin perlin;
+        //-- Cinemachine
+        private CinemachineVirtualCamera[] cinemachineCams;
+        private CinemachineBasicMultiChannelPerlin[] perlins;
 
+        //-- Shake
         private float strength;
         private float length;
         private float lengthTimer;
 
-        private Vector3 startPos;
-        private Quaternion startRot;
+        //-- Start values
+        private Vector3[] startPos;
+        private Quaternion[] startRot;
 
         private void Awake()
         {
@@ -32,11 +35,15 @@ namespace Game.Player
         }
 
         /// <summary>
-        /// Sets what the cinemachine camera should follow
+        /// Sets what all the cinemachine cameras should follow
         /// </summary>
         public static void SetCamFollow(Transform follow)
         {
-            instance.cinemachineCam.Follow = follow;
+            // Loop through all the cameras
+            foreach (CinemachineVirtualCamera cinemachineCam in instance.cinemachineCams)
+            {
+                cinemachineCam.Follow = follow;
+            }
         }
 
         /// <summary>
@@ -49,12 +56,32 @@ namespace Game.Player
             // Get the main camera
             cam = Camera.main;
 
-            // Set start position
-            startPos = cinemachineCam.transform.position;
-            startRot = cinemachineCam.transform.rotation;
+            // Find all cinemachine cameras
+            cinemachineCams = FindObjectsOfType<CinemachineVirtualCamera>();
 
-            // Get multi channel perlin for camera shake
-            perlin = cinemachineCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            // Create temporary lists
+            List<Vector3> startPosList = new List<Vector3>();
+            List<Quaternion> startRotList = new List<Quaternion>();
+            List<CinemachineBasicMultiChannelPerlin> perlinList = new List<CinemachineBasicMultiChannelPerlin>();
+
+            int index = 0;
+            foreach (CinemachineVirtualCamera cinemachineCam in instance.cinemachineCams)
+            {
+                print(cinemachineCam.name + " | " + index);
+                index++;
+
+                // Set start values for each camera
+                startPosList.Add(cinemachineCam.transform.position);
+                startRotList.Add(cinemachineCam.transform.rotation);
+
+                // Also get the multi channel perlin for the camera shaking
+                perlinList.Add(cinemachineCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>());
+            }
+
+            // Set the lists to be the arrays
+            startPos = startPosList.ToArray();
+            startRot = startRotList.ToArray();
+            perlins = perlinList.ToArray();
 
             // Subscribe to events
             p.OnDeath += OnDeath;
@@ -91,18 +118,25 @@ namespace Game.Player
             {
                 // Set the amplitude to decrease the lower the lengthTimer is
                 float shakePower = MathE.Map(0, length, 0, 1, lengthTimer);
-                perlin.m_AmplitudeGain = strength * shakePower;
+
+                foreach (CinemachineBasicMultiChannelPerlin perlin in perlins)
+                {
+                    perlin.m_AmplitudeGain = strength * shakePower;
+                }
             }
             // Reset shake values when the timer runs out
             else
             {
-                if (perlin.m_AmplitudeGain != 0)
+                foreach (CinemachineBasicMultiChannelPerlin perlin in perlins)
                 {
-                    perlin.m_AmplitudeGain = 0;
-                }
-                if (perlin.m_FrequencyGain != 0)
-                {
-                    perlin.m_FrequencyGain = 0;
+                    if (perlin.m_AmplitudeGain != 0)
+                    {
+                        perlin.m_AmplitudeGain = 0;
+                    }
+                    if (perlin.m_FrequencyGain != 0)
+                    {
+                        perlin.m_FrequencyGain = 0;
+                    }
                 }
             }
         }
@@ -129,7 +163,10 @@ namespace Game.Player
             this.length = length;
             lengthTimer = length;
 
-            perlin.m_FrequencyGain = frequency;
+            foreach (CinemachineBasicMultiChannelPerlin perlin in perlins)
+            {
+                perlin.m_FrequencyGain = frequency;
+            }
         }
 
         private void OnDeath()
@@ -143,12 +180,29 @@ namespace Game.Player
 
         private void OnRespawn()
         {
-            // Reset the camera position
-            cinemachineCam.transform.position = startPos;
-            cinemachineCam.ForceCameraPosition(startPos, startRot);
+            // Reset all of the cameras positions and rotations
+            for (int i = 0; i < cinemachineCams.Length; i++)
+            {
+                cinemachineCams[i].transform.position = startPos[i];
+                cinemachineCams[i].ForceCameraPosition(startPos[i], startRot[i]);
+            }
 
             // Make the camera follow the player
             SetCamFollow(transform);
+        }
+
+        /// <summary>
+        /// Changes the priority of all cameras to 0, except for the camera with the index given.
+        /// </summary>
+        /// <param name="cameraIndex"></param>
+        public void ChangePriorityCamera(int cameraIndex)
+        {
+            // Loop through all cameras
+            for (int i = 0; i < cinemachineCams.Length; i++)
+            {
+                // Set their priority to 0 unless the current camera is the same as the camera we want to prioritise
+                cinemachineCams[i].Priority = i == cameraIndex ? 1 : 0;
+            }
         }
     }
 }

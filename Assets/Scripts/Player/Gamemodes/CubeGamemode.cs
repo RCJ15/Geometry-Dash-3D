@@ -36,7 +36,7 @@ namespace Game.Player
         [SerializeField] private GameObject jumpParticles;
         [SerializeField] private GameObject landParticles;
 
-        // Time in the air is 0.44 seconds
+        // The time spent in the air per jump is about 0.44 seconds
 
         public override void Start()
         {
@@ -112,10 +112,16 @@ namespace Game.Player
         /// </summary>
         private void AngularVelocity()
         {
-            // Spin in the Z axis while in the air
+            // Check if we are in the air
             if (!onGround)
             {
+                angularVelocity = Vector3.zero;
+
+                // Spin -180 degrees per 0.44 seconds in the Z axis
                 angularVelocity.z = -180 / 0.44f;
+
+                // Set the angular velocity X to the rigidbodies current Z velocity
+                angularVelocity.x = rb.velocity.z * 30;
             }
 
             // Increase target rotation by angular velocity
@@ -130,11 +136,12 @@ namespace Game.Player
 
         private void OnLand()
         {
-            // Reset angular velocity Z
-            angularVelocity.z = 0;
+            // Reset the X and Z angular velocity 
+            angularVelocity = Vector3.zero;
 
-            // Round the X and Z rotation to be a multiple of 90
+            // Round the X and Z rotation to be a multiple of 90 (0, 90, 180 or 270)
             targetRot.x = Mathf.Round(targetRot.x / 90) * 90;
+            targetRot.y = Mathf.Round(targetRot.y / 90) * 90;
             targetRot.z = Mathf.Round(targetRot.z / 90) * 90;
 
             SpawnParticles(landParticles);

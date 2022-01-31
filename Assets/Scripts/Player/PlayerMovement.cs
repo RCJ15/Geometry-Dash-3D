@@ -64,6 +64,8 @@ namespace Game.Player
 
             // Clamp Y velocity between terminal velocity
             YVelocity = Mathf.Clamp(YVelocity, -terminalVelocity, terminalVelocity);
+
+            rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, -Input.GetAxis("Horizontal") * 10);
         }
 
         public void ChangeSpeed(GameSpeed newSpeed)

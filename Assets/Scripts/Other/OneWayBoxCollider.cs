@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// This was copied from: https://www.youtube.com/watch?v=qwwjwb7XlUc <para/>
+/// So credit goes to them.
+/// </summary>
 [RequireComponent(typeof(BoxCollider))]
 public class OneWayBoxCollider : MonoBehaviour
 {
