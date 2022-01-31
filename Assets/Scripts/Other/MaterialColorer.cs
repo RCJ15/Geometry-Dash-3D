@@ -25,6 +25,8 @@ public class MaterialColorer : MonoBehaviour
 
     public Color[] colors = new Color[] { Color.white };
 
+    [SerializeField] private MaterialColorer copyFrom;
+
     //-- Update mode
     [SerializeField] private UpdateMode updateMode;
 
@@ -57,6 +59,89 @@ public class MaterialColorer : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Returns the correct material index
+    /// </summary>
+    private int GetMaterialIndex
+    {
+        get
+        {
+            // Return this material index if it shouldn't copy from another
+            if (colorMode != ColorMode.copyFromAnother)
+            {
+                return materialIndex;
+            }
+            // Return the copy froms material index otherwise
+            else
+            {
+                return copyFrom.GetMaterialIndex;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Returns the correct color mode
+    /// </summary>
+    private ColorMode GetColorMode
+    {
+        get
+        {
+            // Return this color mode if it shouldn't copy from another
+            if (colorMode != ColorMode.copyFromAnother)
+            {
+                return colorMode;
+            }
+            // Return the copy froms color mode otherwise
+            else
+            {
+                return copyFrom.GetColorMode;
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Returns the correct colors
+    /// </summary>
+    private Color GetColor
+    {
+        get
+        {
+            // Return this color if it shouldn't copy from another
+            if (colorMode != ColorMode.copyFromAnother)
+            {
+                return color;
+            }
+            // Return the copy froms color otherwise
+            else
+            {
+                return copyFrom.GetColor;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Returns the correct colors
+    /// </summary>
+    private Color[] GetColors
+    {
+        get
+        {
+            // Return this colors if it shouldn't copy from another
+            if (colorMode != ColorMode.copyFromAnother)
+            {
+                return colors;
+            }
+            // Return the copy froms colors otherwise
+            else
+            {
+                return copyFrom.GetColors;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Returns the correct renderers materials
+    /// </summary>
     private Material[] materials {
         get { return GetRenderer.materials; }
         set { GetRenderer.materials = value; }
@@ -71,10 +156,10 @@ public class MaterialColorer : MonoBehaviour
         List<Material> newMaterials = new List<Material>();
 
         // Change a list of materials
-        if (colorMode == ColorMode.array)
+        if (GetColorMode == ColorMode.array)
         {
             // Loop through all existing materials
-            for (int i = 0; i < Mathf.Clamp(colors.Length, 0, materials.Length); i++)
+            for (int i = 0; i < Mathf.Clamp(GetColors.Length, 0, materials.Length); i++)
             {
                 Material mat = materials[i];
 
@@ -98,7 +183,7 @@ public class MaterialColorer : MonoBehaviour
 
         // Change one of the materials to be new
         // The material that is changed is controlled by the material index
-        if (colorMode == ColorMode.single)
+        if (GetColorMode == ColorMode.single)
         {
             // Loop through all the materials
             for (int i = 0; i < materials.Length; i++)
@@ -106,7 +191,7 @@ public class MaterialColorer : MonoBehaviour
                 Material mat = materials[i];
 
                 // If the I matches the material index, then create a new material
-                if (i == materialIndex)
+                if (i == GetMaterialIndex)
                 {
                     // Create a new material that copies the orignal material
                     Material newMat = new Material(mat);
@@ -159,42 +244,93 @@ public class MaterialColorer : MonoBehaviour
     public void UpdateColors()
     {
         // Change an entire list of material colors
-        if (colorMode == ColorMode.array)
+        if (GetColorMode == ColorMode.array)
         {
-            // Loop through the amount of colors
-            for (int i = 0; i < colors.Length; i++)
-            {
-                Material mat = materials[i];
-
-                // Set the color
-                mat.color = colors[i];
-
-                // Set the emission color if updateEmmision is true
-                if (updateEmmision)
-                {
-                    mat.SetColor("_EmissionColor", colors[i]);
-                }
-            }
+            SetArrayColor(GetColors);
 
             return;
         }
 
         // Color only a single material in the list
         // The material is determined by the material index
-        if (colorMode == ColorMode.single)
+        if (GetColorMode == ColorMode.single)
         {
-            Material mat = materials[materialIndex];
+            SetSingleColor(GetColor);
+
+            return;
+        }
+    }
+
+    /// <summary>
+    /// Sets the color using an array
+    /// </summary>
+    private void SetArrayColor(Color[] colors)
+    {
+        // Loop through the amount of colors
+        for (int i = 0; i < Mathf.Min(colors.Length, materials.Length); i++)
+        {
+            Material mat = materials[i];
 
             // Set the color
-            mat.color = color;
+            mat.color = colors[i];
 
             // Set the emission color if updateEmmision is true
             if (updateEmmision)
             {
-                mat.SetColor("_EmissionColor", color);
+                mat.SetColor("_EmissionColor", colors[i]);
             }
+        }
+    }
 
-            return;
+    /// <summary>
+    /// Sets the color using an array
+    /// </summary>
+    private void SetSingleColor(Color color)
+    {
+        // Get material
+        Material mat = materials[materialIndex];
+
+        // Set the color
+        mat.color = color;
+
+        // Set the emission color if updateEmmision is true
+        if (updateEmmision)
+        {
+            mat.SetColor("_EmissionColor", color);
+        }
+    }
+
+    /// <summary>
+    /// Returns the current color array
+    /// </summary>
+    private Color[] GetArrayColor()
+    {
+        // Return normal colors
+        if (colorMode != ColorMode.copyFromAnother)
+        {
+            return colors;
+        }
+        // Return copy from colors
+        else
+        {
+            return copyFrom.colors;
+        }
+    }
+
+    /// <summary>
+    /// Returns the current single color
+    /// </summary>
+    private Color GetSingleColor()
+    {
+        // Return normal color
+        if (colorMode != ColorMode.copyFromAnother)
+        {
+            return color;
+        }
+        // Return copy from color
+        else
+        {
+            return copyFrom.color;
         }
     }
 
@@ -209,13 +345,14 @@ public class MaterialColorer : MonoBehaviour
     }
 
     /// <summary>
-    /// Enum for what update mode a mesh colorer can have
+    /// Enum for what color mode a mesh colorer can have
     /// </summary>
     [System.Serializable]
     public enum ColorMode
     {
         single = 0,
         array = 1,
+        copyFromAnother = 2,
     }
 
     /// <summary>
@@ -276,6 +413,9 @@ public class MaterialColorerEditor : Editor
                 break;
             case MaterialColorer.ColorMode.array:
                 Serialize("colors");
+                break;
+            case MaterialColorer.ColorMode.copyFromAnother:
+                Serialize("copyFrom");
                 break;
         }
 

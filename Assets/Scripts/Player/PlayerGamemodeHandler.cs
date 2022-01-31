@@ -39,12 +39,35 @@ namespace Game.Player
 
             // Update the start gamemode
             ChangeGamemode(currentGamemode);
+
+            // Subscribe to events
+            p.OnDeath += OnDeath;
+            p.OnRespawn += OnRespawn;
+        }
+
+        /// <summary>
+        /// Called when the player dies
+        /// </summary>
+        private void OnDeath()
+        {
+            activeGamemodeScript.OnDeath();
+        }
+
+        /// <summary>
+        /// Called when the player respawns
+        /// </summary>
+        private void OnRespawn()
+        {
+            activeGamemodeScript.OnRespawn();
         }
 
         private void SetupGamemodeScript(GamemodeScript script)
         {
             script.gh = this;
+            script.p = p;
             script.rb = rb;
+
+            script.Start();
         }
 
         /// <summary>

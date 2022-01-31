@@ -23,6 +23,7 @@ namespace Game.Player
         private float lengthTimer;
 
         private Vector3 startPos;
+        private Quaternion startRot;
 
         private void Awake()
         {
@@ -50,6 +51,7 @@ namespace Game.Player
 
             // Set start position
             startPos = cinemachineCam.transform.position;
+            startRot = cinemachineCam.transform.rotation;
 
             // Get multi channel perlin for camera shake
             perlin = cinemachineCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
@@ -143,6 +145,7 @@ namespace Game.Player
         {
             // Reset the camera position
             cinemachineCam.transform.position = startPos;
+            cinemachineCam.ForceCameraPosition(startPos, startRot);
 
             // Make the camera follow the player
             SetCamFollow(transform);

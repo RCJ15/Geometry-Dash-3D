@@ -57,7 +57,7 @@ namespace Game.Player
         }
 
         /// <summary>
-        /// Same as GetComponent<>(), but if the method return null, GetComponentInChildren() is used instead
+        /// Same as GetComponent<>(), but if the method return null, GetComponentInChildren() is used instead. If that also fails then GetComponentInParent() is used instead.
         /// </summary>
         public T GetChildComponent<T>()
         {
@@ -65,11 +65,18 @@ namespace Game.Player
             T component = GetComponent<T>();
 
             // If it's null, use get component in children
-            if (component.Equals(null))
+            if (component == null || component.Equals(null))
             {
                 component = GetComponentInChildren<T>();
             }
 
+            // If it's null again, use get component in parent
+            if (component == null || component.Equals(null))
+            {
+                component = GetComponentInParent<T>();
+            }
+            
+            // Return
             return component;
         }
 

@@ -13,17 +13,17 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Basic Block Edges
-    second: {fileID: 2100000, guid: f02672f219630494e8f1a6e3da77e711, type: 2}
+    second: {fileID: 2100000, guid: 0cf401c0a1125284a85099be2da188f5, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Basic Block Sides
-    second: {fileID: 2100000, guid: 4c5bdbe4786058d4eb8faa93dd286000, type: 2}
+    second: {fileID: 2100000, guid: b2f59e7eca2a73f419da10e31c6c05cf, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Basic Block Top
-    second: {fileID: 2100000, guid: a07028f96d9b17b45952020722eed172, type: 2}
+    second: {fileID: 2100000, guid: a92702b58df79dc4099bd9cbf152e552, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

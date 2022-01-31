@@ -159,7 +159,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   points: 15
-  ringSize: 1
+  ringSize: 2
   updateMode: 2
 --- !u!95 &1724722748292280669
 Animator:

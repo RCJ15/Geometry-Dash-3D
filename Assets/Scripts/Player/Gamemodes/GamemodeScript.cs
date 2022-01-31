@@ -12,6 +12,7 @@ namespace Game.Player
     {
         //-- Component references
         [HideInInspector] public PlayerGamemodeHandler gh;
+        [HideInInspector] public PlayerMain p;
         [HideInInspector] public Rigidbody rb;
 
         /// <summary>
@@ -52,6 +53,25 @@ namespace Game.Player
         }
 
         /// <summary>
+        /// Shortcut for getting "p.dead"
+        /// </summary>
+        internal bool dead
+        {
+            get
+            {
+                return p.dead;
+            }
+        }
+
+        /// <summary>
+        /// Start is called before the first frame update
+        /// </summary>
+        public virtual void Start()
+        {
+
+        }
+
+        /// <summary>
         /// OnEnable is called when the gamemode is switched to this gamemode
         /// </summary>
         public virtual void OnEnable()
@@ -88,6 +108,22 @@ namespace Game.Player
         /// <paramref name="mode"/> determines whether the button was just pressed, held or just released.
         /// </summary>
         public virtual void OnClick(PressMode mode)
+        {
+
+        }
+
+        /// <summary>
+        /// Fixed Update is called once per physics frame
+        /// </summary>
+        public virtual void OnDeath()
+        {
+
+        }
+
+        /// <summary>
+        /// Fixed Update is called once per physics frame
+        /// </summary>
+        public virtual void OnRespawn()
         {
 
         }

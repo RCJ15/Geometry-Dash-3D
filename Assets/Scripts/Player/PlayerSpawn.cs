@@ -16,6 +16,7 @@ namespace Game.Player
         [SerializeField] private float respawnTime;
 
         [SerializeField] private TMP_Text attemptText;
+        private int currentAttemp = 1;
 
         /// <summary>
         /// Start is called before the first frame update
@@ -63,6 +64,9 @@ namespace Game.Player
             // Wait 1 second
             yield return new WaitForSeconds(1f);
 
+            currentAttemp++;
+            attemptText.text = "Attemp " + currentAttemp;
+
             // Invoke respawn event
             p.InvokeRespawnEvent();
 
@@ -71,13 +75,13 @@ namespace Game.Player
             SpawnRespawnRing();
             ToggleMesh(true);
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 4; i++)
             {
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.05f);
 
                 ToggleMesh(false);
 
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.05f);
 
                 SpawnRespawnRing();
                 ToggleMesh(true);
