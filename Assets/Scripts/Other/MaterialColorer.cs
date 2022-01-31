@@ -6,7 +6,8 @@ using UnityEditor;
 #endif
 
 /// <summary>
-/// Takes a renderer and an array of colors to change the renderers material color to the ones in the array.
+/// Takes a renderer and an array of colors to change the renderers material color to the ones in the array. <para/>
+/// Also has options for a single color or copying another MaterialColorer's colors.
 /// </summary>
 public class MaterialColorer : MonoBehaviour
 {
@@ -20,10 +21,10 @@ public class MaterialColorer : MonoBehaviour
     //-- Colors
     [SerializeField] internal ColorMode colorMode;
 
-    public Color color = Color.white;
+    [SerializeField] private Color color = Color.white;
     [SerializeField] private int materialIndex;
 
-    public Color[] colors = new Color[] { Color.white };
+    [SerializeField] private Color[] colors = new Color[] { Color.white };
 
     [SerializeField] private MaterialColorer copyFrom;
 
@@ -32,6 +33,7 @@ public class MaterialColorer : MonoBehaviour
 
     //-- Other settings
     [SerializeField] private bool updateEmmision;
+    [SerializeField] private bool updateSpecular;
 
     /// <summary>
     /// Finds the correct renderer
@@ -102,7 +104,7 @@ public class MaterialColorer : MonoBehaviour
     /// <summary>
     /// Returns the correct colors
     /// </summary>
-    private Color GetColor
+    public Color GetColor
     {
         get
         {
@@ -117,12 +119,25 @@ public class MaterialColorer : MonoBehaviour
                 return copyFrom.GetColor;
             }
         }
+        set
+        {
+            // Set this color if it shouldn't copy from another
+            if (colorMode != ColorMode.copyFromAnother)
+            {
+                color = value;
+            }
+            // Set the copy froms color otherwise
+            else
+            {
+                copyFrom.GetColor = value;
+            }
+        }
     }
 
     /// <summary>
     /// Returns the correct colors
     /// </summary>
-    private Color[] GetColors
+    public Color[] GetColors
     {
         get
         {
@@ -135,6 +150,19 @@ public class MaterialColorer : MonoBehaviour
             else
             {
                 return copyFrom.GetColors;
+            }
+        }
+        set
+        {
+            // Set this colors if it shouldn't copy from another
+            if (colorMode != ColorMode.copyFromAnother)
+            {
+                colors = value;
+            }
+            // Set the copy froms colors otherwise
+            else
+            {
+                copyFrom.GetColors = value;
             }
         }
     }
@@ -269,27 +297,23 @@ public class MaterialColorer : MonoBehaviour
         // Loop through the amount of colors
         for (int i = 0; i < Mathf.Min(colors.Length, materials.Length); i++)
         {
-            Material mat = materials[i];
-
-            // Set the color
-            mat.color = colors[i];
-
-            // Set the emission color if updateEmmision is true
-            if (updateEmmision)
-            {
-                mat.SetColor("_EmissionColor", colors[i]);
-            }
+            UpdateMat(materials[i], colors[i]);
         }
     }
 
     /// <summary>
-    /// Sets the color using an array
+    /// Sets the color using a single color
     /// </summary>
     private void SetSingleColor(Color color)
     {
-        // Get material
-        Material mat = materials[materialIndex];
+        UpdateMat(materials[materialIndex], color);
+    }
 
+    /// <summary>
+    /// Updates the given materials color to match the given color
+    /// </summary>
+    private void UpdateMat(Material mat, Color color)
+    {
         // Set the color
         mat.color = color;
 
@@ -298,39 +322,11 @@ public class MaterialColorer : MonoBehaviour
         {
             mat.SetColor("_EmissionColor", color);
         }
-    }
 
-    /// <summary>
-    /// Returns the current color array
-    /// </summary>
-    private Color[] GetArrayColor()
-    {
-        // Return normal colors
-        if (colorMode != ColorMode.copyFromAnother)
+        // Set the specular color if updateSpecular is true
+        if (updateSpecular)
         {
-            return colors;
-        }
-        // Return copy from colors
-        else
-        {
-            return copyFrom.colors;
-        }
-    }
-
-    /// <summary>
-    /// Returns the current single color
-    /// </summary>
-    private Color GetSingleColor()
-    {
-        // Return normal color
-        if (colorMode != ColorMode.copyFromAnother)
-        {
-            return color;
-        }
-        // Return copy from color
-        else
-        {
-            return copyFrom.color;
+            mat.SetColor("_SpecColor", color);
         }
     }
 
@@ -430,6 +426,7 @@ public class MaterialColorerEditor : Editor
         EditorGUILayout.LabelField("Other settings", EditorStyles.boldLabel);
 
         Serialize("updateEmmision");
+        Serialize("updateSpecular");
 
         // Apply modified properties
         serializedObject.ApplyModifiedProperties();

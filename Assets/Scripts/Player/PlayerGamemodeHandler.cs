@@ -12,8 +12,6 @@ namespace Game.Player
     {
         public Gamemode currentGamemode;
 
-        [SerializeField] private float groundDetectSize = 0.45f;
-
         [Header("Gamemodes")]
         public CubeGamemode cube;
         public ShipGamemode ship;
@@ -175,13 +173,6 @@ namespace Game.Player
                 default:
                     return null;
             }
-        }
-
-        private void OnDrawGizmosSelected()
-        {
-            Gizmos.color = Color.red;
-
-            Gizmos.DrawWireCube(transform.position, Vector3.one * groundDetectSize * 2);
         }
     }
 

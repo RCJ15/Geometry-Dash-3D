@@ -1,12 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
+/// <summary>
+/// Uses a line renderer to draw a ring with adjustable resolution and size. <para/>
+/// Can even be used to draw wire polygons like triangles and squares.
+/// </summary>
+[RequireComponent(typeof(LineRenderer))]
 public class RingRenderer : MonoBehaviour
 {
+    [Header("Ring Stats")]
     [SerializeField] private int points = 100;
     [SerializeField] private float ringSize = 1;
 
+    [Header("Camera")]
+    [SerializeField] private bool lookAtCamera = true;
+    private Transform cam;
+
+    [Header("Update mode")]
     [SerializeField] private UpdateMode updateMode;
 
     private LineRenderer lr;
@@ -19,6 +33,10 @@ public class RingRenderer : MonoBehaviour
         // Get line renderer
         lr = GetComponent<LineRenderer>();
 
+        // Get the camera
+        cam = Camera.main.transform;
+
+        // Always update in awake regardless of the update mode
         UpdateLines();
     }
 
@@ -27,6 +45,7 @@ public class RingRenderer : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        // Update every frame if the update mode is set to every frame
         if (updateMode == UpdateMode.everyFrame)
         {
             UpdateLines();
@@ -38,6 +57,7 @@ public class RingRenderer : MonoBehaviour
     /// </summary>
     private void FixedUpdate()
     {
+        // Update every fixed frame if the update mode is set to every fixed frame
         if (updateMode == UpdateMode.everyFixedFrame)
         {
             UpdateLines();
@@ -45,15 +65,27 @@ public class RingRenderer : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the line renderers lines to form a ring
+    /// Updates the line renderers lines to form the ring
     /// </summary>
-    private void UpdateLines()
+    public void UpdateLines()
     {
-        // Set no ring if there are no points or the size is 0
+        // Get the line renderer if it's (somehow) missing
+        if (lr == null)
+        {
+            lr = GetComponent<LineRenderer>();
+        }
+
+        // Render no ring if there are no points or the size is 0
         if (points <= 0 || ringSize <= 0)
         {
             lr.positionCount = 0;
             return;
+        }
+
+        // Look at the camera if we are supposed to do that
+        if (lookAtCamera && cam != null)
+        {
+            transform.LookAt(cam, Vector3.up);
         }
 
         // Create list of Vector3
@@ -63,11 +95,11 @@ public class RingRenderer : MonoBehaviour
         for (int i = 0; i < points; i++)
         {
             // Add the position to the list
-            poses.Add(transform.position + GetPos(i));
+            poses.Add(GetPos(i));
         }
 
         // Add the first pos
-        poses.Add(transform.position + GetPos(0));
+        poses.Add(GetPos(0));
 
         // Set the line renderers positions
         lr.positionCount = poses.Count;
@@ -82,12 +114,16 @@ public class RingRenderer : MonoBehaviour
     {
         // Calculate the angle
         float angle = MathE.Map(0, points, 0, 360, index);
+        angle = MathE.LoopValue(angle, 0, 360);
 
-        // Convert the angle to a normal
+        // Convert the angle into a normal
         Vector2 dir = MathE.AngleToNormal(angle);
 
+        // Calculate the new position
+        Vector3 newPos = dir * ringSize;
+
         // Return the position
-        return dir * ringSize;
+        return transform.TransformPoint(newPos);
     }
 
     /// <summary>
@@ -100,4 +136,62 @@ public class RingRenderer : MonoBehaviour
         everyFrame = 1,
         everyFixedFrame = 2,
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
+    {
+        // Get the line renderer if it's missing
+        if (lr == null)
+        {
+            lr = GetComponent<LineRenderer>();
+        }
+
+        // Render no ring if there are no points or the size is 0
+        if (points <= 0 || ringSize <= 0)
+        {
+            return;
+        }
+
+        // Simply draws the ring but with gizmos
+        for (int i = 0; i < points; i++)
+        {
+            float t = (float)i / (float)points;
+
+            // Get the color
+            Gizmos.color = lr.colorGradient.Evaluate(t);
+
+            // Draw the lines
+            Gizmos.DrawLine(GetPos(i), GetPos(i + 1));
+        }
+    }
+#endif
 }
+
+#if UNITY_EDITOR
+[CustomEditor(typeof(RingRenderer))]
+public class RingRendererEditor : Editor
+{
+    private RingRenderer ringRenderer;
+
+    public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Editor Tools", EditorStyles.boldLabel);
+
+        // Just renders the lines, but in the editor
+        if (GUILayout.Button("Render in editor"))
+        {
+            Undo.RecordObject(ringRenderer, "Rendered ring in editor");
+            ringRenderer.UpdateLines();
+        }
+    }
+
+    private void OnEnable()
+    {
+        // Get the line renderer on the target object
+        ringRenderer = (RingRenderer)target;
+    }
+}
+#endif

@@ -11,7 +11,6 @@ namespace Game.Player
     public class PlayerSpawn : PlayerScript
     {
         [SerializeField] private GameObject respawnRing;
-        [SerializeField] private MaterialColorer playerColorer;
 
         [SerializeField] private float respawnTime;
 
@@ -53,9 +52,17 @@ namespace Game.Player
             // Disable the mesh
             p.mesh.ToggleMesh(false);
 
-            StartCoroutine(Respawn());
+            // Stop the currently active respawn coroutine
+            if (currentRespawnCoroutine != null)
+            {
+                StopCoroutine(currentRespawnCoroutine);
+            }
+
+            // Start the respawn coroutine
+            currentRespawnCoroutine = StartCoroutine(Respawn());
         }
 
+        private Coroutine currentRespawnCoroutine;
         /// <summary>
         /// Makes the player flash on/off and spawn respawn rings
         /// </summary>
@@ -75,7 +82,7 @@ namespace Game.Player
             SpawnRespawnRing();
             ToggleMesh(true);
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 3; i++)
             {
                 yield return new WaitForSeconds(0.05f);
 
@@ -106,7 +113,7 @@ namespace Game.Player
             obj.transform.localPosition = Vector3.zero;
 
             // Get the player color
-            Color playerColor1 = playerColorer.colors[0];
+            Color playerColor1 = p.colorer.GetColors[0];
 
             // Change the line renderers color
             LineRenderer lr = obj.GetComponent<LineRenderer>();

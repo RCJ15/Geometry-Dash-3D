@@ -547,7 +547,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0cf401c0a1125284a85099be2da188f5, type: 2}
+  - {fileID: 2100000, guid: a2a02a9de766b5e45a2d2f2c8e124fd2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -668,7 +668,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6735754596036729210}
-  - component: {fileID: 3262665956010538743}
+  - component: {fileID: 2104605837008287421}
   m_Layer: 7
   m_Name: Death Zone
   m_TagString: Untagged
@@ -690,8 +690,8 @@ Transform:
   m_Father: {fileID: 3455930435130590047}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &3262665956010538743
-BoxCollider:
+--- !u!135 &2104605837008287421
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -701,5 +701,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.6, y: 0.6, z: 0.6}
+  m_Radius: 0.3
   m_Center: {x: 0, y: 0, z: 0}

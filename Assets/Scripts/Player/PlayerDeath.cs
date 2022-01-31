@@ -39,6 +39,14 @@ namespace Game.Player
             {
                 Die();
             }
+
+#if UNITY_EDITOR
+            // DEBUG!!! Die when R is pressed
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                Die();
+            }
+#endif
         }
 
         /// <summary>
@@ -60,8 +68,25 @@ namespace Game.Player
                 return;
             }
 
-            // Spawn death particles
-            Instantiate(deathEffect, transform.position, Quaternion.identity);
+            // Spawn death effect
+            GameObject obj = Instantiate(deathEffect, transform.position, Quaternion.identity);
+
+            // Change the death particles color to match the player colors
+            ParticleSystemRenderer particles = obj.GetComponentInChildren<ParticleSystemRenderer>();
+
+            // Create a clone material and set the new material
+            Material newMaterial = CloneMaterial(particles.materials[0], 1, true, true);
+
+            particles.materials = new Material[] { newMaterial };
+
+            // Change the death sphere color to match the player colors
+            MaterialColorer colorer = obj.GetComponentInChildren<MaterialColorer>();
+
+            // Make sure to have the same alpha value
+            Color playerColor = PlayerColor1;
+            playerColor.a = colorer.GetColor.a;
+
+            colorer.GetColor = playerColor;
 
             // Play death sound
             SoundManager.PlaySound("Player Explode", 1);

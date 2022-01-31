@@ -6,15 +6,14 @@ using Game.CustomInput;
 namespace Game.Player
 {
     /// <summary>
-    /// This script contains a reference to all the other player scripts and acts as a communicator between them. <para/>
-    /// Also has crucial player methods like Win() and Die()
+    /// This script contains a reference to all the other player scripts and acts as a communicator between them.
     /// </summary>
     public class PlayerMain : PlayerScript
     {
         //-- Instance
         public static PlayerMain instance;
 
-        //-- Other player scripts
+        //-- Player scripts
         internal PlayerMovement movement;
         internal PlayerInput input;
         internal PlayerMesh mesh;
@@ -24,7 +23,11 @@ namespace Game.Player
         internal PlayerCamera cam;
         internal PlayerGamemodeHandler gamemode;
 
+        //-- Other Stuff
         internal bool dead;
+        public MaterialColorer colorer;
+
+        //-- Events
         public delegate void OnDeathEvent();
         public event OnDeathEvent OnDeath;
 

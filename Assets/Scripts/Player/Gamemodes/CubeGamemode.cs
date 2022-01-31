@@ -33,8 +33,8 @@ namespace Game.Player
 
         [Header("Effects")]
         [SerializeField] private ParticleSystem slideParticles;
-        [SerializeField] private ParticleSystem jumpParticles;
-        [SerializeField] private ParticleSystem landParticles;
+        [SerializeField] private GameObject jumpParticles;
+        [SerializeField] private GameObject landParticles;
 
         // Time in the air is 0.44 seconds
 
@@ -136,6 +136,8 @@ namespace Game.Player
             // Round the X and Z rotation to be a multiple of 90
             targetRot.x = Mathf.Round(targetRot.x / 90) * 90;
             targetRot.z = Mathf.Round(targetRot.z / 90) * 90;
+
+            SpawnParticles(landParticles);
         }
 
         /// <summary>
@@ -168,14 +170,35 @@ namespace Game.Player
             {
                 // The button was held down
                 case PressMode.hold:
-
-                    // Jump
-                    YVelocity = jumpHeight;
-
-                    // Restart the jump cooldown
-                    jumpCooldownTimer = jumpCooldown;
+                    Jump();
                     break;
             }
+        }
+
+        private void Jump()
+        {
+            // Set Y velocity
+            YVelocity = jumpHeight;
+
+            // Restart the jump cooldown
+            jumpCooldownTimer = jumpCooldown;
+
+            SpawnParticles(jumpParticles);
+        }
+
+
+        private void SpawnParticles(GameObject orignalObject)
+        {
+            // Create cube particles
+            GameObject obj = Object.Instantiate(orignalObject, transform.position, Quaternion.identity, transform);
+            obj.transform.localPosition = Vector3.zero;
+
+            // Get the particle system renderer
+            ParticleSystemRenderer jumpParticlesRenderer = obj.GetComponent<ParticleSystemRenderer>();
+            Material newMaterial = p.CloneMaterial(jumpParticlesRenderer.materials[0], 1, true, true);
+
+            // Set the materials
+            jumpParticlesRenderer.materials = new Material[] { newMaterial };
         }
 
         public override void OnDeath()

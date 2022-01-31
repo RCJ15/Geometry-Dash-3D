@@ -435,6 +435,28 @@ public struct MathE
     {
         return quaternion.eulerAngles.z;
     }
+
+    /// <summary>
+    /// Rotates the given <paramref name="point"/> around the <paramref name="pivot"/> by the given <paramref name="angles"/>.
+    /// </summary>
+    /// <param name="point">The point that'll be rotated.</param>
+    /// <param name="pivot">The pivot that the point will be rotated around.</param>
+    /// <param name="angles">The amount the point will rotate around the pivot.</param>
+    /// <returns>The rotated point.</returns>
+    public static Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, Vector3 angles)
+    {
+        // Get the direction of the point and pivot
+        Vector3 dir = point - pivot;
+
+        // Rotate the point by angles
+        dir = Quaternion.Euler(angles) * dir;
+
+        // Calculate the new point by setting it to pivot and offseting it
+        point = pivot + dir;
+
+        // Return the new point
+        return point;
+    }
     #endregion
 
     #region Middle methods

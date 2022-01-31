@@ -35,6 +35,28 @@ namespace Game.Player
         }
 
         /// <summary>
+        /// The primary player color
+        /// </summary>
+        public Color PlayerColor1
+        {
+            get
+            {
+                return p.colorer.GetColors[0];
+            }
+        }
+
+        /// <summary>
+        /// The secondary player color
+        /// </summary>
+        public Color PlayerColor2
+        {
+            get
+            {
+                return p.colorer.GetColors[1];
+            }
+        }
+
+        /// <summary>
         /// Start is called before the first frame update
         /// </summary>
         public virtual void Start()
@@ -112,6 +134,48 @@ namespace Game.Player
         public virtual void OnClick(PressMode mode)
         {
 
+        }
+
+        /// <summary>
+        /// Basically the same as <see cref="CloneMaterial(Material, Color, bool, bool)"/> but with a player color id instead
+        /// </summary>
+        public Material CloneMaterial(Material original, int playerColor = 1, bool changeEmission = false, bool changeSpecular = false)
+        {
+            return CloneMaterial(original, playerColor == 2 ? PlayerColor2 : PlayerColor1, changeEmission, changeSpecular);
+        }
+
+        /// <summary>
+        /// Clones the given material and changes the new clone materials color to match the given color. <para/>
+        /// Will also change the emission and specular colors if <paramref name="changeEmission"/> and <paramref name="changeSpecular"/> are true.
+        /// </summary>
+        /// <param name="original">The material to clone.</param>
+        /// <param name="newColor">The new color of the cloned material.</param>
+        /// <param name="changeEmission">Wheter to update the emission color.</param>
+        /// <param name="changeSpecular">Wheter to update the specular color.</param>
+        /// <returns></returns>
+        public Material CloneMaterial(Material original, Color newColor, bool changeEmission = false, bool changeSpecular =false)
+        {
+            // Copy original material
+            Material newMaterial = new Material(original);
+            newColor.a = original.color.a;
+
+            // Update material color
+            newMaterial.color = newColor;
+
+            // Update emission color if we should
+            if (changeEmission)
+            {
+                newMaterial.SetColor("_EmissionColor", newColor);
+            }
+
+            // Update specular color if we should
+            if (changeSpecular)
+            {
+                newMaterial.SetColor("_SpecColor", newColor);
+            }
+
+            // Return the new copied material
+            return newMaterial;
         }
     }
 }
