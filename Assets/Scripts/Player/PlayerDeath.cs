@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GD3D.Audio;
 
-namespace Game.Player
+namespace GD3D.Player
 {
     /// <summary>
     /// Handles the players death. Including detecting when the player should die. Disable this script to basically enable noclip.
@@ -11,7 +12,7 @@ namespace Game.Player
     {
         [Header("Main")]
         [SerializeField] private LayerMask deathLayer;
-        private bool touchingDeath;
+        private bool _touchingDeath;
 
         [Header("Effects")]
         [SerializeField] private GameObject deathEffect;
@@ -32,10 +33,10 @@ namespace Game.Player
             base.Update();
 
             // Detect if the player is touching deadly stuff
-            touchingDeath = Physics.OverlapBox(transform.position, transform.localScale / 2 + (Vector3.one / 15), transform.rotation, deathLayer).Length >= 1;
+            _touchingDeath = Physics.OverlapBox(transform.position, transform.localScale / 2 + (Vector3.one / 15), transform.rotation, deathLayer).Length >= 1;
 
             // Die if we are touching death
-            if (touchingDeath)
+            if (_touchingDeath)
             {
                 Die();
             }
@@ -63,7 +64,7 @@ namespace Game.Player
         public void Die()
         {
             // Don't die again if we have already died
-            if (p.dead)
+            if (_player._dead)
             {
                 return;
             }
@@ -92,7 +93,7 @@ namespace Game.Player
             SoundManager.PlaySound("Player Explode", 1);
 
             // Invoke on death event
-            p.InvokeDeathEvent();
+            _player.InvokeDeathEvent();
         }
     }
 }

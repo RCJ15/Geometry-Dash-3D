@@ -5,193 +5,196 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-/// <summary>
-/// Uses a line renderer to draw a ring with adjustable resolution and size. <para/>
-/// Can even be used to draw wire polygons like triangles and squares.
-/// </summary>
-[RequireComponent(typeof(LineRenderer))]
-public class RingRenderer : MonoBehaviour
+namespace GD3D
 {
-    [Header("Ring Stats")]
-    [SerializeField] private int points = 100;
-    [SerializeField] private float ringSize = 1;
-
-    [Header("Camera")]
-    [SerializeField] private bool lookAtCamera = true;
-    private Transform cam;
-
-    [Header("Update mode")]
-    [SerializeField] private UpdateMode updateMode;
-
-    private LineRenderer lr;
-
     /// <summary>
-    /// Awake is called when the script instance is being loaded
+    /// Uses a line renderer to draw a ring with adjustable resolution and size. <para/>
+    /// Can even be used to draw wire polygons like triangles and squares.
     /// </summary>
-    void Awake()
+    [RequireComponent(typeof(LineRenderer))]
+    public class RingRenderer : MonoBehaviour
     {
-        // Get line renderer
-        lr = GetComponent<LineRenderer>();
+        [Header("Ring Stats")]
+        [SerializeField] private int _points = 100;
+        [SerializeField] private float _ringSize = 1;
 
-        // Get the camera
-        cam = Camera.main.transform;
+        [Header("Camera")]
+        [SerializeField] private bool _lookAtCamera = true;
+        private Transform _cam;
 
-        // Always update in awake regardless of the update mode
-        UpdateLines();
-    }
+        [Header("Update mode")]
+        [SerializeField] private UpdateMode _updateMode;
 
-    /// <summary>
-    /// Update is called once per frame
-    /// </summary>
-    private void Update()
-    {
-        // Update every frame if the update mode is set to every frame
-        if (updateMode == UpdateMode.everyFrame)
+        private LineRenderer _lr;
+
+        /// <summary>
+        /// Awake is called when the script instance is being loaded
+        /// </summary>
+        void Awake()
         {
+            // Get line renderer
+            _lr = GetComponent<LineRenderer>();
+
+            // Get the camera
+            _cam = Camera.main.transform;
+
+            // Always update in awake regardless of the update mode
             UpdateLines();
         }
-    }
 
-    /// <summary>
-    /// Fixed Update is called once per physics frame
-    /// </summary>
-    private void FixedUpdate()
-    {
-        // Update every fixed frame if the update mode is set to every fixed frame
-        if (updateMode == UpdateMode.everyFixedFrame)
+        /// <summary>
+        /// Update is called once per frame
+        /// </summary>
+        private void Update()
         {
-            UpdateLines();
-        }
-    }
-
-    /// <summary>
-    /// Updates the line renderers lines to form the ring
-    /// </summary>
-    public void UpdateLines()
-    {
-        // Get the line renderer if it's (somehow) missing
-        if (lr == null)
-        {
-            lr = GetComponent<LineRenderer>();
+            // Update every frame if the update mode is set to every frame
+            if (_updateMode == UpdateMode.everyFrame)
+            {
+                UpdateLines();
+            }
         }
 
-        // Render no ring if there are no points or the size is 0
-        if (points <= 0 || ringSize <= 0)
+        /// <summary>
+        /// Fixed Update is called once per physics frame
+        /// </summary>
+        private void FixedUpdate()
         {
-            lr.positionCount = 0;
-            return;
+            // Update every fixed frame if the update mode is set to every fixed frame
+            if (_updateMode == UpdateMode.everyFixedFrame)
+            {
+                UpdateLines();
+            }
         }
 
-        // Look at the camera if we are supposed to do that
-        if (lookAtCamera && cam != null)
+        /// <summary>
+        /// Updates the line renderers lines to form the ring
+        /// </summary>
+        public void UpdateLines()
         {
-            transform.LookAt(cam, Vector3.up);
+            // Get the line renderer if it's (somehow) missing
+            if (_lr == null)
+            {
+                _lr = GetComponent<LineRenderer>();
+            }
+
+            // Render no ring if there are no points or the size is 0
+            if (_points <= 0 || _ringSize <= 0)
+            {
+                _lr.positionCount = 0;
+                return;
+            }
+
+            // Look at the camera if we are supposed to do that
+            if (_lookAtCamera && _cam != null)
+            {
+                transform.LookAt(_cam, Vector3.up);
+            }
+
+            // Create list of Vector3
+            List<Vector3> poses = new List<Vector3>();
+
+            // Loop for the amount of points needed
+            for (int i = 0; i < _points; i++)
+            {
+                // Add the position to the list
+                poses.Add(GetPos(i));
+            }
+
+            // Add the first pos
+            poses.Add(GetPos(0));
+
+            // Set the line renderers positions
+            _lr.positionCount = poses.Count;
+
+            _lr.SetPositions(poses.ToArray());
         }
 
-        // Create list of Vector3
-        List<Vector3> poses = new List<Vector3>();
-
-        // Loop for the amount of points needed
-        for (int i = 0; i < points; i++)
+        /// <summary>
+        /// Returns the position of the ring at the given <paramref name="index"/>
+        /// </summary>
+        private Vector3 GetPos(int index)
         {
-            // Add the position to the list
-            poses.Add(GetPos(i));
+            // Calculate the angle
+            float angle = MathE.Map(0, _points, 0, 360, index);
+            angle = MathE.LoopValue(angle, 0, 360);
+
+            // Convert the angle into a normal
+            Vector2 dir = MathE.AngleToNormal(angle);
+
+            // Calculate the new position
+            Vector3 newPos = dir * _ringSize;
+
+            // Return the position
+            return transform.TransformPoint(newPos);
         }
 
-        // Add the first pos
-        poses.Add(GetPos(0));
+        /// <summary>
+        /// Enum for what update mode a ring renderer can have
+        /// </summary>
+        [System.Serializable]
+        public enum UpdateMode
+        {
+            onAwake = 0,
+            everyFrame = 1,
+            everyFixedFrame = 2,
+        }
 
-        // Set the line renderers positions
-        lr.positionCount = poses.Count;
+#if UNITY_EDITOR
+        private void OnDrawGizmosSelected()
+        {
+            // Get the line renderer if it's missing
+            if (_lr == null)
+            {
+                _lr = GetComponent<LineRenderer>();
+            }
 
-        lr.SetPositions(poses.ToArray());
-    }
+            // Render no ring if there are no points or the size is 0
+            if (_points <= 0 || _ringSize <= 0)
+            {
+                return;
+            }
 
-    /// <summary>
-    /// Returns the position of the ring at the given <paramref name="index"/>
-    /// </summary>
-    private Vector3 GetPos(int index)
-    {
-        // Calculate the angle
-        float angle = MathE.Map(0, points, 0, 360, index);
-        angle = MathE.LoopValue(angle, 0, 360);
+            // Simply draws the ring but with gizmos
+            for (int i = 0; i < _points; i++)
+            {
+                float t = (float)i / (float)_points;
 
-        // Convert the angle into a normal
-        Vector2 dir = MathE.AngleToNormal(angle);
+                // Get the color
+                Gizmos.color = _lr.colorGradient.Evaluate(t);
 
-        // Calculate the new position
-        Vector3 newPos = dir * ringSize;
-
-        // Return the position
-        return transform.TransformPoint(newPos);
-    }
-
-    /// <summary>
-    /// Enum for what update mode a ring renderer can have
-    /// </summary>
-    [System.Serializable]
-    public enum UpdateMode
-    {
-        onAwake = 0,
-        everyFrame = 1,
-        everyFixedFrame = 2,
+                // Draw the lines
+                Gizmos.DrawLine(GetPos(i), GetPos(i + 1));
+            }
+        }
+#endif
     }
 
 #if UNITY_EDITOR
-    private void OnDrawGizmosSelected()
+    [CustomEditor(typeof(RingRenderer))]
+    public class RingRendererEditor : Editor
     {
-        // Get the line renderer if it's missing
-        if (lr == null)
+        private RingRenderer ringRenderer;
+
+        public override void OnInspectorGUI()
         {
-            lr = GetComponent<LineRenderer>();
+            base.OnInspectorGUI();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Editor Tools", EditorStyles.boldLabel);
+
+            // Just renders the lines, but in the editor
+            if (GUILayout.Button("Render in editor"))
+            {
+                Undo.RecordObject(ringRenderer, "Rendered ring in editor");
+                ringRenderer.UpdateLines();
+            }
         }
 
-        // Render no ring if there are no points or the size is 0
-        if (points <= 0 || ringSize <= 0)
+        private void OnEnable()
         {
-            return;
-        }
-
-        // Simply draws the ring but with gizmos
-        for (int i = 0; i < points; i++)
-        {
-            float t = (float)i / (float)points;
-
-            // Get the color
-            Gizmos.color = lr.colorGradient.Evaluate(t);
-
-            // Draw the lines
-            Gizmos.DrawLine(GetPos(i), GetPos(i + 1));
+            // Get the line renderer on the target object
+            ringRenderer = (RingRenderer)target;
         }
     }
 #endif
 }
-
-#if UNITY_EDITOR
-[CustomEditor(typeof(RingRenderer))]
-public class RingRendererEditor : Editor
-{
-    private RingRenderer ringRenderer;
-
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
-
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Editor Tools", EditorStyles.boldLabel);
-
-        // Just renders the lines, but in the editor
-        if (GUILayout.Button("Render in editor"))
-        {
-            Undo.RecordObject(ringRenderer, "Rendered ring in editor");
-            ringRenderer.UpdateLines();
-        }
-    }
-
-    private void OnEnable()
-    {
-        // Get the line renderer on the target object
-        ringRenderer = (RingRenderer)target;
-    }
-}
-#endif

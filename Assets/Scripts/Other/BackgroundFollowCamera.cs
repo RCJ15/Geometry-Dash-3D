@@ -2,155 +2,158 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Makes the object follow the camera in a stepped motion to allow for looping a object of a certain size.
-/// </summary>
-public class BackgroundFollowCamera : MonoBehaviour
+namespace GD3D
 {
-    [Header("Main Settings")]
-    public Vector3 roundValue = new Vector3(16, 16, 16);
-
-    public bool followX = true;
-    public bool followY = true;
-    public bool followZ = true;
-
-    public bool useLocalScale = true;
-
-    [Header("General Offset")]
-    public Vector3 offset;
-
-    [Header("Random Offset")]
-    public bool haveRandomXOffset = false;
-    private float randomXOffset;
-
-    public bool haveRandomYOffset = false;
-    private float randomYOffset;
-
-    public bool haveRandomZOffset = false;
-    private float randomZOffset;
-
-    [Header("Generate Background")]
-    public GameObject backgroundObjectToCopy;
-    public Vector3Int amount = new Vector3Int(1, 1, 1);
-
-    private Transform cam;
-    private Vector3 startPos;
-    private Vector3 pieceOffset;
-
     /// <summary>
-    /// Start is called before the first frame update
+    /// Makes the object follow the camera in a stepped motion to allow for looping a object of a certain size.
     /// </summary>
-    void Start()
+    public class BackgroundFollowCamera : MonoBehaviour
     {
-        // Set the start position
-        startPos = transform.position;
+        [Header("Main Settings")]
+        [SerializeField] private Vector3 _roundValue = new Vector3(16, 16, 16);
 
-        // Get the camera
-        cam = Camera.main.transform;
+        [SerializeField] private bool _followX = true;
+        [SerializeField] private bool _followY = true;
+        [SerializeField] private bool _followZ = true;
 
-        // Generate a random X offset if it should have a random X offset
-        if (haveRandomXOffset)
+        [SerializeField] private bool _useLocalScale = true;
+
+        [Header("General Offset")]
+        [SerializeField] private Vector3 _offset;
+
+        [Header("Random Offset")]
+        [SerializeField] private bool _haveRandomXOffset = false;
+        private float _randomXOffset;
+
+        [SerializeField] private bool _haveRandomYOffset = false;
+        private float _randomYOffset;
+
+        [SerializeField] private bool _haveRandomZOffset = false;
+        private float _randomZOffset;
+
+        [Header("Generate Background")]
+        [SerializeField] private GameObject _backgroundObjectToCopy;
+        [SerializeField] private Vector3Int _amount = new Vector3Int(1, 1, 1);
+
+        private Transform _cam;
+        private Vector3 _startPos;
+        private Vector3 _pieceOffset;
+
+        /// <summary>
+        /// Start is called before the first frame update
+        /// </summary>
+        void Start()
         {
-            randomXOffset = Random.Range(-roundValue.x, roundValue.x);
-        }
+            // Set the start position
+            _startPos = transform.position;
 
-        // Generate a random Y offset if it should have a random Y offset
-        if (haveRandomYOffset)
-        {
-            randomYOffset = Random.Range(-roundValue.y, roundValue.y);
-        }
+            // Get the camera
+            _cam = Camera.main.transform;
 
-        // Generate a random Z offset if it should have a random Z offset
-        if (haveRandomZOffset)
-        {
-            randomZOffset = Random.Range(-roundValue.z, roundValue.z);
-        }
-
-        // If there is no object to copy or the amount of objects to copy is below or equal to 0, then return
-        if (backgroundObjectToCopy == null || (amount.x <= 0 && amount.y <= 0 && amount.z <= 0))
-        {
-            return;
-        }
-
-        int amountSpawned = 1;
-
-        // Set the pieceOffset
-        pieceOffset = backgroundObjectToCopy.transform.localPosition;
-
-        // Loop for the amount of objects in the X
-        for (int x = 1; x < amount.x + 1; x++)
-        {
-            // Loop for the amount of objects in the Y
-            for (int y = 0; y < amount.y; y++)
+            // Generate a random X offset if it should have a random X offset
+            if (_haveRandomXOffset)
             {
-                //Loop for the amount of objects in the Z
-                for (int z = 0; z < amount.z; z++)
+                _randomXOffset = Random.Range(-_roundValue.x, _roundValue.x);
+            }
+
+            // Generate a random Y offset if it should have a random Y offset
+            if (_haveRandomYOffset)
+            {
+                _randomYOffset = Random.Range(-_roundValue.y, _roundValue.y);
+            }
+
+            // Generate a random Z offset if it should have a random Z offset
+            if (_haveRandomZOffset)
+            {
+                _randomZOffset = Random.Range(-_roundValue.z, _roundValue.z);
+            }
+
+            // If there is no object to copy or the amount of objects to copy is below or equal to 0, then return
+            if (_backgroundObjectToCopy == null || (_amount.x <= 0 && _amount.y <= 0 && _amount.z <= 0))
+            {
+                return;
+            }
+
+            int amountSpawned = 1;
+
+            // Set the pieceOffset
+            _pieceOffset = _backgroundObjectToCopy.transform.localPosition;
+
+            // Loop for the amount of objects in the X
+            for (int x = 1; x < _amount.x + 1; x++)
+            {
+                // Loop for the amount of objects in the Y
+                for (int y = 0; y < _amount.y; y++)
                 {
-                    // Set the X pos
-                    float xPos = amount.x <= 1 ? // Check if the amount of objects in the X are less or equal to 1
-                                                 // If true:
-                        backgroundObjectToCopy.transform.localPosition.x // Defaults to the local X position
-                        : // Else
-                        (x * roundValue.x) - ((amount.x * roundValue.x) / 2); // Calculation for getting the middle pos for X
+                    //Loop for the amount of objects in the Z
+                    for (int z = 0; z < _amount.z; z++)
+                    {
+                        // Set the X pos
+                        float xPos = _amount.x <= 1 ? // Check if the amount of objects in the X are less or equal to 1
+                                                      // If true:
+                            _backgroundObjectToCopy.transform.localPosition.x // Defaults to the local X position
+                            : // Else
+                            (x * _roundValue.x) - ((_amount.x * _roundValue.x) / 2); // Calculation for getting the middle pos for X
 
-                    // Set the Y pos
-                    float yPos = amount.y <= 1 ? // Check if the amount of objects in the Y are less or equal to 1
-                                                 // If true:
-                        backgroundObjectToCopy.transform.localPosition.y // Defaults to the local Y position
-                        : // Else:
-                        (y * roundValue.y) - ((amount.y * roundValue.y) / 2); // Calculation for getting the middle pos for Y
+                        // Set the Y pos
+                        float yPos = _amount.y <= 1 ? // Check if the amount of objects in the Y are less or equal to 1
+                                                      // If true:
+                            _backgroundObjectToCopy.transform.localPosition.y // Defaults to the local Y position
+                            : // Else:
+                            (y * _roundValue.y) - ((_amount.y * _roundValue.y) / 2); // Calculation for getting the middle pos for Y
 
-                    // Set the Z pos
-                    float zPos = amount.z <= 1 ? // Check if the amount of objects in the Z are less or equal to 1
-                                                 // If true:
-                        backgroundObjectToCopy.transform.localPosition.z // Defaults to the local Z position
-                        : // Else:
-                        (z * roundValue.z) - ((amount.z * roundValue.z) / 2); // Calculation for getting the middle pos for Z
+                        // Set the Z pos
+                        float zPos = _amount.z <= 1 ? // Check if the amount of objects in the Z are less or equal to 1
+                                                      // If true:
+                            _backgroundObjectToCopy.transform.localPosition.z // Defaults to the local Z position
+                            : // Else:
+                            (z * _roundValue.z) - ((_amount.z * _roundValue.z) / 2); // Calculation for getting the middle pos for Z
 
-                    GameObject newObj = Instantiate(backgroundObjectToCopy, Vector3.zero, backgroundObjectToCopy.transform.rotation, transform);
-                    newObj.transform.SetParent(transform);
-                    newObj.transform.localPosition = new Vector3(xPos, yPos, zPos) + pieceOffset + offset;
-                    newObj.name = backgroundObjectToCopy.name + " (" + amountSpawned + ")";
+                        GameObject newObj = Instantiate(_backgroundObjectToCopy, Vector3.zero, _backgroundObjectToCopy.transform.rotation, transform);
+                        newObj.transform.SetParent(transform);
+                        newObj.transform.localPosition = new Vector3(xPos, yPos, zPos) + _pieceOffset + _offset;
+                        newObj.name = _backgroundObjectToCopy.name + " (" + amountSpawned + ")";
 
-                    // Increment amount spawned by 1
-                    amountSpawned++;
+                        // Increment amount spawned by 1
+                        amountSpawned++;
+                    }
                 }
             }
+
+            // Destroy the orignal object cuz it's useless now
+            Destroy(_backgroundObjectToCopy);
         }
 
-        // Destroy the orignal object cuz it's useless now
-        Destroy(backgroundObjectToCopy);
-    }
+        /// <summary>
+        /// Update is called once per frame
+        /// </summary>
+        void Update()
+        {
+            // Set the position to follow the camera (with steps)
+            transform.position = new Vector3(
+                // X pos
+                _followX ?
+                (Mathf.Round(_cam.position.x / (_useLocalScale ? transform.localScale.x : 1) / _roundValue.x) // Round it after decreasing the value
+                * _roundValue.x * (_useLocalScale ? transform.localScale.x : 1)) + _randomXOffset // Make the value big again
+                :
+                _startPos.x, // Otherwise if it's not supposed to follow the X then set it to just be at it's start X
 
-    /// <summary>
-    /// Update is called once per frame
-    /// </summary>
-    void Update()
-    {
-        // Set the position to follow the camera (with steps)
-        transform.position = new Vector3(
-            // X pos
-            followX ?
-            (Mathf.Round(cam.position.x / (useLocalScale ? transform.localScale.x : 1) / roundValue.x) // Round it after decreasing the value
-            * roundValue.x * (useLocalScale ? transform.localScale.x : 1)) + randomXOffset // Make the value big again
-            :
-            startPos.x, // Otherwise if it's not supposed to follow the X then set it to just be at it's start X
+                // Y pos
+                _followY ?
+                (Mathf.Round(_cam.position.y / (_useLocalScale ? transform.localScale.y : 1) / _roundValue.y) // Round it after decreasing the value
+                * _roundValue.y * (_useLocalScale ? transform.localScale.y : 1)) + _randomYOffset // Make the value big again
+                :
+                _startPos.y, // Otherwise if it's not supposed to follow the Y then set it to just be at it's start Y
 
-            // Y pos
-            followY ?
-            (Mathf.Round(cam.position.y / (useLocalScale ? transform.localScale.y : 1) / roundValue.y) // Round it after decreasing the value
-            * roundValue.y * (useLocalScale ? transform.localScale.y : 1)) + randomYOffset // Make the value big again
-            :
-            startPos.y, // Otherwise if it's not supposed to follow the Y then set it to just be at it's start Y
+                // Z pos
+                _followZ ?
+                (Mathf.Round(_cam.position.z / (_useLocalScale ? transform.localScale.z : 1) / _roundValue.z) // Round it after decreasing the value
+                * _roundValue.z * (_useLocalScale ? transform.localScale.z : 1)) + _randomZOffset // Make the value big again
+                :
+                _startPos.z) // Otherwise if it's not supposed to follow the Z then set it to just be at it's start Z
 
-            // Z pos
-            followZ ?
-            (Mathf.Round(cam.position.z / (useLocalScale ? transform.localScale.z : 1) / roundValue.z) // Round it after decreasing the value
-            * roundValue.z * (useLocalScale ? transform.localScale.z : 1)) + randomZOffset // Make the value big again
-            :
-            startPos.z) // Otherwise if it's not supposed to follow the Z then set it to just be at it's start Z
-
-            // Add the offset
-            + offset;
+                // Add the offset
+                + _offset;
+        }
     }
 }

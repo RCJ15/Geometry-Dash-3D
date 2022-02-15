@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Game.Player;
+using GD3D.Player;
 
-namespace Game.CustomInput
+namespace GD3D.CustomInput
 {
     /// <summary>
     /// Is the enum for any press mode when taking input.

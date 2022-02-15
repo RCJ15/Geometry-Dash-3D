@@ -1,9 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Game.CustomInput;
+using GD3D.CustomInput;
 
-namespace Game.Player
+namespace GD3D.Player
 {
     /// <summary>
     /// This script contains a reference to all the other player scripts and acts as a communicator between them.
@@ -11,7 +12,7 @@ namespace Game.Player
     public class PlayerMain : PlayerScript
     {
         //-- Instance
-        public static PlayerMain instance;
+        public static PlayerMain Instance;
 
         //-- Player scripts
         internal PlayerMovement movement;
@@ -24,20 +25,17 @@ namespace Game.Player
         internal PlayerGamemodeHandler gamemode;
 
         //-- Other Stuff
-        internal bool dead;
-        public MaterialColorer colorer;
+        internal bool _dead;
+        public MaterialColorer Colorer;
 
         //-- Events
-        public delegate void OnDeathEvent();
-        public event OnDeathEvent OnDeath;
-
-        public delegate void OnRespawnEvent();
-        public event OnRespawnEvent OnRespawn;
+        public Action OnDeath;
+        public Action OnRespawn;
 
         // Start values
-        internal Vector3 startPos;
-        internal Vector3 startScale;
-        internal Quaternion startRotation;
+        internal Vector3 _startPos;
+        internal Vector3 _startScale;
+        internal Quaternion _startRotation;
 
         /// <summary>
         /// Awake is called when the script instance is being loaded
@@ -45,12 +43,12 @@ namespace Game.Player
         private void Awake()
         {
             // Set instance
-            instance = this;
+            Instance = this;
 
             // Set start values
-            startPos = transform.position;
-            startScale = transform.localScale;
-            startRotation = transform.rotation;
+            _startPos = transform.position;
+            _startScale = transform.localScale;
+            _startRotation = transform.rotation;
         }
 
         /// <summary>
@@ -93,7 +91,7 @@ namespace Game.Player
         /// </summary>
         public void InvokeDeathEvent()
         {
-            p.dead = true;
+            _player._dead = true;
 
             OnDeath?.Invoke();
         }
@@ -103,12 +101,12 @@ namespace Game.Player
         /// </summary>
         public void InvokeRespawnEvent()
         {
-            p.dead = false;
+            _player._dead = false;
 
             // Reset transform
-            transform.position = startPos;
-            transform.localScale = startScale;
-            transform.rotation = startRotation;
+            transform.position = _startPos;
+            transform.localScale = _startScale;
+            transform.rotation = _startRotation;
 
             OnRespawn?.Invoke();
         }

@@ -4826,7 +4826,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e4dec3f15c479a42881ed21c2694287, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifetime: 0.45
-  objectsToKill: []
-  unscaledTime: 0
-  killThisObject: 1
+  Lifetime: 0.45
+  ObjectsToKill: []
+  UnscaledTime: 0
+  KillThisObject: 1

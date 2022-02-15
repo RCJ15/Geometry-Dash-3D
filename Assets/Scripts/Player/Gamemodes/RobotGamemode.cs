@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Game.CustomInput;
+using GD3D.CustomInput;
 
-namespace Game.Player
+namespace GD3D.Player
 {
     /// <summary>
     /// Jumps (But different)

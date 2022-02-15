@@ -2,43 +2,46 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class KillObjectsAfterTime : MonoBehaviour
+namespace GD3D
 {
-    public float lifetime;
-    public GameObject[] objectsToKill = new GameObject[] { };
-    public bool unscaledTime;
-    public bool killThisObject = true;
-
-    /// <summary>
-    /// Start is called before the first frame update
-    /// </summary>
-    void Start()
+    public class KillObjectsAfterTime : MonoBehaviour
     {
-        StartCoroutine(Despawn());
-    }
+        public float Lifetime;
+        public GameObject[] ObjectsToKill = new GameObject[] { };
+        public bool UnscaledTime;
+        public bool KillThisObject = true;
 
-    /// <summary>
-    /// Starts a timer that'll destroy objects when it runs out
-    /// </summary>
-    private IEnumerator Despawn()
-    {
-        if (unscaledTime)
+        /// <summary>
+        /// Start is called before the first frame update
+        /// </summary>
+        void Start()
         {
-            yield return new WaitForSecondsRealtime(lifetime);
-        }
-        else
-        {
-            yield return new WaitForSeconds(lifetime);
+            StartCoroutine(Despawn());
         }
 
-        foreach (GameObject g in objectsToKill)
+        /// <summary>
+        /// Starts a timer that'll destroy objects when it runs out
+        /// </summary>
+        private IEnumerator Despawn()
         {
-            Destroy(g);
-        }
+            if (UnscaledTime)
+            {
+                yield return new WaitForSecondsRealtime(Lifetime);
+            }
+            else
+            {
+                yield return new WaitForSeconds(Lifetime);
+            }
 
-        if (killThisObject)
-        {
-            Destroy(gameObject);
+            foreach (GameObject g in ObjectsToKill)
+            {
+                Destroy(g);
+            }
+
+            if (KillThisObject)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

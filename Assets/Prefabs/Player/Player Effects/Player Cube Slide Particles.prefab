@@ -4826,15 +4826,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90f5d020a20948c498ca353ee64a1a47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  renderType: 1
-  rend: {fileID: 0}
-  particles: {fileID: 8362820433848460630}
-  colorMode: 2
-  color: {r: 1, g: 1, b: 1, a: 1}
-  materialIndex: 0
-  colors:
+  _renderType: 1
+  _renderer: {fileID: 0}
+  _particles: {fileID: 8362820433848460630}
+  _colorMode: 2
+  _color: {r: 1, g: 1, b: 1, a: 1}
+  _materialIndex: 0
+  _colors:
   - {r: 1, g: 1, b: 1, a: 1}
-  copyFrom: {fileID: 0}
-  updateMode: 0
-  updateEmmision: 1
-  updateSpecular: 1
+  _copyFrom: {fileID: 0}
+  _updateMode: 0
+  _updateEmmision: 1
+  _updateSpecular: 1

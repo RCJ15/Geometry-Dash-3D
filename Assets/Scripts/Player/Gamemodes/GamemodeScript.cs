@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Game.CustomInput;
+using GD3D.CustomInput;
 
-namespace Game.Player
+namespace GD3D.Player
 {
     /// <summary>
     /// The class all gameplay scripts inherit from.
@@ -11,64 +11,34 @@ namespace Game.Player
     public class GamemodeScript
     {
         //-- Component references
-        [HideInInspector] public PlayerGamemodeHandler gh;
-        [HideInInspector] public PlayerMain p;
-        [HideInInspector] public Rigidbody rb;
+        [HideInInspector] public PlayerGamemodeHandler GamemodeHandler;
+        [HideInInspector] public PlayerMain Player;
+        [HideInInspector] public Rigidbody Rigidbody;
 
-        /// <summary>
-        /// Shortcut for getting transform
-        /// </summary>
-        internal Transform transform
-        {
-            get
-            {
-                return gh.transform;
-            }
-        }
-
-        /// <summary>
-        /// Shortcut for getting gameObject
-        /// </summary>
-        internal GameObject gameObject
-        {
-            get
-            {
-                return gh.gameObject;
-            }
-        }
+        internal Transform _transform;
+        internal GameObject _gameObject;
 
         /// <summary>
         /// Shortcut for setting and getting "rb.velocity.y"
         /// </summary>
         internal float YVelocity
         {
-            set
-            {
-                gh.YVelocity = value;
-            }
-            get
-            {
-                return gh.YVelocity;
-            }
+            get => GamemodeHandler.YVelocity;
+            set => GamemodeHandler.YVelocity = value;
         }
 
         /// <summary>
         /// Shortcut for getting "p.dead"
         /// </summary>
-        internal bool dead
-        {
-            get
-            {
-                return p.dead;
-            }
-        }
+        internal bool dead => Player._dead;
 
         /// <summary>
         /// Start is called before the first frame update
         /// </summary>
         public virtual void Start()
         {
-
+            _transform = GamemodeHandler.transform;
+            _gameObject = GamemodeHandler.gameObject;
         }
 
         /// <summary>

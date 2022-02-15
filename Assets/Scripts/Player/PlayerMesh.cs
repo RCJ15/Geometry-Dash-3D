@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.Player
+namespace GD3D.Player
 {
     /// <summary>
     /// 
@@ -40,7 +40,7 @@ namespace Game.Player
         /// </summary>
         public void ToggleMesh(bool enable)
         {
-            mr.enabled = enable;
+            _meshRenderer.enabled = enable;
             meshOutline.SetActive(enable);
         }
     }

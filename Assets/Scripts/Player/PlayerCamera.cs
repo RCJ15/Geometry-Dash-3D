@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 
-namespace Game.Player
+namespace GD3D.Player
 {
     /// <summary>
     /// Contains the camera and controls where the camera is looking. Also has methods for camera shake
@@ -11,18 +11,18 @@ namespace Game.Player
     public class PlayerCamera : PlayerScript
     {
         //-- Instance
-        private static PlayerCamera instance;
+        private static PlayerCamera s_instance;
         
-        private Camera cam;
+        private Camera _cam;
 
         //-- Cinemachine
-        private CinemachineVirtualCamera[] cinemachineCams;
-        private CinemachineBasicMultiChannelPerlin[] perlins;
+        private CinemachineVirtualCamera[] _cinemachineCams;
+        private CinemachineBasicMultiChannelPerlin[] _perlins;
 
         //-- Shake
-        private float strength;
-        private float length;
-        private float lengthTimer;
+        private float _strength;
+        private float _length;
+        private float _lengthTimer;
 
         //-- Start values
         private Vector3[] startPos;
@@ -31,7 +31,7 @@ namespace Game.Player
         private void Awake()
         {
             // Set instance
-            instance = this;
+            s_instance = this;
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Game.Player
         public static void SetCamFollow(Transform follow)
         {
             // Loop through all the cameras
-            foreach (CinemachineVirtualCamera cinemachineCam in instance.cinemachineCams)
+            foreach (CinemachineVirtualCamera cinemachineCam in s_instance._cinemachineCams)
             {
                 cinemachineCam.Follow = follow;
             }
@@ -54,10 +54,10 @@ namespace Game.Player
             base.Start();
 
             // Get the main camera
-            cam = Camera.main;
+            _cam = Camera.main;
 
             // Find all cinemachine cameras
-            cinemachineCams = FindObjectsOfType<CinemachineVirtualCamera>();
+            _cinemachineCams = FindObjectsOfType<CinemachineVirtualCamera>();
 
             // Create temporary lists
             List<Vector3> startPosList = new List<Vector3>();
@@ -65,7 +65,7 @@ namespace Game.Player
             List<CinemachineBasicMultiChannelPerlin> perlinList = new List<CinemachineBasicMultiChannelPerlin>();
 
             int index = 0;
-            foreach (CinemachineVirtualCamera cinemachineCam in instance.cinemachineCams)
+            foreach (CinemachineVirtualCamera cinemachineCam in s_instance._cinemachineCams)
             {
                 print(cinemachineCam.name + " | " + index);
                 index++;
@@ -81,11 +81,11 @@ namespace Game.Player
             // Set the lists to be the arrays
             startPos = startPosList.ToArray();
             startRot = startRotList.ToArray();
-            perlins = perlinList.ToArray();
+            _perlins = perlinList.ToArray();
 
             // Subscribe to events
-            p.OnDeath += OnDeath;
-            p.OnRespawn += OnRespawn;
+            _player.OnDeath += OnDeath;
+            _player.OnRespawn += OnRespawn;
         }
 
         /// <summary>
@@ -96,13 +96,13 @@ namespace Game.Player
             base.Update();
 
             // Decrease the timer and set it to 0 if it's below 0
-            if (lengthTimer > 0)
+            if (_lengthTimer > 0)
             {
-                lengthTimer -= Time.deltaTime;
+                _lengthTimer -= Time.deltaTime;
             }
-            else if (lengthTimer != 0)
+            else if (_lengthTimer != 0)
             {
-                lengthTimer = 0;
+                _lengthTimer = 0;
             }
         }
 
@@ -114,20 +114,20 @@ namespace Game.Player
             base.FixedUpdate();
 
             // Update the shaking whilst the timer is above 0
-            if (lengthTimer > 0)
+            if (_lengthTimer > 0)
             {
                 // Set the amplitude to decrease the lower the lengthTimer is
-                float shakePower = MathE.Map(0, length, 0, 1, lengthTimer);
+                float shakePower = MathE.Map(0, _length, 0, 1, _lengthTimer);
 
-                foreach (CinemachineBasicMultiChannelPerlin perlin in perlins)
+                foreach (CinemachineBasicMultiChannelPerlin perlin in _perlins)
                 {
-                    perlin.m_AmplitudeGain = strength * shakePower;
+                    perlin.m_AmplitudeGain = _strength * shakePower;
                 }
             }
             // Reset shake values when the timer runs out
             else
             {
-                foreach (CinemachineBasicMultiChannelPerlin perlin in perlins)
+                foreach (CinemachineBasicMultiChannelPerlin perlin in _perlins)
                 {
                     if (perlin.m_AmplitudeGain != 0)
                     {
@@ -147,7 +147,7 @@ namespace Game.Player
         public static void Shake(float strength, float frequency, float length)
         {
             // Static shortcut cuz it's easier to access - Ruben
-            instance.UpdateCam(strength, frequency, length);
+            s_instance.UpdateCam(strength, frequency, length);
         }
 
         /// <summary>
@@ -158,12 +158,12 @@ namespace Game.Player
         /// <param name="length">How long the shake will last</param>
         public void UpdateCam(float strength, float frequency, float length)
         {
-            this.strength = strength;
+            this._strength = strength;
 
-            this.length = length;
-            lengthTimer = length;
+            this._length = length;
+            _lengthTimer = length;
 
-            foreach (CinemachineBasicMultiChannelPerlin perlin in perlins)
+            foreach (CinemachineBasicMultiChannelPerlin perlin in _perlins)
             {
                 perlin.m_FrequencyGain = frequency;
             }
@@ -181,10 +181,10 @@ namespace Game.Player
         private void OnRespawn()
         {
             // Reset all of the cameras positions and rotations
-            for (int i = 0; i < cinemachineCams.Length; i++)
+            for (int i = 0; i < _cinemachineCams.Length; i++)
             {
-                cinemachineCams[i].transform.position = startPos[i];
-                cinemachineCams[i].ForceCameraPosition(startPos[i], startRot[i]);
+                _cinemachineCams[i].transform.position = startPos[i];
+                _cinemachineCams[i].ForceCameraPosition(startPos[i], startRot[i]);
             }
 
             // Make the camera follow the player
@@ -198,10 +198,10 @@ namespace Game.Player
         public void ChangePriorityCamera(int cameraIndex)
         {
             // Loop through all cameras
-            for (int i = 0; i < cinemachineCams.Length; i++)
+            for (int i = 0; i < _cinemachineCams.Length; i++)
             {
                 // Set their priority to 0 unless the current camera is the same as the camera we want to prioritise
-                cinemachineCams[i].Priority = i == cameraIndex ? 1 : 0;
+                _cinemachineCams[i].Priority = i == cameraIndex ? 1 : 0;
             }
         }
     }

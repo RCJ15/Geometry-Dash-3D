@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-namespace Game.Player
+namespace GD3D.Player
 {
     /// <summary>
-    /// 
+    /// Controls the player spawning
     /// </summary>
     public class PlayerSpawn : PlayerScript
     {
@@ -15,7 +15,7 @@ namespace Game.Player
         [SerializeField] private float respawnTime;
 
         [SerializeField] private TMP_Text attemptText;
-        private int currentAttemp = 1;
+        private int _currentAttemp = 1;
 
         /// <summary>
         /// Start is called before the first frame update
@@ -25,7 +25,7 @@ namespace Game.Player
             base.Start();
 
             // Subscribe to the OnDeath event
-            p.OnDeath += OnDeath;
+            _player.OnDeath += OnDeath;
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Game.Player
         private void OnDeath()
         {
             // Disable the mesh
-            p.mesh.ToggleMesh(false);
+            _player.mesh.ToggleMesh(false);
 
             // Stop the currently active respawn coroutine
             if (currentRespawnCoroutine != null)
@@ -71,11 +71,11 @@ namespace Game.Player
             // Wait 1 second
             yield return new WaitForSeconds(1f);
 
-            currentAttemp++;
-            attemptText.text = "Attemp " + currentAttemp;
+            _currentAttemp++;
+            attemptText.text = "Attempt " + _currentAttemp;
 
             // Invoke respawn event
-            p.InvokeRespawnEvent();
+            _player.InvokeRespawnEvent();
 
             // Make the player flash on/off and spawn respawn rings every time the player is turned on
             // Do this 3 times total over the course of 0.6 seconds
@@ -100,7 +100,7 @@ namespace Game.Player
         /// </summary>
         private void ToggleMesh(bool enable)
         {
-            p.mesh.ToggleMesh(enable);
+            _player.mesh.ToggleMesh(enable);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Game.Player
             obj.transform.localPosition = Vector3.zero;
 
             // Get the player color
-            Color playerColor1 = p.colorer.GetColors[0];
+            Color playerColor1 = _player.Colorer.GetColors[0];
 
             // Change the line renderers color
             LineRenderer lr = obj.GetComponent<LineRenderer>();

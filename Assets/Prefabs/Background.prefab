@@ -126,17 +126,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aef751877bea75344af2c1644de31b5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roundValue: {x: 80, y: 80, z: 16}
-  followX: 1
-  followY: 1
-  followZ: 0
-  useLocalScale: 1
-  offset: {x: 0, y: 0, z: 0}
-  haveRandomXOffset: 1
-  haveRandomYOffset: 0
-  haveRandomZOffset: 0
-  backgroundObjectToCopy: {fileID: 589550423988226174}
-  amount: {x: 50, y: 10, z: 1}
+  _roundValue: {x: 80, y: 80, z: 0}
+  _followX: 1
+  _followY: 1
+  _followZ: 0
+  _useLocalScale: 1
+  _offset: {x: 0, y: 0, z: 0}
+  _haveRandomXOffset: 0
+  _haveRandomYOffset: 0
+  _haveRandomZOffset: 0
+  _backgroundObjectToCopy: {fileID: 589550423988226174}
+  _amount: {x: 30, y: 10, z: 1}
 --- !u!1 &7099663577345649050
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,25 +1,25 @@
-using Game.CustomInput;
+using GD3D.CustomInput;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.Player
+namespace GD3D.Player
 {
     /// <summary>
     /// Stores which gamemode the player is in and handles when gamemodes are switched
     /// </summary>
     public class PlayerGamemodeHandler : PlayerScript
     {
-        public Gamemode currentGamemode;
+        public Gamemode CurrentGamemode;
 
         [Header("Gamemodes")]
-        public CubeGamemode cube;
-        public ShipGamemode ship;
-        public UfoGamemode ufo;
-        public BallGamemode ball;
-        public RobotGamemode robot;
+        public CubeGamemode Cube;
+        public ShipGamemode Ship;
+        public UfoGamemode Ufo;
+        public BallGamemode Ball;
+        public RobotGamemode Robot;
 
-        private GamemodeScript activeGamemodeScript;
+        private GamemodeScript _activeGamemodeScript;
 
         /// <summary>
         /// Start is called before the first frame update
@@ -29,18 +29,18 @@ namespace Game.Player
             base.Start();
 
             // Setup all the gamemode scripts
-            SetupGamemodeScript(cube);
-            SetupGamemodeScript(ship);
-            SetupGamemodeScript(ufo);
-            SetupGamemodeScript(ball);
-            SetupGamemodeScript(robot);
+            SetupGamemodeScript(Cube);
+            SetupGamemodeScript(Ship);
+            SetupGamemodeScript(Ufo);
+            SetupGamemodeScript(Ball);
+            SetupGamemodeScript(Robot);
 
             // Update the start gamemode
-            ChangeGamemode(currentGamemode);
+            ChangeGamemode(CurrentGamemode);
 
             // Subscribe to events
-            p.OnDeath += OnDeath;
-            p.OnRespawn += OnRespawn;
+            _player.OnDeath += OnDeath;
+            _player.OnRespawn += OnRespawn;
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Game.Player
         /// </summary>
         private void OnDeath()
         {
-            activeGamemodeScript.OnDeath();
+            _activeGamemodeScript.OnDeath();
         }
 
         /// <summary>
@@ -56,14 +56,14 @@ namespace Game.Player
         /// </summary>
         private void OnRespawn()
         {
-            activeGamemodeScript.OnRespawn();
+            _activeGamemodeScript.OnRespawn();
         }
 
         private void SetupGamemodeScript(GamemodeScript script)
         {
-            script.gh = this;
-            script.p = p;
-            script.rb = rb;
+            script.GamemodeHandler = this;
+            script.Player = _player;
+            script.Rigidbody = _rigidbody;
 
             script.Start();
         }
@@ -76,7 +76,7 @@ namespace Game.Player
             base.Update();
 
             // Call Update() in activeGamemodeScript (Unless it's null)
-            activeGamemodeScript?.Update();
+            _activeGamemodeScript?.Update();
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Game.Player
             base.FixedUpdate();
 
             // Call FixedUpdate() in activeGamemodeScript (Unless it's null)
-            activeGamemodeScript?.FixedUpdate();
+            _activeGamemodeScript?.FixedUpdate();
         }
 
         public override void OnClick(PressMode mode)
@@ -95,7 +95,7 @@ namespace Game.Player
             base.OnClick(mode);
 
             // Call OnClick() in activeGamemodeScript (Unless it's null)
-            activeGamemodeScript?.OnClick(mode);
+            _activeGamemodeScript?.OnClick(mode);
         }
 
         /// <summary>
@@ -104,16 +104,16 @@ namespace Game.Player
         public void ChangeGamemode(Gamemode newGamemode)
         {
             // Change gamemode enum
-            currentGamemode = newGamemode;
+            CurrentGamemode = newGamemode;
 
             // Call OnDisable() in the old activeGamemodeScript (Unless it's null)
-            activeGamemodeScript?.OnDisable();
+            _activeGamemodeScript?.OnDisable();
 
             // Set the new activeGamemodeScript
-            activeGamemodeScript = TypeToGamemode(newGamemode);
+            _activeGamemodeScript = TypeToGamemode(newGamemode);
 
             // Call OnEnable() in the new activeGamemodeScript (Unless it's null)
-            activeGamemodeScript?.OnEnable();
+            _activeGamemodeScript?.OnEnable();
         }
 
         /// <summary>
@@ -156,19 +156,19 @@ namespace Game.Player
                     return null;
 
                 case Gamemode.cube:
-                    return cube;
+                    return Cube;
 
                 case Gamemode.ship:
-                    return ship;
+                    return Ship;
 
                 case Gamemode.ufo:
-                    return ufo;
+                    return Ufo;
 
                 case Gamemode.ball:
-                    return ball;
+                    return Ball;
 
                 case Gamemode.robot:
-                    return robot;
+                    return Robot;
 
                 default:
                     return null;

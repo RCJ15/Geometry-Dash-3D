@@ -8,25 +8,45 @@ using UnityEngine;
 /// </summary>
 public struct MathE
 {
-    /// <summary>
-    /// Returns the current scene we are on.
-    /// </summary>
-    public static int CurrentScene
+    public static Camera Camera
     {
         get
         {
-            return UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex;
+            if (_camera == null)
+            {
+                _camera = Camera.main;
+            }
+
+            return _camera;
         }
     }
+    private static Camera _camera;
+
+    /// <summary>
+    /// Returns the current scene we are on.
+    /// </summary>
+    public static int CurrentScene => UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex;
 
     /// <summary>
     /// Returns the current screen size in pixels unit.
     /// </summary>
-    public static Vector2 ScreenSize
+    public static Vector2 ScreenSize => new Vector2(Screen.width, Screen.height);
+
+    /// <summary>
+    /// Returns the entire screen size in world space
+    /// </summary>
+    public static Vector2 ScreenSizeWorld
     {
         get
         {
-            return new Vector2(Screen.width, Screen.height);
+            // Get the screen size using this cool calculation
+            Vector2 screenSize = Camera.ViewportToWorldPoint(new Vector3(1, 1, -Camera.transform.position.z));
+
+            // Convert it into local space cuz we are getting size not position
+            screenSize = Camera.transform.InverseTransformPoint(screenSize);
+
+            // Return the screen size but twice as big (cuz it's only half)
+            return screenSize * 2;
         }
     }
 
@@ -289,33 +309,6 @@ public struct MathE
         return LoopValue(index, 0, array.Length - 1);
     }
     #endregion
-
-    /// <summary>
-    /// Returns the entire screen size in world space
-    /// </summary>
-    public static Vector2 ScreenSizeWorld
-    {
-        get
-        {
-            // Get the camera
-            Camera cam = Camera.main;
-
-            // Set the old camera position
-            Vector3 oldCamPos = cam.transform.position;
-
-            // Reset the camera position back to 0, 0, but still keep the Z pos
-            cam.transform.position = new Vector3(0, 0, cam.transform.position.z);
-
-            // Get the screen size using this cool calculation
-            Vector2 screenSize = cam.ViewportToWorldPoint(new Vector3(1, 1, -cam.transform.position.z));
-
-            // Reset the camera back to it's orignal position
-            cam.transform.position = oldCamPos;
-
-            // Return the screen size but twice as big (cuz it's only half)
-            return screenSize * 2;
-        }
-    }
 
     #region Speed Calculation
     /// <summary>

@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Game.CustomInput;
+using GD3D.CustomInput;
 
-namespace Game.Player
+namespace GD3D.Player
 {
     /// <summary>
     /// The class all player scripts inherit from
@@ -11,58 +11,49 @@ namespace Game.Player
     public class PlayerScript : MonoBehaviour
     {
         //-- Input
-        internal Key clickKey;
+        internal Key _clickKey;
 
         //-- Component references
-        internal PlayerMain p;
-        internal Rigidbody rb;
-        internal MeshRenderer mr;
-        internal BoxCollider boxCol;
+        internal PlayerMain _player;
+        internal Rigidbody _rigidbody;
+        internal MeshRenderer _meshRenderer;
+        internal BoxCollider _boxCol;
+
+        internal Transform _transform;
+
+        private System.Array _pressModeValues;
 
         /// <summary>
         /// Shortcut for setting and getting "rb.velocity.y"
         /// </summary>
         public float YVelocity
         {
-            set
-            {
-                rb.velocity = new Vector3(rb.velocity.x, value, rb.velocity.z);
-            }
-            get
-            {
-                return rb.velocity.y;
-            }
+            get => _rigidbody.velocity.y;
+            set => _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, value, _rigidbody.velocity.z);
         }
 
         /// <summary>
         /// The primary player color
         /// </summary>
-        public Color PlayerColor1
-        {
-            get
-            {
-                return p.colorer.GetColors[0];
-            }
-        }
+        public Color PlayerColor1 => _player.Colorer.GetColors[0];
 
         /// <summary>
         /// The secondary player color
         /// </summary>
-        public Color PlayerColor2
-        {
-            get
-            {
-                return p.colorer.GetColors[1];
-            }
-        }
+        public Color PlayerColor2 => _player.Colorer.GetColors[1];
 
         /// <summary>
         /// Start is called before the first frame update
         /// </summary>
         public virtual void Start()
         {
+            _transform = transform;
+
+            // Set the enum array
+            _pressModeValues = System.Enum.GetValues(typeof(PressMode));
+
             // Get input key
-            clickKey = PlayerInput.GetKey("Click");
+            _clickKey = PlayerInput.GetKey("Click");
 
             GetComponents();
         }
@@ -72,10 +63,10 @@ namespace Game.Player
         /// </summary>
         private void GetComponents()
         {
-            p = GetChildComponent<PlayerMain>();
-            rb = GetChildComponent<Rigidbody>();
-            mr = GetChildComponent<MeshRenderer>();
-            boxCol = GetChildComponent<BoxCollider>();
+            _player = GetChildComponent<PlayerMain>();
+            _rigidbody = GetChildComponent<Rigidbody>();
+            _meshRenderer = GetChildComponent<MeshRenderer>();
+            _boxCol = GetChildComponent<BoxCollider>();
         }
 
         /// <summary>
@@ -108,10 +99,10 @@ namespace Game.Player
         public virtual void Update()
         {
             // Loop through all press modes (there are only 3)
-            foreach (PressMode mode in System.Enum.GetValues(typeof(PressMode)))
+            foreach (PressMode mode in _pressModeValues)
             {
                 // Check if the key is pressed with this press mode
-                if (clickKey.Pressed(mode))
+                if (_clickKey.Pressed(mode))
                 {
                     // Call on click with this press mode
                     OnClick(mode);

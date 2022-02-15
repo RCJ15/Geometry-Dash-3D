@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Game.CustomInput;
+using GD3D.CustomInput;
 
-namespace Game.Player
+namespace GD3D.Player
 {
     //=========================================================================
     /// <summary>
@@ -14,9 +14,9 @@ namespace Game.Player
     //=========================================================================
     public class PlayerInput : MonoBehaviour
     {
-        public const int keycodeLength = 510;
+        public const int KEYCODE_LENGTH = 510;
 
-        private static Key[] defaultKeys = new Key[]
+        private static Key[] s_defaultKeys = new Key[]
         {
             //-- The main gameplay button
             new Key("Click",
@@ -61,62 +61,62 @@ namespace Game.Player
                 3),
         };
 
-        public static Key[] DefaultKeys { get { return defaultKeys; } }
+        public static Key[] DefaultKeys => s_defaultKeys;
 
-        public static Key[] keys = DefaultKeys;
+        public static Key[] Keys = DefaultKeys;
 
-        public static float triggerDeadZone = 0.5f;
-        public static float joystickDeadzone = 0.5f;
-        public static float dpadDeadzone = 0.5f;
+        public static float TriggerDeadZone = 0.5f;
+        public static float JoystickDeadzone = 0.5f;
+        public static float DpadDeadzone = 0.5f;
 
         //-- Special Gamepad Input (For the different press modes)
-        private static float badTriggerInput;
-        private static float leftTriggerInput;
-        private static float rightTriggerInput;
-        private static Vector2 leftStickInput;
-        private static Vector2 rightStickInput;
-        private static Vector2 dpadInput;
+        private static float s_badTriggerInput;
+        private static float s_leftTriggerInput;
+        private static float s_rightTriggerInput;
+        private static Vector2 s_leftStickInput;
+        private static Vector2 s_rightStickInput;
+        private static Vector2 s_dpadInput;
 
-        private static float exactBadTriggerInput;
-        private static float exactLeftTriggerInput;
-        private static float exactRightTriggerInput;
-        private static Vector2 exactLeftStickInput;
-        private static Vector2 exactRightStickInput;
-        private static Vector2 exactDpadInput;
+        private static float s_exactBadTriggerInput;
+        private static float s_exactLeftTriggerInput;
+        private static float s_exactRightTriggerInput;
+        private static Vector2 s_exactLeftStickInput;
+        private static Vector2 s_exactRightStickInput;
+        private static Vector2 s_exactDpadInput;
 
         //-- Old Special Gamepad Input
-        private static float oldBadTriggerInput;
-        private static float oldLeftTriggerInput;
-        private static float oldRightTriggerInput;
-        private static Vector2 oldLeftStickInput;
-        private static Vector2 oldRightStickInput;
-        private static Vector2 oldDpadInput;
+        private static float s_oldBadTriggerInput;
+        private static float s_oldLeftTriggerInput;
+        private static float s_oldRightTriggerInput;
+        private static Vector2 s_oldLeftStickInput;
+        private static Vector2 s_oldRightStickInput;
+        private static Vector2 s_oldDpadInput;
 
         //-- Public Shortcuts
-        public static float LeftTriggerInput { get { return exactLeftTriggerInput; } }
-        public static float RightTriggerInput { get { return exactRightTriggerInput; } }
-        public static Vector2 LeftStickInput { get { return exactLeftStickInput; } }
-        public static Vector2 RightStickInput { get { return exactRightStickInput; } }
-        public static Vector2 DpadInput { get { return exactDpadInput; } }
+        public static float LeftTriggerInput => s_exactLeftTriggerInput;
+        public static float RightTriggerInput => s_exactRightTriggerInput;
+        public static Vector2 LeftStickInput => s_exactLeftStickInput;
+        public static Vector2 RightStickInput => s_exactRightStickInput;
+        public static Vector2 DpadInput => s_exactDpadInput;
 
         // Start is called before the first frame update
         void Start()
         {
             // Reset all of the Special Gamepad Inputs because they are static
-            badTriggerInput = 0;
-            leftTriggerInput = 0;
-            rightTriggerInput = 0;
-            leftStickInput = Vector2.zero;
-            rightStickInput = Vector2.zero;
-            dpadInput = Vector2.zero;
+            s_badTriggerInput = 0;
+            s_leftTriggerInput = 0;
+            s_rightTriggerInput = 0;
+            s_leftStickInput = Vector2.zero;
+            s_rightStickInput = Vector2.zero;
+            s_dpadInput = Vector2.zero;
 
             // Also reset the Old Special Gamepad Input
-            oldBadTriggerInput = 0;
-            oldLeftTriggerInput = 0;
-            oldRightTriggerInput = 0;
-            oldLeftStickInput = Vector2.zero;
-            oldRightStickInput = Vector2.zero;
-            oldDpadInput = Vector2.zero;
+            s_oldBadTriggerInput = 0;
+            s_oldLeftTriggerInput = 0;
+            s_oldRightTriggerInput = 0;
+            s_oldLeftStickInput = Vector2.zero;
+            s_oldRightStickInput = Vector2.zero;
+            s_oldDpadInput = Vector2.zero;
         }
 
         // Update is called once per frame
@@ -132,42 +132,42 @@ namespace Game.Player
         private void DoAxisInput()
         {
             // Update the old inputs to be the current inputs
-            oldBadTriggerInput = badTriggerInput;
-            oldLeftTriggerInput = leftTriggerInput;
-            oldRightTriggerInput = rightTriggerInput;
-            oldLeftStickInput = leftStickInput;
-            oldRightStickInput = rightStickInput;
-            oldDpadInput = dpadInput;
+            s_oldBadTriggerInput = s_badTriggerInput;
+            s_oldLeftTriggerInput = s_leftTriggerInput;
+            s_oldRightTriggerInput = s_rightTriggerInput;
+            s_oldLeftStickInput = s_leftStickInput;
+            s_oldRightStickInput = s_rightStickInput;
+            s_oldDpadInput = s_dpadInput;
 
             // Update the inputs to be new so the old ones become old
-            exactBadTriggerInput = UnityEngine.Input.GetAxis("Trigger");
-            exactLeftTriggerInput = Mathf.Abs(UnityEngine.Input.GetAxis("Left Trigger"));
-            exactRightTriggerInput = Mathf.Abs(UnityEngine.Input.GetAxis("Right Trigger"));
-            exactLeftStickInput = new Vector2(UnityEngine.Input.GetAxis("Joystick Horizontal"), UnityEngine.Input.GetAxis("Joystick Vertical"));
-            exactRightStickInput = new Vector2(UnityEngine.Input.GetAxis("Right Joystick Horizontal"), UnityEngine.Input.GetAxis("Right Joystick Vertical"));
-            exactDpadInput = new Vector2(UnityEngine.Input.GetAxis("Dpad X"), UnityEngine.Input.GetAxis("Dpad Y"));
+            s_exactBadTriggerInput = Input.GetAxis("Trigger");
+            s_exactLeftTriggerInput = Mathf.Abs(Input.GetAxis("Left Trigger"));
+            s_exactRightTriggerInput = Mathf.Abs(Input.GetAxis("Right Trigger"));
+            s_exactLeftStickInput = new Vector2(Input.GetAxis("Joystick Horizontal"), Input.GetAxis("Joystick Vertical"));
+            s_exactRightStickInput = new Vector2(Input.GetAxis("Right Joystick Horizontal"), Input.GetAxis("Right Joystick Vertical"));
+            s_exactDpadInput = new Vector2(Input.GetAxis("Dpad X"), Input.GetAxis("Dpad Y"));
 
             // Make the inputs 0 if they are within their dead zone
             // Also round the input values whilst the exact input values will stay the same
             // Triggers
-            exactBadTriggerInput = LockAxis(exactBadTriggerInput, triggerDeadZone);
-            badTriggerInput = Mathf.Round(exactBadTriggerInput);
-            exactLeftTriggerInput = LockAxis(exactLeftTriggerInput, triggerDeadZone);
-            leftTriggerInput = Mathf.Round(exactLeftTriggerInput);
-            exactRightTriggerInput = LockAxis(exactRightTriggerInput, triggerDeadZone);
-            rightTriggerInput = Mathf.Round(exactRightTriggerInput);
+            s_exactBadTriggerInput = LockAxis(s_exactBadTriggerInput, TriggerDeadZone);
+            s_badTriggerInput = Mathf.Round(s_exactBadTriggerInput);
+            s_exactLeftTriggerInput = LockAxis(s_exactLeftTriggerInput, TriggerDeadZone);
+            s_leftTriggerInput = Mathf.Round(s_exactLeftTriggerInput);
+            s_exactRightTriggerInput = LockAxis(s_exactRightTriggerInput, TriggerDeadZone);
+            s_rightTriggerInput = Mathf.Round(s_exactRightTriggerInput);
 
             // Left stick
-            exactLeftStickInput = LockVector2Axis(exactLeftStickInput, joystickDeadzone);
-            leftStickInput = MathE.RoundVector2(exactLeftStickInput);
+            s_exactLeftStickInput = LockVector2Axis(s_exactLeftStickInput, JoystickDeadzone);
+            s_leftStickInput = MathE.RoundVector2(s_exactLeftStickInput);
 
             // Right stick
-            exactRightStickInput = LockVector2Axis(exactRightStickInput, joystickDeadzone);
-            rightStickInput = MathE.RoundVector2(exactRightStickInput);
+            s_exactRightStickInput = LockVector2Axis(s_exactRightStickInput, JoystickDeadzone);
+            s_rightStickInput = MathE.RoundVector2(s_exactRightStickInput);
 
             // Dpad
-            exactDpadInput = LockVector2Axis(exactDpadInput, dpadDeadzone);
-            dpadInput = MathE.RoundVector2(exactDpadInput);
+            s_exactDpadInput = LockVector2Axis(s_exactDpadInput, DpadDeadzone);
+            s_dpadInput = MathE.RoundVector2(s_exactDpadInput);
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace Game.Player
         }
 
         /// <summary>
-        /// Loops through <see cref="keys"/> until it finds a key with a name that matches <paramref name="name"/> exactly. (Unless <paramref name="caseSensitive"/> is set to false)
+        /// Loops through <see cref="Keys"/> until it finds a key with a name that matches <paramref name="name"/> exactly. (Unless <paramref name="caseSensitive"/> is set to false)
         /// </summary>
         /// <param name="name">The name of the key that we should search for.</param>
         /// <param name="caseSensitive">True by defualt.<para/>
@@ -207,7 +207,7 @@ namespace Game.Player
         public static Key GetKey(string name, bool caseSensitive = true)
         {
             // Loop through all of the keys
-            foreach (Key key in keys)
+            foreach (Key key in Keys)
             {
                 // Check if the names match (Case sensitive)
                 if (key.name == name && caseSensitive)
@@ -242,7 +242,7 @@ namespace Game.Player
                 return false;
 
             // If the key is outside the keycode length then return false
-            if ((int)key >= keycodeLength - 1)
+            if ((int)key >= KEYCODE_LENGTH - 1)
             {
                 return false;
             }
@@ -265,57 +265,57 @@ namespace Game.Player
                 return false;
 
             // If the key is outside the keycode length then it's one of the special gamepad keys so check those
-            if ((int)key >= keycodeLength - 1)
+            if ((int)key >= KEYCODE_LENGTH - 1)
             {
                 // Check all of the special gamepad keys
                 switch (key)
                 {
                     // Triggers
                     case GamepadKey.LeftTrigger:
-                        bool leftTriggerPressed = ValuePressed(leftTriggerInput, oldLeftTriggerInput, mode, false);
+                        bool leftTriggerPressed = ValuePressed(s_leftTriggerInput, s_oldLeftTriggerInput, mode, false);
 
                         if (!leftTriggerPressed)
-                            leftTriggerPressed = ValuePressed(badTriggerInput, oldBadTriggerInput, mode, true);
+                            leftTriggerPressed = ValuePressed(s_badTriggerInput, s_oldBadTriggerInput, mode, true);
 
                         return leftTriggerPressed;
 
                     case GamepadKey.RightTrigger:
-                        bool rightTriggerPressed = ValuePressed(rightTriggerInput, oldRightTriggerInput, mode, false);
+                        bool rightTriggerPressed = ValuePressed(s_rightTriggerInput, s_oldRightTriggerInput, mode, false);
 
                         if (!rightTriggerPressed)
-                            rightTriggerPressed = ValuePressed(badTriggerInput, oldBadTriggerInput, mode, false);
+                            rightTriggerPressed = ValuePressed(s_badTriggerInput, s_oldBadTriggerInput, mode, false);
 
                         return rightTriggerPressed;
 
                     // Left Stick
                     case GamepadKey.LeftStickUp:
-                        return ValuePressed(leftStickInput.y, oldLeftStickInput.y, mode, false);
+                        return ValuePressed(s_leftStickInput.y, s_oldLeftStickInput.y, mode, false);
                     case GamepadKey.LeftStickDown:
-                        return ValuePressed(leftStickInput.y, oldLeftStickInput.y, mode, true);
+                        return ValuePressed(s_leftStickInput.y, s_oldLeftStickInput.y, mode, true);
                     case GamepadKey.LeftStickLeft:
-                        return ValuePressed(leftStickInput.x, oldLeftStickInput.x, mode, true);
+                        return ValuePressed(s_leftStickInput.x, s_oldLeftStickInput.x, mode, true);
                     case GamepadKey.LeftStickRight:
-                        return ValuePressed(leftStickInput.x, oldLeftStickInput.x, mode, false);
+                        return ValuePressed(s_leftStickInput.x, s_oldLeftStickInput.x, mode, false);
 
                     // Right Stick
                     case GamepadKey.RightStickUp:
-                        return ValuePressed(rightStickInput.y, oldRightStickInput.y, mode, false);
+                        return ValuePressed(s_rightStickInput.y, s_oldRightStickInput.y, mode, false);
                     case GamepadKey.RightStickDown:
-                        return ValuePressed(rightStickInput.y, oldRightStickInput.y, mode, true);
+                        return ValuePressed(s_rightStickInput.y, s_oldRightStickInput.y, mode, true);
                     case GamepadKey.RightStickLeft:
-                        return ValuePressed(rightStickInput.x, oldRightStickInput.x, mode, true);
+                        return ValuePressed(s_rightStickInput.x, s_oldRightStickInput.x, mode, true);
                     case GamepadKey.RightStickRight:
-                        return ValuePressed(rightStickInput.x, oldRightStickInput.x, mode, false);
+                        return ValuePressed(s_rightStickInput.x, s_oldRightStickInput.x, mode, false);
 
                     // Dpad
                     case GamepadKey.DpadUp:
-                        return ValuePressed(dpadInput.y, oldDpadInput.y, mode, false);
+                        return ValuePressed(s_dpadInput.y, s_oldDpadInput.y, mode, false);
                     case GamepadKey.DpadDown:
-                        return ValuePressed(dpadInput.y, oldDpadInput.y, mode, true);
+                        return ValuePressed(s_dpadInput.y, s_oldDpadInput.y, mode, true);
                     case GamepadKey.DpadLeft:
-                        return ValuePressed(dpadInput.x, oldDpadInput.x, mode, true);
+                        return ValuePressed(s_dpadInput.x, s_oldDpadInput.x, mode, true);
                     case GamepadKey.DpadRight:
-                        return ValuePressed(dpadInput.x, oldDpadInput.x, mode, false);
+                        return ValuePressed(s_dpadInput.x, s_oldDpadInput.x, mode, false);
 
                     // Return false if no valid GamepadKey was given. (Which shouldn't happen)
                     default:

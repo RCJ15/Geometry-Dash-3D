@@ -46,10 +46,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e4dec3f15c479a42881ed21c2694287, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifetime: 0.5
-  objectsToKill: []
-  unscaledTime: 0
-  killThisObject: 1
+  Lifetime: 0.2
+  ObjectsToKill: []
+  UnscaledTime: 0
+  KillThisObject: 1
 --- !u!120 &1724722748292280656
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -158,10 +158,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a4073f4b59d09e408a4111ec79b6716, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  points: 15
-  ringSize: 2
-  lookAtCamera: 1
-  updateMode: 2
+  _points: 100
+  _ringSize: 2
+  _lookAtCamera: 1
+  _updateMode: 2
 --- !u!95 &1724722748292280669
 Animator:
   serializedVersion: 3

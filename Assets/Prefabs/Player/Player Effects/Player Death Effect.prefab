@@ -45,10 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e4dec3f15c479a42881ed21c2694287, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifetime: 0.5
-  objectsToKill: []
-  unscaledTime: 0
-  killThisObject: 1
+  Lifetime: 1
+  ObjectsToKill: []
+  UnscaledTime: 0
+  KillThisObject: 1
 --- !u!1 &215747074548560204
 GameObject:
   m_ObjectHideFlags: 0
@@ -5025,14 +5025,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90f5d020a20948c498ca353ee64a1a47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  renderType: 0
-  rend: {fileID: 215747075547756504}
-  particles: {fileID: 0}
-  colorMode: 0
-  color: {r: 0.47843137, g: 0.96862745, b: 0.003921569, a: 0.4}
-  materialIndex: 0
-  colors: []
-  copyFrom: {fileID: 0}
-  updateMode: 2
-  updateEmmision: 1
-  updateSpecular: 1
+  _renderType: 0
+  _renderer: {fileID: 215747075547756504}
+  _particles: {fileID: 0}
+  _colorMode: 0
+  _color: {r: 0.47843137, g: 0.96862745, b: 0.003921569, a: 0.4}
+  _materialIndex: 0
+  _colors:
+  - {r: 1, g: 1, b: 1, a: 1}
+  _copyFrom: {fileID: 0}
+  _updateMode: 2
+  _updateEmmision: 1
+  _updateSpecular: 1
