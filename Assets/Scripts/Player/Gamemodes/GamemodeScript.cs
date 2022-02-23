@@ -10,6 +10,10 @@ namespace GD3D.Player
     /// </summary>
     public class GamemodeScript
     {
+        [Header("Gravity")]
+        [SerializeField] internal float gravity = 85;
+        [SerializeField] internal float terminalVelocity = 28.4f;
+
         //-- Component references
         [HideInInspector] public PlayerGamemodeHandler GamemodeHandler;
         [HideInInspector] public PlayerMain Player;
@@ -70,7 +74,17 @@ namespace GD3D.Player
         /// </summary>
         public virtual void FixedUpdate()
         {
+            // Gravity constant (do none if gravity is 0)
+            if (gravity != 0)
+            {
+                Rigidbody.AddForce(Vector3.down * gravity);
+            }
 
+            // Clamp Y velocity between terminal velocity if it's not 0
+            if (terminalVelocity != 0)
+            {
+                YVelocity = Mathf.Clamp(YVelocity, -terminalVelocity, terminalVelocity);
+            }
         }
 
         /// <summary>
@@ -80,6 +94,11 @@ namespace GD3D.Player
         public virtual void OnClick(PressMode mode)
         {
 
+        }
+
+        public bool ButtonPress(PressMode mode = PressMode.hold)
+        {
+            return GamemodeHandler.ButtonPress(mode);
         }
 
         /// <summary>

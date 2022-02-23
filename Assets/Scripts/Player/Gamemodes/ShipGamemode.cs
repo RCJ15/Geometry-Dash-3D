@@ -48,7 +48,7 @@ namespace GD3D.Player
         /// </summary>
         public override void OnClick(PressMode mode)
         {
-            base.OnClick(mode);
+
         }
     }
 }

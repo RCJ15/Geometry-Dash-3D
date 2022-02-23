@@ -98,6 +98,11 @@ namespace GD3D.Player
             _activeGamemodeScript?.OnClick(mode);
         }
 
+        public bool ButtonPress(PressMode mode = PressMode.hold)
+        {
+            return _clickKey.Pressed(mode);
+        }
+
         /// <summary>
         /// Updates the current gamemode and changes it to be <paramref name="newGamemode"/>
         /// </summary>

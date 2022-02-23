@@ -730,7 +730,7 @@ namespace GD3D.Audio
             // Get the SoundManager component of this object
             soundManager = (SoundManager)target;
 
-            audioClipQueue = serializedObject.FindProperty("audioClipQueue");
+            audioClipQueue = serializedObject.FindProperty("AudioClipQueue");
         }
     }
 #endif

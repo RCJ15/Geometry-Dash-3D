@@ -21,8 +21,6 @@ namespace GD3D.Player
         [SerializeField] private GameSpeed currentSpeed = GameSpeed.normalSpeed;
         public static float Speed;
 
-        public float TerminalVelocity = 28.4f;
-
         private float _targetX;
 
         [Header("Z Movement")]
@@ -75,9 +73,6 @@ namespace GD3D.Player
             // Go towards target X
             _transform.position = new Vector3(_targetX, _transform.position.y, _transform.position.z);
 
-            // Clamp Y velocity between terminal velocity
-            YVelocity = Mathf.Clamp(YVelocity, -TerminalVelocity, TerminalVelocity);
-            
             ZAxisMovement();
         }
 

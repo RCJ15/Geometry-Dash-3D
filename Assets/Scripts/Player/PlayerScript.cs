@@ -17,7 +17,6 @@ namespace GD3D.Player
         internal PlayerMain _player;
         internal Rigidbody _rigidbody;
         internal MeshRenderer _meshRenderer;
-        internal BoxCollider _boxCol;
 
         internal Transform _transform;
 
@@ -66,7 +65,6 @@ namespace GD3D.Player
             _player = GetChildComponent<PlayerMain>();
             _rigidbody = GetChildComponent<Rigidbody>();
             _meshRenderer = GetChildComponent<MeshRenderer>();
-            _boxCol = GetChildComponent<BoxCollider>();
         }
 
         /// <summary>

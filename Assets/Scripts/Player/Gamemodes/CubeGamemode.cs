@@ -29,8 +29,6 @@ namespace GD3D.Player
         private Vector3 _angularVelocity;
         private Vector3 _targetRot;
 
-        private Vector3 _startRot;
-
         [Header("Effects")]
         [SerializeField] private ParticleSystem slideParticles;
         [SerializeField] private GameObject jumpParticles;
@@ -38,19 +36,12 @@ namespace GD3D.Player
 
         // The time spent in the air per jump is about 0.44 seconds
 
-        public override void Start()
-        {
-            base.Start();
-
-            _startRot = _targetRot;
-        }
-
         /// <summary>
         /// OnEnable is called when the gamemode is switched to this gamemode
         /// </summary>
         public override void OnEnable()
         {
-            
+            ResetRotation();
         }
 
         /// <summary>
@@ -62,9 +53,6 @@ namespace GD3D.Player
             slideParticles.Stop();
         }
 
-        /// <summary>
-        /// Update is called once per frame
-        /// </summary>
         public override void Update()
         {
             // Don't do anything if the player is dead
@@ -151,9 +139,6 @@ namespace GD3D.Player
             SpawnParticles(landParticles);
         }
 
-        /// <summary>
-        /// Fixed Update is called once per physics frame
-        /// </summary>
         public override void FixedUpdate()
         {
             // Don't do anything if the player is dead
@@ -164,6 +149,9 @@ namespace GD3D.Player
             Quaternion slerp = Quaternion.Slerp(objToRotate.rotation, Quaternion.Euler(_targetRot), cubeSlerpSpeed);
 
             objToRotate.rotation = slerp;
+
+            // Do gravity
+            base.FixedUpdate();
         }
 
         /// <summary>
@@ -219,10 +207,14 @@ namespace GD3D.Player
             // Stop slide particles
             slideParticles.Stop();
 
-            // Reset rotation
+            ResetRotation();
+        }
+
+        private void ResetRotation()
+        {
             _angularVelocity = Vector3.zero;
-            _targetRot = _startRot;
-            objToRotate.rotation = Quaternion.Euler(_startRot);
+            _targetRot = Vector3.zero;
+            objToRotate.rotation = Quaternion.Euler(Vector3.zero);
         }
     }
 }
