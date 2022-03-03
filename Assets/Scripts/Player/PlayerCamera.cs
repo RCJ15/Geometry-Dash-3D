@@ -46,9 +46,6 @@ namespace GD3D.Player
             }
         }
 
-        /// <summary>
-        /// Start is called before the first frame update
-        /// </summary>
         public override void Start()
         {
             base.Start();
@@ -84,13 +81,10 @@ namespace GD3D.Player
             _perlins = perlinList.ToArray();
 
             // Subscribe to events
-            _player.OnDeath += OnDeath;
-            _player.OnRespawn += OnRespawn;
+            player.OnDeath += OnDeath;
+            player.OnRespawn += OnRespawn;
         }
 
-        /// <summary>
-        /// Update is called once per frame
-        /// </summary>
         public override void Update()
         {
             base.Update();
@@ -106,9 +100,6 @@ namespace GD3D.Player
             }
         }
 
-        /// <summary>
-        /// Fixed Update is called once per physics frame
-        /// </summary>
         public override void FixedUpdate()
         {
             base.FixedUpdate();
@@ -195,7 +186,7 @@ namespace GD3D.Player
         /// Changes the priority of all cameras to 0, except for the camera with the index given.
         /// </summary>
         /// <param name="cameraIndex"></param>
-        public void ChangePriorityCamera(int cameraIndex)
+        public void ChangeCameraPriority(int cameraIndex)
         {
             // Loop through all cameras
             for (int i = 0; i < _cinemachineCams.Length; i++)

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GD3D.CustomInput;
+using System;
 
 namespace GD3D.Player
 {
@@ -12,7 +13,19 @@ namespace GD3D.Player
     {
         [Header("Gravity")]
         [SerializeField] internal float gravity = 85;
-        [SerializeField] internal float terminalVelocity = 28.4f;
+
+        [Tooltip("X = Min Terminal Velocity \nY = Max Terminal Velocity \nWhen upside down, these are swaped")]
+        [SerializeField] internal Vector2 terminalVelocity = new Vector2(28.4f, 28.4f);
+
+        [Header("Ground Detection")]
+        [SerializeField] private Vector3 groundOffset;
+        [SerializeField] private Vector3 groundDetectSize = new Vector3(0.54f, 0.54f, 0.54f);
+        [SerializeField] private LayerMask groundLayer;
+
+        internal bool onGround;
+        private bool _landedOnGround;
+
+        internal float XRot => Mathf.Clamp(Rigidbody.velocity.z, -1, 1) * 15;
 
         //-- Component references
         [HideInInspector] public PlayerGamemodeHandler GamemodeHandler;
@@ -23,18 +36,24 @@ namespace GD3D.Player
         internal GameObject _gameObject;
 
         /// <summary>
+        /// Shortcut for getting "upsideDown"
+        /// </summary>
+        internal bool upsideDown => GamemodeHandler.upsideDown;
+        internal float upsideDownMultiplier => upsideDown ? -1 : 1;
+
+        /// <summary>
         /// Shortcut for setting and getting "rb.velocity.y"
         /// </summary>
         internal float YVelocity
         {
             get => GamemodeHandler.YVelocity;
-            set => GamemodeHandler.YVelocity = value;
+            set => GamemodeHandler.YVelocity = value * upsideDownMultiplier;
         }
 
         /// <summary>
         /// Shortcut for getting "p.dead"
         /// </summary>
-        internal bool dead => Player._dead;
+        internal bool dead => Player.dead;
 
         /// <summary>
         /// Start is called before the first frame update
@@ -66,6 +85,48 @@ namespace GD3D.Player
         /// </summary>
         public virtual void Update()
         {
+            GroundDetection();
+        }
+
+        /// <summary>
+        /// Handles all ground detection
+        /// </summary>
+        private void GroundDetection()
+        {
+            // Fix the ground detection for upside down
+            Vector3 newGroundOffset = groundOffset;
+            newGroundOffset.y *= upsideDownMultiplier;
+
+            // Detect if the player is on the ground
+            onGround = Physics.OverlapBox(_transform.position + newGroundOffset, groundDetectSize, Quaternion.identity, groundLayer).Length >= 1;
+
+            // Detects if the player has landed back on the ground
+            if (!_landedOnGround && onGround)
+            {
+                _landedOnGround = true;
+                OnLand();
+            }
+            // Detects when the player leaves the ground
+            else if (_landedOnGround && !onGround)
+            {
+                _landedOnGround = false;
+                OnLeaveGround();
+            }
+        }
+
+        /// <summary>
+        /// Called when the player lands on the ground
+        /// </summary>
+        public virtual void OnLand()
+        {
+
+        }
+
+        /// <summary>
+        /// Called when the player leaves the ground
+        /// </summary>
+        public virtual void OnLeaveGround()
+        {
 
         }
 
@@ -77,13 +138,13 @@ namespace GD3D.Player
             // Gravity constant (do none if gravity is 0)
             if (gravity != 0)
             {
-                Rigidbody.AddForce(Vector3.down * gravity);
+                Rigidbody.AddForce(Vector3.down * gravity * upsideDownMultiplier);
             }
 
             // Clamp Y velocity between terminal velocity if it's not 0
-            if (terminalVelocity != 0)
+            if (terminalVelocity != Vector2.zero)
             {
-                YVelocity = Mathf.Clamp(YVelocity, -terminalVelocity, terminalVelocity);
+                YVelocity = Mathf.Clamp(YVelocity, -terminalVelocity.x, terminalVelocity.y);
             }
         }
 
@@ -94,11 +155,6 @@ namespace GD3D.Player
         public virtual void OnClick(PressMode mode)
         {
 
-        }
-
-        public bool ButtonPress(PressMode mode = PressMode.hold)
-        {
-            return GamemodeHandler.ButtonPress(mode);
         }
 
         /// <summary>
@@ -116,6 +172,20 @@ namespace GD3D.Player
         {
 
         }
+
+#if UNITY_EDITOR
+        public void DrawGroundDetectGizmo(Transform transform, bool upsideDown)
+        {
+            Matrix4x4 rotationMatrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, transform.lossyScale);
+            Gizmos.matrix = rotationMatrix;
+
+            // Fix the ground detection for upside down
+            Vector3 newGroundOffset = groundOffset;
+            newGroundOffset.y *= upsideDown ? -1 : 1;
+
+            Gizmos.DrawWireCube(transform.position + newGroundOffset, groundDetectSize * 2);
+        }
+#endif
     }
 }
 

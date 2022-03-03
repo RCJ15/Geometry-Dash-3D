@@ -6,10 +6,10 @@ using GD3D.CustomInput;
 namespace GD3D.Player
 {
     /// <summary>
-    /// Changes gravity
+    /// Ball gamemode, but way cooler
     /// </summary>
     [System.Serializable]
-    public class BallGamemode : GamemodeScript
+    public class SpiderGamemode : GamemodeScript
     {
         public override void OnEnable()
         {

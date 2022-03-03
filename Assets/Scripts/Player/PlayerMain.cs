@@ -17,6 +17,7 @@ namespace GD3D.Player
         //-- Player scripts
         internal PlayerMovement movement;
         internal PlayerInput input;
+        internal PlayerColors colors;
         internal PlayerMesh mesh;
         internal PlayerWin win;
         internal PlayerDeath death;
@@ -25,35 +26,28 @@ namespace GD3D.Player
         internal PlayerGamemodeHandler gamemode;
 
         //-- Other Stuff
-        internal bool _dead;
-        public MaterialColorer Colorer;
+        internal bool dead;
 
         //-- Events
         public Action OnDeath;
         public Action OnRespawn;
 
         // Start values
-        internal Vector3 _startPos;
-        internal Vector3 _startScale;
-        internal Quaternion _startRotation;
+        internal Vector3 startPos;
+        internal Vector3 startScale;
+        internal Quaternion startRotation;
 
-        /// <summary>
-        /// Awake is called when the script instance is being loaded
-        /// </summary>
         private void Awake()
         {
             // Set instance
             Instance = this;
 
             // Set start values
-            _startPos = transform.position;
-            _startScale = transform.localScale;
-            _startRotation = transform.rotation;
+            startPos = transform.position;
+            startScale = transform.localScale;
+            startRotation = transform.rotation;
         }
 
-        /// <summary>
-        /// Start is called before the first frame update
-        /// </summary>
         public override void Start()
         {
             base.Start();
@@ -68,6 +62,7 @@ namespace GD3D.Player
         {
             movement = GetChildComponent<PlayerMovement>();
             input = GetChildComponent<PlayerInput>();
+            colors = GetChildComponent<PlayerColors>();
             mesh = GetChildComponent<PlayerMesh>();
             win = GetChildComponent<PlayerWin>();
             death = GetChildComponent<PlayerDeath>();
@@ -77,21 +72,11 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Update is called once per frame
-        /// </summary>
-        public override void Update()
-        {
-            base.Update();
-
-
-        }
-
-        /// <summary>
         /// Invokes the OnDeath event cuz p.OnDeath?.Invoke() won't work outside of this script
         /// </summary>
         public void InvokeDeathEvent()
         {
-            _player._dead = true;
+            player.dead = true;
 
             OnDeath?.Invoke();
         }
@@ -101,12 +86,12 @@ namespace GD3D.Player
         /// </summary>
         public void InvokeRespawnEvent()
         {
-            _player._dead = false;
+            player.dead = false;
 
             // Reset transform
-            transform.position = _startPos;
-            transform.localScale = _startScale;
-            transform.rotation = _startRotation;
+            transform.position = startPos;
+            transform.localScale = startScale;
+            transform.rotation = startRotation;
 
             OnRespawn?.Invoke();
         }

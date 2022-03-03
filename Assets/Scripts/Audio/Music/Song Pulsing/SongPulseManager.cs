@@ -28,6 +28,16 @@ namespace GD3D.Audio.Pulsing
             // Get audio source
             _source = GetComponent<AudioSource>();
 
+            if (_source == null || _source.clip == null)
+            {
+                Destroy(gameObject);
+
+                #if UNITY_EDITOR
+                print("MISSING SONG JAIOFKAWOIJFIOAWJFIOAWJFIOAWJMFO");
+                #endif
+                return;
+            }
+
             // Calculate the frequency multiplier
             // We do this so the pulsing system works on any audio frequency
             // This is orignally designed for 44100 hz which is why we use it here

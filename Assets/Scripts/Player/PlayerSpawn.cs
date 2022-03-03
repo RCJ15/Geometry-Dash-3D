@@ -25,7 +25,7 @@ namespace GD3D.Player
             base.Start();
 
             // Subscribe to the OnDeath event
-            _player.OnDeath += OnDeath;
+            player.OnDeath += OnDeath;
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace GD3D.Player
         private void OnDeath()
         {
             // Disable the mesh
-            _player.mesh.ToggleMesh(false);
+            player.mesh.ToggleCurrentMesh(false);
 
             // Stop the currently active respawn coroutine
             if (currentRespawnCoroutine != null)
@@ -75,7 +75,7 @@ namespace GD3D.Player
             attemptText.text = "Attempt " + _currentAttemp;
 
             // Invoke respawn event
-            _player.InvokeRespawnEvent();
+            player.InvokeRespawnEvent();
 
             // Make the player flash on/off and spawn respawn rings every time the player is turned on
             // Do this 3 times total over the course of 0.6 seconds
@@ -96,11 +96,11 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Just a shortcut for <see cref="PlayerMesh.ToggleMesh(bool)"/>
+        /// Just a shortcut for <see cref="PlayerMesh.ToggleCurrentMesh(bool)"/>
         /// </summary>
         private void ToggleMesh(bool enable)
         {
-            _player.mesh.ToggleMesh(enable);
+            player.mesh.ToggleCurrentMesh(enable);
         }
 
         /// <summary>
@@ -112,13 +112,10 @@ namespace GD3D.Player
             GameObject obj = Instantiate(respawnRing, transform.position, Quaternion.identity, transform);
             obj.transform.localPosition = Vector3.zero;
 
-            // Get the player color
-            Color playerColor1 = _player.Colorer.GetColors[0];
-
             // Change the line renderers color
             LineRenderer lr = obj.GetComponent<LineRenderer>();
-            lr.startColor = playerColor1;
-            lr.endColor = playerColor1;
+            lr.startColor = PlayerColor1;
+            lr.endColor = PlayerColor1;
         }
     }
 }

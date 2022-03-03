@@ -6,10 +6,10 @@ using GD3D.CustomInput;
 namespace GD3D.Player
 {
     /// <summary>
-    /// Changes gravity
+    /// I hate this gamemode (mad cuz bad)
     /// </summary>
     [System.Serializable]
-    public class BallGamemode : GamemodeScript
+    public class WaveGamemode : GamemodeScript
     {
         public override void OnEnable()
         {

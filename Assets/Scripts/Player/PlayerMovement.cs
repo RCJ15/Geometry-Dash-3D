@@ -49,7 +49,7 @@ namespace GD3D.Player
             _targetX = _transform.position.x;
 
             // Subscribe to the on respawn event
-            _player.OnRespawn += OnRespawn;
+            player.OnRespawn += OnRespawn;
         }
 
         /// <summary>
@@ -100,11 +100,11 @@ namespace GD3D.Player
             }
 
             // Set speed
-            Vector3 newVelocity = _rigidbody.velocity;
+            Vector3 newVelocity = rb.velocity;
 
             newVelocity.z = speedCurve.Evaluate(Mathf.Abs(_currentZSpeedTime)) * Mathf.Sign(_currentZSpeedTime * -1) * maxZSpeed;
 
-            _rigidbody.velocity = newVelocity;
+            rb.velocity = newVelocity;
         }
 
         public void ChangeSpeed(GameSpeed newSpeed)
@@ -146,11 +146,11 @@ namespace GD3D.Player
         private void OnRespawn()
         {
             // Reset the target X
-            _targetX = _player._startPos.x;
+            _targetX = player.startPos.x;
 
             // Reset rigidbody components aswell
-            _rigidbody.velocity = Vector3.zero;
-            _rigidbody.angularVelocity = Vector3.zero;
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
         }
     }
 

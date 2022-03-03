@@ -16,16 +16,9 @@ namespace GD3D.Player
         [SerializeField] private float jumpCooldown = 0.2f;
         private float _jumpCooldownTimer;
 
-        [Header("Ground Detection")]
-        [SerializeField] private float groundDetectSize = 0.54f;
-        [SerializeField] private LayerMask groundLayer;
-
-        private bool _onGround;
-        private bool _landedOnGround;
-
         [Header("Cube Rotation")]
         [SerializeField] private Transform objToRotate;
-        [SerializeField] private float cubeSlerpSpeed = 0.55f;
+        [SerializeField] private float rotateSlerpSpeed = 0.55f;
         private Vector3 _angularVelocity;
         private Vector3 _targetRot;
 
@@ -36,19 +29,17 @@ namespace GD3D.Player
 
         // The time spent in the air per jump is about 0.44 seconds
 
-        /// <summary>
-        /// OnEnable is called when the gamemode is switched to this gamemode
-        /// </summary>
         public override void OnEnable()
         {
+            base.OnEnable();
+
             ResetRotation();
         }
 
-        /// <summary>
-        /// OnDisable is called when the gamemode is switched from this gamemode
-        /// </summary>
         public override void OnDisable()
         {
+            base.OnDisable();
+
             // Stop slide particles
             slideParticles.Stop();
         }
@@ -59,42 +50,15 @@ namespace GD3D.Player
             if (dead)
                 return;
 
+            base.Update();
+
             // Decrease the jump cooldown whilst it's above 0
             if (_jumpCooldownTimer > 0)
             {
                 _jumpCooldownTimer -= Time.deltaTime;
             }
 
-            GroundDetection();
-
             AngularVelocity();
-        }
-
-        /// <summary>
-        /// Handles all ground detection
-        /// </summary>
-        private void GroundDetection()
-        {
-            // Detect if the player is on the ground
-            _onGround = Physics.OverlapBox(_transform.position, Vector3.one * groundDetectSize, _transform.rotation, groundLayer).Length >= 1;
-
-            // Detects if the player has landed back on the ground
-            if (!_landedOnGround && _onGround)
-            {
-                _landedOnGround = true;
-                OnLand();
-
-                // Enable slide particles
-                slideParticles.Play();
-            }
-            // Detects when the player leaves the ground
-            else if (_landedOnGround && !_onGround)
-            {
-                _landedOnGround = false;
-
-                // Disable slide particles
-                slideParticles.Stop();
-            }
         }
 
         /// <summary>
@@ -103,7 +67,7 @@ namespace GD3D.Player
         private void AngularVelocity()
         {
             // Check if we are in the air
-            if (!_onGround)
+            if (!onGround)
             {
                 _angularVelocity = Vector3.zero;
 
@@ -113,30 +77,39 @@ namespace GD3D.Player
                 _angularVelocity.z = -force;
 
                 // Set the angular velocity X to the rigidbodies current Z velocity
-                _targetRot.x = Mathf.Clamp(Rigidbody.velocity.z, -1, 1) * 15;
+                _targetRot.x = XRot;
             }
 
             // Increase target rotation by angular velocity
             if (_angularVelocity != Vector3.zero)
             {
-                _targetRot += _angularVelocity * Time.deltaTime;
+                _targetRot += _angularVelocity * Time.deltaTime * upsideDownMultiplier;
                 _targetRot.x %= 360;
                 _targetRot.y %= 360;
                 _targetRot.z %= 360;
             }
         }
 
-        private void OnLand()
+        public override void OnLand()
         {
             // Reset the X and Z angular velocity 
             _angularVelocity = Vector3.zero;
 
-            // Round the X and Z rotation to be a multiple of 90 (0, 90, 180 or 270)
+            // Snap the X and Z rotation to be a multiple of 90 (0, 90, 180, 270, 360 etc...)
             _targetRot.x = Mathf.Round(_targetRot.x / 90) * 90;
             _targetRot.y = Mathf.Round(_targetRot.y / 90) * 90;
             _targetRot.z = Mathf.Round(_targetRot.z / 90) * 90;
 
             SpawnParticles(landParticles);
+
+            // Enable slide particles
+            slideParticles.Play();
+        }
+
+        public override void OnLeaveGround()
+        {
+            // Disable slide particles
+            slideParticles.Stop();
         }
 
         public override void FixedUpdate()
@@ -146,7 +119,7 @@ namespace GD3D.Player
                 return;
 
             // Set rotation
-            Quaternion slerp = Quaternion.Slerp(objToRotate.rotation, Quaternion.Euler(_targetRot), cubeSlerpSpeed);
+            Quaternion slerp = Quaternion.Slerp(objToRotate.rotation, Quaternion.Euler(_targetRot), rotateSlerpSpeed);
 
             objToRotate.rotation = slerp;
 
@@ -154,14 +127,10 @@ namespace GD3D.Player
             base.FixedUpdate();
         }
 
-        /// <summary>
-        /// OnClick is called when the player presses the main gameplay button. <para/>
-        /// <paramref name="mode"/> determines whether the button was just pressed, held or just released.
-        /// </summary>
         public override void OnClick(PressMode mode)
         {
             // Can't jump if not on ground or if the jump is on cooldown
-            if (!_onGround || _jumpCooldownTimer > 0)
+            if (!onGround || _jumpCooldownTimer > 0)
             {
                 return;
             }
@@ -176,6 +145,9 @@ namespace GD3D.Player
             }
         }
 
+        /// <summary>
+        /// Called when the player is both on ground and presses the click key
+        /// </summary>
         private void Jump()
         {
             // Set Y velocity
@@ -196,14 +168,14 @@ namespace GD3D.Player
 
             // Get the particle system renderer
             ParticleSystemRenderer jumpParticlesRenderer = obj.GetComponent<ParticleSystemRenderer>();
-            Material newMaterial = Player.CloneMaterial(jumpParticlesRenderer.materials[0], 1, true, true);
 
-            // Set the materials
-            jumpParticlesRenderer.materials = new Material[] { newMaterial };
+            MaterialColorer.UpdateRendererMaterials(jumpParticlesRenderer, GamemodeHandler.PlayerColor1, true, true);
         }
 
         public override void OnDeath()
         {
+            base.OnDeath();
+
             // Stop slide particles
             slideParticles.Stop();
 

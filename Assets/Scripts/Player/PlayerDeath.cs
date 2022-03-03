@@ -17,17 +17,6 @@ namespace GD3D.Player
         [Header("Effects")]
         [SerializeField] private GameObject deathEffect;
 
-        /// <summary>
-        /// Start is called before the first frame update
-        /// </summary>
-        public override void Start()
-        {
-            base.Start();
-        }
-
-        /// <summary>
-        /// Update is called once per frame
-        /// </summary>
         public override void Update()
         {
             base.Update();
@@ -51,20 +40,12 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Fixed Update is called once per physics frame
-        /// </summary>
-        public override void FixedUpdate()
-        {
-            base.FixedUpdate();
-        }
-
-        /// <summary>
         /// Makes the player explode, plays the death sound effect, disables the mesh and respawns the player afterwards.
         /// </summary>
         public void Die()
         {
             // Don't die again if we have already died
-            if (_player._dead)
+            if (player.dead)
             {
                 return;
             }
@@ -72,13 +53,10 @@ namespace GD3D.Player
             // Spawn death effect
             GameObject obj = Instantiate(deathEffect, transform.position, Quaternion.identity);
 
-            // Change the death particles color to match the player colors
+            // Change the death particles color to match the first player color
             ParticleSystemRenderer particles = obj.GetComponentInChildren<ParticleSystemRenderer>();
 
-            // Create a clone material and set the new material
-            Material newMaterial = CloneMaterial(particles.materials[0], 1, true, true);
-
-            particles.materials = new Material[] { newMaterial };
+            MaterialColorer.UpdateRendererMaterials(particles, PlayerColor1, true, true);
 
             // Change the death sphere color to match the player colors
             MaterialColorer colorer = obj.GetComponentInChildren<MaterialColorer>();
@@ -93,7 +71,7 @@ namespace GD3D.Player
             SoundManager.PlaySound("Player Explode", 1);
 
             // Invoke on death event
-            _player.InvokeDeathEvent();
+            player.InvokeDeathEvent();
         }
     }
 }

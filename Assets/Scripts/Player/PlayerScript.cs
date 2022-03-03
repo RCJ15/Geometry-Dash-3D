@@ -14,32 +14,31 @@ namespace GD3D.Player
         internal Key _clickKey;
 
         //-- Component references
-        internal PlayerMain _player;
-        internal Rigidbody _rigidbody;
-        internal MeshRenderer _meshRenderer;
+        internal PlayerMain player;
+        internal Rigidbody rb;
 
         internal Transform _transform;
 
-        private System.Array _pressModeValues;
+        private static System.Array s_pressModeValues = null;
 
         /// <summary>
         /// Shortcut for setting and getting "rb.velocity.y"
         /// </summary>
         public float YVelocity
         {
-            get => _rigidbody.velocity.y;
-            set => _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, value, _rigidbody.velocity.z);
+            get => rb.velocity.y;
+            set => rb.velocity = new Vector3(rb.velocity.x, value, rb.velocity.z);
         }
 
         /// <summary>
         /// The primary player color
         /// </summary>
-        public Color PlayerColor1 => _player.Colorer.GetColors[0];
+        public Color PlayerColor1 => player.colors.playerColor1;
 
         /// <summary>
         /// The secondary player color
         /// </summary>
-        public Color PlayerColor2 => _player.Colorer.GetColors[1];
+        public Color PlayerColor2 => player.colors.playerColor2;
 
         /// <summary>
         /// Start is called before the first frame update
@@ -49,7 +48,10 @@ namespace GD3D.Player
             _transform = transform;
 
             // Set the enum array
-            _pressModeValues = System.Enum.GetValues(typeof(PressMode));
+            if (s_pressModeValues == null)
+            {
+                s_pressModeValues = System.Enum.GetValues(typeof(PressMode));
+            }
 
             // Get input key
             _clickKey = PlayerInput.GetKey("Click");
@@ -62,9 +64,8 @@ namespace GD3D.Player
         /// </summary>
         private void GetComponents()
         {
-            _player = GetChildComponent<PlayerMain>();
-            _rigidbody = GetChildComponent<Rigidbody>();
-            _meshRenderer = GetChildComponent<MeshRenderer>();
+            player = GetChildComponent<PlayerMain>();
+            rb = GetChildComponent<Rigidbody>();
         }
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace GD3D.Player
         public virtual void Update()
         {
             // Loop through all press modes (there are only 3)
-            foreach (PressMode mode in _pressModeValues)
+            foreach (PressMode mode in s_pressModeValues)
             {
                 // Check if the key is pressed with this press mode
                 if (_clickKey.Pressed(mode))
@@ -125,6 +126,7 @@ namespace GD3D.Player
 
         }
 
+        /*
         /// <summary>
         /// Basically the same as <see cref="CloneMaterial(Material, Color, bool, bool)"/> but with a player color id instead
         /// </summary>
@@ -142,7 +144,7 @@ namespace GD3D.Player
         /// <param name="changeEmission">Wheter to update the emission color.</param>
         /// <param name="changeSpecular">Wheter to update the specular color.</param>
         /// <returns></returns>
-        public Material CloneMaterial(Material original, Color newColor, bool changeEmission = false, bool changeSpecular =false)
+        public Material CloneMaterial(Material original, Color newColor, bool changeEmission = false, bool changeSpecular = false)
         {
             // Copy original material
             Material newMaterial = new Material(original);
@@ -166,6 +168,7 @@ namespace GD3D.Player
             // Return the new copied material
             return newMaterial;
         }
+        */
     }
 }
 

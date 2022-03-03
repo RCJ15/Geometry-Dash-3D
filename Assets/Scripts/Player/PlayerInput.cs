@@ -99,7 +99,6 @@ namespace GD3D.Player
         public static Vector2 RightStickInput => s_exactRightStickInput;
         public static Vector2 DpadInput => s_exactDpadInput;
 
-        // Start is called before the first frame update
         void Start()
         {
             // Reset all of the Special Gamepad Inputs because they are static
@@ -119,7 +118,6 @@ namespace GD3D.Player
             s_oldDpadInput = Vector2.zero;
         }
 
-        // Update is called once per frame
         void Update()
         {
             DoAxisInput();

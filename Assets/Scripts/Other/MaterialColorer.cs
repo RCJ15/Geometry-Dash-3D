@@ -11,7 +11,7 @@ namespace GD3D
     /// Takes a renderer and an array of colors to change the renderers material color to the ones in the array. <para/>
     /// Also has options for a single color or copying another MaterialColorer's colors.
     /// </summary>
-    public class MaterialColorer : MonoBehaviour
+    public class MaterialColorer : MonoBehaviour, IMaterialColorable
     {
         //-- Renderer
         [SerializeField] internal RenderType _renderType;
@@ -28,7 +28,8 @@ namespace GD3D
 
         [SerializeField] private Color[] _colors = new Color[] { Color.white };
 
-        [SerializeField] private MaterialColorer _copyFrom;
+        [SerializeField] private GameObject _copyFromObject;
+        private IMaterialColorable _copyFrom;
 
         //-- Update mode
         [SerializeField] private UpdateMode _updateMode;
@@ -66,7 +67,7 @@ namespace GD3D
         /// <summary>
         /// Returns the correct material index
         /// </summary>
-        private int GetMaterialIndex
+        public int GetMaterialIndex
         {
             get
             {
@@ -86,7 +87,7 @@ namespace GD3D
         /// <summary>
         /// Returns the correct color mode
         /// </summary>
-        private ColorMode GetColorMode
+        public ColorMode GetColorMode
         {
             get
             {
@@ -183,10 +184,22 @@ namespace GD3D
         /// </summary>
         void Awake()
         {
+            // Get the interface from the _copyFromObject
+            if (_copyFromObject != null)
+            {
+                _copyFrom = _copyFromObject.GetComponent<IMaterialColorable>();
+
+                // THROW ERROR >:(
+                if (_copyFrom == null)
+                {
+                    throw new System.Exception($"{_copyFromObject.name} does not have a {nameof(IMaterialColorable)} attached to it");
+                }
+            }
+
             // Create a new list of materials
             List<Material> newMaterials = new List<Material>();
 
-            // Change a list of materials
+            // Change the newly created materials list
             if (GetColorMode == ColorMode.array)
             {
                 // Loop through all existing materials
@@ -241,7 +254,7 @@ namespace GD3D
             // Set the new materials
             materials = newMaterials.ToArray();
 
-            // Update the colors on awake if updateOnAwake is true
+            // Always update colors on awake so nothing ugly is seen on the first frame
             UpdateColors();
         }
 
@@ -293,48 +306,71 @@ namespace GD3D
         }
 
         /// <summary>
-        /// Sets the color using an array
+        /// Sets the colors of the renderer using an array of colors
         /// </summary>
         private void SetArrayColor(Color[] colors)
         {
-            // Loop through the amount of colors
-            for (int i = 0; i < Mathf.Min(colors.Length, materials.Length); i++)
-            {
-                UpdateMat(materials[i], colors[i]);
-            }
+            UpdateRendererMaterials(GetRenderer, colors, _updateEmmision, _updateSpecular);
         }
 
         /// <summary>
-        /// Sets the color using a single color
+        /// Sets the colors of the renderer using a single color
         /// </summary>
         private void SetSingleColor(Color color)
         {
-            UpdateMat(materials[_materialIndex], color);
+            UpdateMaterialColor(materials[_materialIndex], color, _updateEmmision, _updateSpecular);
         }
 
         /// <summary>
         /// Updates the given materials color to match the given color
         /// </summary>
-        private void UpdateMat(Material mat, Color color)
+        public static void UpdateMaterialColor(Material mat, Color color, bool updateEmission, bool updateSpecular)
         {
             // Set the color
             mat.color = color;
 
             // Set the emission color if updateEmmision is true
-            if (_updateEmmision)
+            if (updateEmission && mat.HasProperty("_EmissionColor"))
             {
                 mat.SetColor("_EmissionColor", color);
             }
 
             // Set the specular color if updateSpecular is true
-            if (_updateSpecular)
+            if (updateSpecular && mat.HasProperty("_SpecColor"))
             {
                 mat.SetColor("_SpecColor", color);
             }
         }
 
         /// <summary>
-        /// Enum for what update mode a mesh colorer can have
+        /// Updates each of the given renderers materials to match the given color
+        /// </summary>
+        public static void UpdateRendererMaterials(Renderer renderer, Color color, bool updateEmission, bool updateSpecular)
+        {
+            // Loop through the amount of materials the mesh has
+            for (int i = 0; i < renderer.materials.Length; i++)
+            {
+                // Update each material to have the correct color
+                UpdateMaterialColor(renderer.materials[i], color, true, true);
+            }
+        }
+
+        /// <summary>
+        /// Updates each of the given renderers materials to match the correct color in the given color array
+        /// </summary>
+        public static void UpdateRendererMaterials(Renderer renderer, Color[] colors, bool updateEmission, bool updateSpecular)
+        {
+            // Loop through the length of either colors or the matrials
+            // The one that's the smallest in length will be used
+            for (int i = 0; i < Mathf.Min(colors.Length, renderer.materials.Length); i++)
+            {
+                // Update each material to have the correct color
+                UpdateMaterialColor(renderer.materials[i], colors[i], updateEmission, updateSpecular);
+            }
+        }
+
+        /// <summary>
+        /// Enum for what update mode a material colorer can have
         /// </summary>
         [System.Serializable]
         public enum RenderType
@@ -344,7 +380,7 @@ namespace GD3D
         }
 
         /// <summary>
-        /// Enum for what color mode a mesh colorer can have
+        /// Enum for what color mode a material colorer can have
         /// </summary>
         [System.Serializable]
         public enum ColorMode
@@ -355,7 +391,7 @@ namespace GD3D
         }
 
         /// <summary>
-        /// Enum for what update mode a mesh colorer can have
+        /// Enum for what update mode a material colorer can have
         /// </summary>
         [System.Serializable]
         public enum UpdateMode
@@ -414,7 +450,7 @@ namespace GD3D
                     Serialize("_colors");
                     break;
                 case MaterialColorer.ColorMode.copyFromAnother:
-                    Serialize("_copyFrom");
+                    Serialize("_copyFromObject");
                     break;
             }
 
