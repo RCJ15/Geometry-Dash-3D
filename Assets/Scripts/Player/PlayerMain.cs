@@ -46,11 +46,6 @@ namespace GD3D.Player
             startPos = transform.position;
             startScale = transform.localScale;
             startRotation = transform.rotation;
-        }
-
-        public override void Start()
-        {
-            base.Start();
 
             GetPlayerScripts();
         }

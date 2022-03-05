@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using PathCreation;
 
 namespace GD3D.Player
 {
@@ -17,21 +18,20 @@ namespace GD3D.Player
         public const float TRIPLE_SPEED = 15.5945419103f; // Actual multiplier: 1.5029239766x
         public const float QUADRUPLE_SPEED = 19.1846522782f; // Actual multiplier: 1.8489208633x
 
+        [SerializeField] private PathCreator pathCreator;
+        private VertexPath path => pathCreator.path;
+
         [Header("Stats")]
         [SerializeField] private GameSpeed currentSpeed = GameSpeed.normalSpeed;
         public static float Speed;
 
-        private float _targetX;
+        private float _travelAmount;
 
         [Header("Z Movement")]
-        [SerializeField] private float timeToAccelerate = 0.2f;
-        [SerializeField] private float timeToDecelerate = 0.3f;
-        [SerializeField] private float maxZSpeed = 7;
-
-        [SerializeField] private AnimationCurve speedCurve = AnimationCurve.Linear(0, 0, 1, 1);
-        private float _currentZSpeedTime;
+        [SerializeField] private float zSpeed = 1;
 
         public bool _canMoveOnZ;
+        private float _zOffset;
 
         /// <summary>
         /// Start is called before the first frame update
@@ -45,8 +45,8 @@ namespace GD3D.Player
 
             ChangeSpeed(currentSpeed);
 
-            // Set target X start point
-            _targetX = _transform.position.x;
+            // Set the start travel amount
+            _travelAmount = path.GetClosestDistanceAlongPath(transform.position);
 
             // Subscribe to the on respawn event
             player.OnRespawn += OnRespawn;
@@ -59,8 +59,6 @@ namespace GD3D.Player
         {
             base.Update();
             
-            // Move the player
-            _targetX += Time.deltaTime * Speed;
         }
 
         /// <summary>
@@ -70,10 +68,29 @@ namespace GD3D.Player
         {
             base.FixedUpdate();
 
-            // Go towards target X
-            _transform.position = new Vector3(_targetX, _transform.position.y, _transform.position.z);
-
             ZAxisMovement();
+
+            // Move the player
+            _travelAmount += Time.fixedDeltaTime * Speed;
+
+            // Calculate target position
+            Vector3 targetPos = path.GetPointAtDistance(_travelAmount, EndOfPathInstruction.Stop);
+            Vector3 direction = path.GetNormalAtDistance(_travelAmount, EndOfPathInstruction.Stop);
+
+            targetPos += direction * _zOffset;
+
+            // Ignore Y
+            targetPos.y = _transform.position.y;
+
+            _transform.position = targetPos;
+
+            // Rotate the correct way
+            Vector3 newRot = path.GetRotationAtDistance(_travelAmount, EndOfPathInstruction.Stop).eulerAngles;
+
+            newRot.x = transform.rotation.eulerAngles.x;
+            newRot.z = transform.rotation.eulerAngles.z;
+
+            transform.rotation = Quaternion.Euler(newRot);
         }
 
         private void ZAxisMovement()
@@ -84,27 +101,9 @@ namespace GD3D.Player
             // Z Speed
             float zInput = Input.GetAxisRaw("Horizontal");
 
-            float targetSpeed = zInput * maxZSpeed;
-
-            bool accelerate = zInput != 0;
-
-            // Accelerate
-            if (accelerate)
-            {
-                _currentZSpeedTime = Mathf.MoveTowards(_currentZSpeedTime, zInput, Time.deltaTime / timeToAccelerate);
-            }
-            // Decelerate
-            else
-            {
-                _currentZSpeedTime = Mathf.MoveTowards(_currentZSpeedTime, 0, Time.deltaTime / timeToDecelerate);
-            }
-
-            // Set speed
-            Vector3 newVelocity = rb.velocity;
-
-            newVelocity.z = speedCurve.Evaluate(Mathf.Abs(_currentZSpeedTime)) * Mathf.Sign(_currentZSpeedTime * -1) * maxZSpeed;
-
-            rb.velocity = newVelocity;
+            // Change offset
+            _zOffset += (-zInput / 10) * zSpeed;
+            _zOffset = Mathf.Clamp(_zOffset, -4.5f, 4.5f);
         }
 
         public void ChangeSpeed(GameSpeed newSpeed)
@@ -146,7 +145,7 @@ namespace GD3D.Player
         private void OnRespawn()
         {
             // Reset the target X
-            _targetX = player.startPos.x;
+            _travelAmount = player.startPos.x;
 
             // Reset rigidbody components aswell
             rb.velocity = Vector3.zero;

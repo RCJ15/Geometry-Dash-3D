@@ -22,6 +22,9 @@ namespace GD3D.Player
         [SerializeField] private Vector3 groundDetectSize = new Vector3(0.54f, 0.54f, 0.54f);
         [SerializeField] private LayerMask groundLayer;
 
+        [Header("Other")]
+        [SerializeField] private TrailMode trailMode = TrailMode.never;
+
         internal bool onGround;
         private bool _landedOnGround;
 
@@ -47,7 +50,7 @@ namespace GD3D.Player
         internal float YVelocity
         {
             get => GamemodeHandler.YVelocity;
-            set => GamemodeHandler.YVelocity = value * upsideDownMultiplier;
+            set => GamemodeHandler.YVelocity = value;
         }
 
         /// <summary>
@@ -69,7 +72,8 @@ namespace GD3D.Player
         /// </summary>
         public virtual void OnEnable()
         {
-
+            // Call OnChangeGravity in case there is a upside down mishap
+            OnChangeGravity(upsideDown);
         }
 
         /// <summary>
@@ -86,10 +90,26 @@ namespace GD3D.Player
         public virtual void Update()
         {
             GroundDetection();
+            UpdateTrail();
         }
 
         /// <summary>
-        /// Handles all ground detection
+        /// Handles the players trail. Is called in Update()
+        /// </summary>
+        private void UpdateTrail()
+        {
+            if (trailMode == TrailMode.never && PlayerTrailManager.HaveTrail)
+            {
+                PlayerTrailManager.HaveTrail = false;
+            }
+            else if (trailMode == TrailMode.always && !PlayerTrailManager.HaveTrail)
+            {
+                PlayerTrailManager.HaveTrail = true;
+            }
+        }
+
+        /// <summary>
+        /// Handles all ground detection. Is called in Update()
         /// </summary>
         private void GroundDetection()
         {
@@ -144,7 +164,10 @@ namespace GD3D.Player
             // Clamp Y velocity between terminal velocity if it's not 0
             if (terminalVelocity != Vector2.zero)
             {
-                YVelocity = Mathf.Clamp(YVelocity, -terminalVelocity.x, terminalVelocity.y);
+                YVelocity = Mathf.Clamp(YVelocity,
+                    upsideDown ? -terminalVelocity.y : -terminalVelocity.x,
+                    upsideDown ? terminalVelocity.x : terminalVelocity.y
+                    );
             }
         }
 
@@ -171,6 +194,34 @@ namespace GD3D.Player
         public virtual void OnRespawn()
         {
 
+        }
+
+        /// <summary>
+        /// Called when the player changes gravity. This can be from entering a gravity portal or from pressing a blue orb.
+        /// </summary>
+        public virtual void OnChangeGravity(bool upsideDown)
+        {
+
+        }
+
+        /// <summary>
+        /// Enum for determining in what way the players trail is shown.
+        /// </summary>
+        [Serializable]
+        public enum TrailMode
+        {
+            /// <summary>
+            /// Trail is never enabled
+            /// </summary>
+            never = 0,
+            /// <summary>
+            /// Trails is always enabled
+            /// </summary>
+            always = 1,
+            /// <summary>
+            /// Trails is only enabled when interacting with special objects, such as hitting a orb or entering a gravity portal.
+            /// </summary>
+            specialObjects = 2,
         }
 
 #if UNITY_EDITOR

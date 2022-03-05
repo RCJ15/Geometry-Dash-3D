@@ -48,7 +48,7 @@ namespace GD3D
             _startPos = transform.position;
 
             // Get the camera
-            _cam = Camera.main.transform;
+            _cam = UnityEngine.Camera.main.transform;
 
             // Generate a random X offset if it should have a random X offset
             if (_haveRandomXOffset)

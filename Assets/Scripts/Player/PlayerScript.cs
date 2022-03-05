@@ -33,12 +33,12 @@ namespace GD3D.Player
         /// <summary>
         /// The primary player color
         /// </summary>
-        public Color PlayerColor1 => player.colors.playerColor1;
+        public Color PlayerColor1 => player.colors.Color1;
 
         /// <summary>
         /// The secondary player color
         /// </summary>
-        public Color PlayerColor2 => player.colors.playerColor2;
+        public Color PlayerColor2 => player.colors.Color2;
 
         /// <summary>
         /// Start is called before the first frame update

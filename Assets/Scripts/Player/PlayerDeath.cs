@@ -24,7 +24,7 @@ namespace GD3D.Player
             // Detect if the player is touching deadly stuff
             _touchingDeath = Physics.OverlapBox(transform.position, transform.localScale / 2 + (Vector3.one / 15), transform.rotation, deathLayer).Length >= 1;
 
-            // Die if we are touching death
+            // Die if we are touching death stuff
             if (_touchingDeath)
             {
                 Die();

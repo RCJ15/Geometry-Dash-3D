@@ -15,7 +15,7 @@ namespace GD3D.Player
         [SerializeField] private float respawnTime;
 
         [SerializeField] private TMP_Text attemptText;
-        private int _currentAttemp = 1;
+        private int _currentAttempt = 1;
 
         /// <summary>
         /// Start is called before the first frame update
@@ -71,8 +71,8 @@ namespace GD3D.Player
             // Wait 1 second
             yield return new WaitForSeconds(1f);
 
-            _currentAttemp++;
-            attemptText.text = "Attempt " + _currentAttemp;
+            _currentAttempt++;
+            attemptText.text = "Attempt " + _currentAttempt;
 
             // Invoke respawn event
             player.InvokeRespawnEvent();

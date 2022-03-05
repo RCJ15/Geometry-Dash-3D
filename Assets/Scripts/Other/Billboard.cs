@@ -26,7 +26,7 @@ namespace GD3D
         // Start is called before the first frame update
         void Start()
         {
-            cam = Camera.main.transform;
+            cam = UnityEngine.Camera.main.transform;
         }
 
         // Update is called once per frame
@@ -46,26 +46,4 @@ namespace GD3D
             transform.eulerAngles += new Vector3(0, invert ? 180 : 0, -transform.eulerAngles.z + zRot);
         }
     }
-
-#if UNITY_EDITOR
-    [CustomEditor(typeof(Billboard), true)]
-    public class BillboardEditor : Editor
-    {
-        private Billboard obj;
-        private Transform cam;
-
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-
-            if (GUILayout.Button("Update looking"))
-            {
-                obj = (Billboard)target;
-                cam = Camera.main.transform;
-
-                obj.Look(cam);
-            }
-        }
-    }
-#endif
 }

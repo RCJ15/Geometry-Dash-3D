@@ -17,6 +17,6 @@ These things below are what I plan on creating for this game.
 
 **Gamemodes from the orignal game:**
 - Cube (FINISHED)
-- Ship (WORKING ON CURRENTLY)
+- Ship (FINISHED)
 
 I might add more in the future but currently this is all that I have planned for the video.

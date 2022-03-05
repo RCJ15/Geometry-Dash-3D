@@ -29,6 +29,18 @@ namespace GD3D.Player
 
         // The time spent in the air per jump is about 0.44 seconds
 
+        public override void Start()
+        {
+            base.Start();
+
+            // Update slide particles color
+            ParticleSystemRenderer slideParticlesRenderer = slideParticles.GetComponent<ParticleSystemRenderer>();
+
+            slideParticlesRenderer.material = new Material(slideParticlesRenderer.material);
+
+            MaterialColorer.UpdateRendererMaterials(slideParticlesRenderer, GamemodeHandler.PlayerColor1, true, true);
+        }
+
         public override void OnEnable()
         {
             base.OnEnable();
@@ -100,7 +112,7 @@ namespace GD3D.Player
             _targetRot.y = Mathf.Round(_targetRot.y / 90) * 90;
             _targetRot.z = Mathf.Round(_targetRot.z / 90) * 90;
 
-            SpawnParticles(landParticles);
+            Object.Instantiate(landParticles, _transform.position, Quaternion.identity, _transform);
 
             // Enable slide particles
             slideParticles.Play();
@@ -119,11 +131,11 @@ namespace GD3D.Player
                 return;
 
             // Set rotation
-            Quaternion slerp = Quaternion.Slerp(objToRotate.rotation, Quaternion.Euler(_targetRot), rotateSlerpSpeed);
+            Quaternion slerp = Quaternion.Slerp(objToRotate.localRotation, Quaternion.Euler(_targetRot), rotateSlerpSpeed);
 
-            objToRotate.rotation = slerp;
+            objToRotate.localRotation = slerp;
 
-            // Do gravity
+            // Do gravity & terminal velocity
             base.FixedUpdate();
         }
 
@@ -151,25 +163,12 @@ namespace GD3D.Player
         private void Jump()
         {
             // Set Y velocity
-            YVelocity = jumpHeight;
+            YVelocity = jumpHeight * upsideDownMultiplier;
 
             // Restart the jump cooldown
             _jumpCooldownTimer = jumpCooldown;
 
-            SpawnParticles(jumpParticles);
-        }
-
-
-        private void SpawnParticles(GameObject orignalObject)
-        {
-            // Create cube particles
-            GameObject obj = Object.Instantiate(orignalObject, _transform.position, Quaternion.identity, _transform);
-            obj.transform.localPosition = Vector3.zero;
-
-            // Get the particle system renderer
-            ParticleSystemRenderer jumpParticlesRenderer = obj.GetComponent<ParticleSystemRenderer>();
-
-            MaterialColorer.UpdateRendererMaterials(jumpParticlesRenderer, GamemodeHandler.PlayerColor1, true, true);
+            Object.Instantiate(jumpParticles, _transform.position, Quaternion.identity, _transform);
         }
 
         public override void OnDeath()
@@ -186,7 +185,7 @@ namespace GD3D.Player
         {
             _angularVelocity = Vector3.zero;
             _targetRot = Vector3.zero;
-            objToRotate.rotation = Quaternion.Euler(Vector3.zero);
+            objToRotate.localRotation = Quaternion.Euler(Vector3.zero);
         }
     }
 }

@@ -36,7 +36,7 @@ namespace GD3D
             _lr = GetComponent<LineRenderer>();
 
             // Get the camera
-            _cam = Camera.main.transform;
+            _cam = UnityEngine.Camera.main.transform;
 
             // Always update in awake regardless of the update mode
             UpdateLines();

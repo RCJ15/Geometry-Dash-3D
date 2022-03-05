@@ -11,9 +11,13 @@ namespace GD3D.Player
     /// </summary>
     public class PlayerGamemodeHandler : PlayerScript
     {
+        private Gamemode _startGamemode;
         public Gamemode CurrentGamemode;
 
         public bool upsideDown;
+        private bool oldUpsideDown;
+
+        public Action<bool> OnChangeGravity;
 
         [Header("Gamemodes")]
         public CubeGamemode Cube;
@@ -45,7 +49,8 @@ namespace GD3D.Player
             SetupGamemodeScript(Spider);
 
             // Change to the start gamemode
-            ChangeGamemode(CurrentGamemode);
+            _startGamemode = CurrentGamemode;
+            ChangeGamemode(_startGamemode);
 
             // Subscribe to events
             player.OnDeath += OnDeath;
@@ -58,6 +63,8 @@ namespace GD3D.Player
         private void OnDeath()
         {
             _activeGamemodeScript.OnDeath();
+
+            ChangeGamemode(_startGamemode);
         }
 
         /// <summary>
@@ -68,6 +75,10 @@ namespace GD3D.Player
             _activeGamemodeScript.OnRespawn();
         }
 
+        /// <summary>
+        /// Sets important variables and invokes Start() on the given <see cref="GamemodeScript"/>. <para/>
+        /// As the name implies, this is used to setup the scripts before the game begins
+        /// </summary>
         private void SetupGamemodeScript(GamemodeScript script)
         {
             script.GamemodeHandler = this;
@@ -81,7 +92,17 @@ namespace GD3D.Player
         {
             base.Update();
 
-            // Call Update() in activeGamemodeScript (Unless it's null)
+            // Check if the players gravity has changed
+            if (oldUpsideDown != upsideDown)
+            {
+                // If it has, then invoke the OnChangeGravity events
+                oldUpsideDown = upsideDown;
+
+                OnChangeGravity?.Invoke(upsideDown);
+                _activeGamemodeScript.OnChangeGravity(upsideDown);
+            }
+
+            // Call Update() in activeGamemodeScript
             _activeGamemodeScript?.Update();
         }
 
@@ -89,7 +110,7 @@ namespace GD3D.Player
         {
             base.FixedUpdate();
 
-            // Call FixedUpdate() in activeGamemodeScript (Unless it's null)
+            // Call FixedUpdate() in activeGamemodeScript
             _activeGamemodeScript?.FixedUpdate();
         }
 
@@ -97,7 +118,7 @@ namespace GD3D.Player
         {
             base.OnClick(mode);
 
-            // Call OnClick() in activeGamemodeScript (Unless it's null)
+            // Call OnClick() in activeGamemodeScript
             _activeGamemodeScript?.OnClick(mode);
         }
 
@@ -109,7 +130,7 @@ namespace GD3D.Player
             // Change gamemode enum
             CurrentGamemode = newGamemode;
 
-            // Call OnDisable() in the old activeGamemodeScript (Unless it's null)
+            // Call OnDisable() in the old activeGamemodeScript
             _activeGamemodeScript?.OnDisable();
 
             // Set the new activeGamemodeScript
@@ -192,7 +213,7 @@ namespace GD3D.Player
 
 #if UNITY_EDITOR
         // Draw current gamemode ground detection gizmo
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
             GamemodeScript currentGamemodeScript = TypeToGamemode(CurrentGamemode);
 

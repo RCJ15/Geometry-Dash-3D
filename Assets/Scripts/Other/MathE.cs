@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Functions that I THINK should exist in MathF are in here.
-/// MathE means MathExtention cuz it's more MathF functions.
+/// Helper methods exist here. <para/>
+/// I copy and paste this script from project to project so that's why this script has some unnecessary things in it - RCJ15
 /// </summary>
 public struct MathE
 {
@@ -14,7 +14,7 @@ public struct MathE
         {
             if (_camera == null)
             {
-                _camera = Camera.main;
+                _camera = Camera.current;
             }
 
             return _camera;

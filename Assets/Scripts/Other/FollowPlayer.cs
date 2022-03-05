@@ -43,7 +43,7 @@ namespace GD3D
             newPos = new Vector3(
                 _followX ? newPos.x : transform.position.x,
                 _followY ? newPos.y : transform.position.y,
-                _followZ ? newPos.y : transform.position.z
+                _followZ ? newPos.z : transform.position.z
                 );
 
             // Set the position

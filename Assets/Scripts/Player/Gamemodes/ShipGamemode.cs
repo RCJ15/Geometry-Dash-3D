@@ -19,17 +19,38 @@ namespace GD3D.Player
         [Header("Rotation")]
         [SerializeField] private Transform objToRotate;
         [SerializeField] private float rotateSlerpSpeed = 0.15f;
-        [SerializeField] private float zRotationModifier = 4;
+        [SerializeField] private float xRotationModifier = 4;
         private Vector3 _targetRot;
+
+        [Header("Effects")]
+        [SerializeField] private ParticleSystem flyParticles;
+        [SerializeField] private ParticleSystem slideParticles;
+        [SerializeField] private ParticleSystem constantParticles;
+
+        [Space]
+        [SerializeField] private Transform particlesParent;
+
+        [Header("Upside Down Scaling")]
+        [SerializeField] private Transform objToScale;
 
         public override void OnEnable()
         {
             base.OnEnable();
+
+            _holdingClickKey = GamemodeHandler._clickKey.Pressed(PressMode.hold);
+
+            // Make constant particles constantly play while in ship gamemode
+            constantParticles.Play();
         }
 
         public override void OnDisable()
         {
             base.OnDisable();
+
+            // Make all particles stop
+            flyParticles.Stop();
+            slideParticles.Stop();
+            constantParticles.Stop();
         }
 
         public override void Update()
@@ -37,9 +58,37 @@ namespace GD3D.Player
             base.Update();
 
             // Go up/down based on if the click key is being held
-            YVelocity += flySpeed * Time.deltaTime * (_holdingClickKey ? 1 : -1);
+            YVelocity += (flySpeed * Time.deltaTime * (_holdingClickKey ? 1 : -1)) * upsideDownMultiplier;
+            
+            HandleParticles();
 
             AngularVelocity();
+        }
+
+        /// <summary>
+        /// Handles the fly and slide particles. Is called in Update()
+        /// </summary>
+        private void HandleParticles()
+        {
+            // Fly particles
+            if (_holdingClickKey && !flyParticles.isPlaying)
+            {
+                flyParticles.Play();
+            }
+            else if (!_holdingClickKey && flyParticles.isPlaying)
+            {
+                flyParticles.Stop();
+            }
+
+            // Slide particles
+            if (onGround && !_holdingClickKey && !slideParticles.isPlaying)
+            {
+                slideParticles.Play();
+            }
+            else if ((!onGround || _holdingClickKey) && slideParticles.isPlaying)
+            {
+                slideParticles.Stop();
+            }
         }
 
         /// <summary>
@@ -50,7 +99,7 @@ namespace GD3D.Player
             // Rotate towards the Y velocity while in the air
             if (!onGround)
             {
-                _targetRot.z = Rigidbody.velocity.y * zRotationModifier;
+                _targetRot.z = Rigidbody.velocity.y * xRotationModifier;
 
                 // Set X velocity
                 _targetRot.x = XRot;
@@ -67,9 +116,12 @@ namespace GD3D.Player
             base.FixedUpdate();
 
             // Set rotation
-            Quaternion slerp = Quaternion.Slerp(objToRotate.rotation, Quaternion.Euler(_targetRot), rotateSlerpSpeed);
+            Quaternion slerp = Quaternion.Slerp(objToRotate.localRotation, Quaternion.Euler(_targetRot * upsideDownMultiplier), rotateSlerpSpeed);
 
-            objToRotate.rotation = slerp;
+            objToRotate.localRotation = slerp;
+
+            // Set particles rotation
+            particlesParent.localRotation = objToRotate.localRotation;
         }
 
         public override void OnClick(PressMode mode)
@@ -84,6 +136,12 @@ namespace GD3D.Player
                     _holdingClickKey = false;
                     break;
             }
+        }
+
+        public override void OnChangeGravity(bool upsideDown)
+        {
+            // Set the scale to make sure the ship turns upside down when it's upside down
+            objToScale.transform.localScale = new Vector3(1, upsideDown ? -1 : 1, 1);
         }
     }
 }

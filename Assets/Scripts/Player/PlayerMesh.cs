@@ -16,21 +16,27 @@ namespace GD3D.Player
         [SerializeField] private GamemodeMeshObject[] gamemodeMeshData;
 
         private Dictionary<Gamemode, GameObject> _meshDataDictionary = new Dictionary<Gamemode, GameObject>();
+        private Dictionary<Gamemode, Collider> _meshHitboxDictionary = new Dictionary<Gamemode, Collider>();
 
         [Space]
 
         private GameObject _currentMeshObject;
+        private Collider _currentMeshHitbox;
 
         public GameObject CurrentMeshObject => _currentMeshObject;
+        public Collider CurrentMeshHitbox => _currentMeshHitbox;
 
         private void Awake()
         {
-            // Create the new mesh data dictionary and disable all the mesh objects
             foreach (GamemodeMeshObject meshData in gamemodeMeshData)
             {
+                // Create the new mesh dictionaries
                 _meshDataDictionary.Add(meshData.gamemode, meshData.meshObject);
+                _meshHitboxDictionary.Add(meshData.gamemode, meshData.meshHitbox);
 
+                // Disable all meshes by default
                 meshData.meshObject.SetActive( false);
+                meshData.meshHitbox.enabled = false;
             }
         }
 
@@ -55,6 +61,7 @@ namespace GD3D.Player
 
             // Disable old gamemode and enable new gamemode
             ToggleCurrentMesh(false);
+            ToggleCurrentHitbox(false);
 
             // Get the meshObject with the given gamemode key and enable it
             GameObject meshObject = _meshDataDictionary[newGamemode];
@@ -62,6 +69,25 @@ namespace GD3D.Player
 
             // Set new currentMeshObject
             _currentMeshObject = meshObject;
+
+            // Do the same thing but for the hitbox
+            Collider meshHitbox = _meshHitboxDictionary[newGamemode];
+            meshHitbox.enabled = true;
+
+            _currentMeshHitbox = meshHitbox;
+        }
+
+        /// <summary>
+        /// Toggles the currentMeshHitbox on/off based on <paramref name="enable"/>
+        /// </summary>
+        public void ToggleCurrentHitbox(bool enable)
+        {
+            if (_currentMeshHitbox == null)
+            {
+                return;
+            }
+
+            _currentMeshHitbox.enabled = enable;
         }
 
         /// <summary>
@@ -85,6 +111,7 @@ namespace GD3D.Player
         {
             public Gamemode gamemode;
             public GameObject meshObject;
+            public Collider meshHitbox;
         }
     }
 }
