@@ -26,6 +26,9 @@ namespace GD3D.Player
         public static float Speed;
 
         private float _travelAmount;
+        private float _startTravelAmount;
+
+        public float TravelAmount => _travelAmount;
 
         [Header("Z Movement")]
         [SerializeField] private float zSpeed = 1;
@@ -47,6 +50,7 @@ namespace GD3D.Player
 
             // Set the start travel amount
             _travelAmount = path.GetClosestDistanceAlongPath(transform.position);
+            _startTravelAmount = _travelAmount;
 
             // Subscribe to the on respawn event
             player.OnRespawn += OnRespawn;
@@ -144,8 +148,10 @@ namespace GD3D.Player
         /// </summary>
         private void OnRespawn()
         {
-            // Reset the target X
-            _travelAmount = player.startPos.x;
+            // Reset the travel amount and position
+            _travelAmount = _startTravelAmount;
+
+            _transform.position = player.startPos;
 
             // Reset rigidbody components aswell
             rb.velocity = Vector3.zero;

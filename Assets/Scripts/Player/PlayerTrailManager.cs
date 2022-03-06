@@ -68,6 +68,9 @@ namespace GD3D.Player
         {
             base.Start();
 
+            // Subscribe to events
+            player.OnDeath += OnDeath;
+
             GenerateTrails(trailCopyables[0], trailAmount);
         }
 
@@ -87,6 +90,12 @@ namespace GD3D.Player
                 // Add to queue
                 _trails.Enqueue(newTrail);
             }
+        }
+
+        private void OnDeath()
+        {
+            // Disable the players trail when they die
+            HaveTrail = false;
         }
     }
 }

@@ -13,6 +13,10 @@ namespace GD3D
     /// </summary>
     public class MaterialColorer : MonoBehaviour, IMaterialColorable
     {
+        //-- Constants
+        public const string EMISSION_NAME = "_EmissionColor";
+        public const string SPECULAR_NAME = "_SpecColor";
+
         //-- Renderer
         [SerializeField] internal RenderType _renderType;
 
@@ -330,15 +334,15 @@ namespace GD3D
             mat.color = color;
 
             // Set the emission color if updateEmmision is true
-            if (updateEmission && mat.HasProperty("_EmissionColor"))
+            if (updateEmission && mat.HasProperty(EMISSION_NAME))
             {
-                mat.SetColor("_EmissionColor", color);
+                mat.SetColor(EMISSION_NAME, color);
             }
 
             // Set the specular color if updateSpecular is true
-            if (updateSpecular && mat.HasProperty("_SpecColor"))
+            if (updateSpecular && mat.HasProperty(SPECULAR_NAME))
             {
-                mat.SetColor("_SpecColor", color);
+                mat.SetColor(SPECULAR_NAME, color);
             }
         }
 

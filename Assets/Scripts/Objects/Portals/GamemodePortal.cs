@@ -17,10 +17,10 @@ namespace GD3D.Objects
         [SerializeField] private bool haveBorders;
         [SerializeField] private int borderDistance = 10;
 
-        public override void OnEnterPortal(PlayerMain player)
+        public override void OnEnterPortal()
         {
             // Change the gamemode
-            player.gamemode.ChangeGamemode(gamemode);
+            _player.gamemode.ChangeGamemode(gamemode);
 
             // Apply borders or remove them, depening on if haveBorders is true or not
             if (haveBorders)
@@ -32,6 +32,12 @@ namespace GD3D.Objects
                 // Remove borders
                 BorderManager.RemoveBorders();
             }
+        }
+
+        public override bool CustomPortalCondition()
+        {
+            // This condition is true if the player is not in the same gamemode
+            return _player.gamemode.CurrentGamemode != gamemode;
         }
 
         /// <summary>
@@ -58,8 +64,15 @@ namespace GD3D.Objects
             return Mathf.Round(minY);
         }
 
+#if UNITY_EDITOR
+        // Draw borders in editor
         private void OnDrawGizmosSelected()
         {
+            if (!haveBorders)
+            {
+                return;
+            }
+
             Gizmos.color = Color.blue;
 
             Vector3 pos = transform.position;
@@ -70,5 +83,6 @@ namespace GD3D.Objects
             pos.y = GetBorderMinY();
             Gizmos.DrawLine(pos - new Vector3(10, 0, 0), pos + new Vector3(10, 0, 0));
         }
+#endif
     }
 }

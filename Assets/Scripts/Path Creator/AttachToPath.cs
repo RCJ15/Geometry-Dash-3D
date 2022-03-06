@@ -17,7 +17,7 @@ namespace GD3D
         private VertexPath path => pathCreator.path;
 
         [Header("Position Settings")]
-        [SerializeField] private float distance;
+        public float Distance;
         [SerializeField] private float zOffset;
 
         [Header("Rotation")]
@@ -37,27 +37,12 @@ namespace GD3D
             }
         }
 
-#if UNITY_EDITOR
-        [SerializeField, HideInInspector]
-        private bool justCreated = true;
-        [SerializeField, HideInInspector]
-        private bool subcribed = false;
-
-        [SerializeField, HideInInspector]
-        private float oldDistance = 0;
-
-        [SerializeField, HideInInspector]
-        private float oldZOffset = 0;
-        [SerializeField, HideInInspector]
-        private Vector3 oldPos = Vector3.zero;
-#endif
-
         public void UpdatePosition()
         {
             // -- Set position --
             // Get the position at distance
-            Vector3 targetPos = path.GetPointAtDistance(distance, EndOfPathInstruction.Stop);
-            Vector3 direction = path.GetNormalAtDistance(distance, EndOfPathInstruction.Stop);
+            Vector3 targetPos = path.GetPointAtDistance(Distance, EndOfPathInstruction.Stop);
+            Vector3 direction = path.GetNormalAtDistance(Distance, EndOfPathInstruction.Stop);
 
             // Apply offset
             targetPos += direction * zOffset;
@@ -69,7 +54,7 @@ namespace GD3D
 
             // -- Set rotation --
             // Get rotation at distance
-            Vector3 targetRot = path.GetRotationAtDistance(distance, EndOfPathInstruction.Stop).eulerAngles;
+            Vector3 targetRot = path.GetRotationAtDistance(Distance, EndOfPathInstruction.Stop).eulerAngles;
 
             // Neutrilize X and Z
             targetRot.x = transform.rotation.eulerAngles.x;
@@ -82,27 +67,69 @@ namespace GD3D
         }
 
 #if UNITY_EDITOR
+        private void Reset()
+        {
+            justCreated = true;
+
+            if (pathCreator != null && subcribed)
+            {
+                subcribed = false;
+                pathCreator.pathUpdated -= UpdatePosition;
+            }
+        }
+
+        [SerializeField, HideInInspector]
+        private bool justCreated = true;
+        [SerializeField, HideInInspector]
+        private bool subcribed = false;
+
+        [SerializeField, HideInInspector]
+        private float oldDistance = 0;
+
+        [SerializeField, HideInInspector]
+        private float oldZOffset = 0;
+        [SerializeField, HideInInspector]
+        private Vector3 oldPos = Vector3.zero;
+
         [CustomEditor(typeof(AttachToPath))]
+        [CanEditMultipleObjects]
         public class AttachToPathEditor : Editor
         {
             private AttachToPath attachToPath;
 
             public override void OnInspectorGUI()
             {
-                EditorGUI.BeginChangeCheck();
+
+                if (attachToPath.pathCreator != null)
+                {
+                    EditorGUI.BeginChangeCheck();
+                }
 
                 base.OnInspectorGUI();
 
+                GUILayout.Space(5);
+
+                if (GUILayout.Button("Editor Reset"))
+                {
+                    attachToPath.Reset();
+                    OnEnable();
+                }
+
+                if (attachToPath.pathCreator == null)
+                {
+                    return;
+                }
+
                 if (EditorGUI.EndChangeCheck() || attachToPath.Transform.position != attachToPath.oldPos)
                 {
-                    if (attachToPath.zOffset == attachToPath.oldZOffset && attachToPath.distance == attachToPath.oldDistance)
+                    if (attachToPath.zOffset == attachToPath.oldZOffset && attachToPath.Distance == attachToPath.oldDistance)
                     {
                         Update();
                     }
                     else
                     {
                         attachToPath.oldZOffset = attachToPath.zOffset;
-                        attachToPath.oldDistance = attachToPath.distance;
+                        attachToPath.oldDistance = attachToPath.Distance;
 
                         attachToPath.UpdatePosition();
                     }
@@ -117,21 +144,7 @@ namespace GD3D
 
                 if (attachToPath.justCreated)
                 {
-                    attachToPath.pathCreator = FindObjectOfType<PathCreator>();
-
-                    if (attachToPath.pathCreator == null)
-                    {
-                        Debug.Log("There is no Path Creator in the scene!");
-                        return;
-                    }
-                    
-                    attachToPath.oldPos = attachToPath.Transform.position;
-                    attachToPath.justCreated = false;
-
-                    attachToPath.oldZOffset = attachToPath.zOffset;
-                    attachToPath.oldDistance = attachToPath.distance;
-
-                    Update();
+                    JustCreated();
                 }
 
                 if (attachToPath.pathCreator != null && !attachToPath.subcribed)
@@ -141,9 +154,27 @@ namespace GD3D
                 }
             }
 
+            private void JustCreated()
+            {
+                attachToPath.pathCreator = FindObjectOfType<PathCreator>();
+
+                if (attachToPath.pathCreator == null)
+                {
+                    return;
+                }
+
+                attachToPath.oldPos = attachToPath.Transform.position;
+                attachToPath.justCreated = false;
+
+                attachToPath.oldZOffset = attachToPath.zOffset;
+                attachToPath.oldDistance = attachToPath.Distance;
+
+                Update();
+            }
+
             private void Update()
             {
-                attachToPath.distance = attachToPath.path.GetClosestDistanceAlongPath(attachToPath.Transform.position);
+                attachToPath.Distance = attachToPath.path.GetClosestDistanceAlongPath(attachToPath.Transform.position);
                 attachToPath.UpdatePosition();
             }
 

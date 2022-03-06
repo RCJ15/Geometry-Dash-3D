@@ -46,6 +46,8 @@ namespace GD3D.Player
             base.OnEnable();
 
             ResetRotation();
+
+            _jumpCooldownTimer = 0;
         }
 
         public override void OnDisable()
