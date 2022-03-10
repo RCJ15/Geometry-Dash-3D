@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using GD3D.ObjectPooling;
 
 namespace GD3D.Player
 {
@@ -10,12 +11,16 @@ namespace GD3D.Player
     /// </summary>
     public class PlayerSpawn : PlayerScript
     {
-        [SerializeField] private GameObject respawnRing;
+        [SerializeField] private int poolSize = 4;
+        private ObjectPool<PoolObject> pool;
+
+        [SerializeField] private PoolObject respawnRing;
 
         [SerializeField] private float respawnTime;
 
         [SerializeField] private TMP_Text attemptText;
         private int _currentAttempt = 1;
+        public int CurrentAttemp => _currentAttempt;
 
         /// <summary>
         /// Start is called before the first frame update
@@ -26,6 +31,27 @@ namespace GD3D.Player
 
             // Subscribe to the OnDeath event
             player.OnDeath += OnDeath;
+
+            // Setup the respawnRing obj by creating a copy and setting the copy
+            GameObject obj = Instantiate(respawnRing.gameObject, transform.position, Quaternion.identity, transform);
+            obj.transform.position = _transform.position;
+
+            // Change the line renderers color
+            LineRenderer lr = obj.GetComponent<LineRenderer>();
+            lr.startColor = PlayerColor1;
+            lr.endColor = PlayerColor1;
+
+            // Create pool
+            pool = new ObjectPool<PoolObject>(obj, poolSize,
+                (poolObj) =>
+                {
+                    poolObj.transform.SetParent(_transform);
+                    poolObj.transform.localPosition = Vector3.zero;
+                }
+            );
+
+            // Destroy the newly created object because we have no use out of it anymore
+            Destroy(obj);
         }
 
         /// <summary>
@@ -104,18 +130,13 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Spawns a respawn ring with the right color
+        /// Spawns a respawn ring (duh)
         /// </summary>
         private void SpawnRespawnRing()
         {
-            // Create the ring
-            GameObject obj = Instantiate(respawnRing, transform.position, Quaternion.identity, transform);
-            obj.transform.localPosition = Vector3.zero;
-
-            // Change the line renderers color
-            LineRenderer lr = obj.GetComponent<LineRenderer>();
-            lr.startColor = PlayerColor1;
-            lr.endColor = PlayerColor1;
+            // Spawn the ring
+            PoolObject obj = pool.SpawnFromPool(_transform.position);
+            obj.RemoveAfterTime(0.5f);
         }
     }
 }

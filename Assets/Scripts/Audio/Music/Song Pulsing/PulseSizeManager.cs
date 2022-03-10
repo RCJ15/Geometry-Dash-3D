@@ -72,7 +72,7 @@ namespace GD3D.Audio.Pulsing
             }
 
             // Map the new size
-            float newSize = MathE.Map(minVolume, maxVolume, minSize, maxSize, vol);
+            float newSize = Helpers.Map(minVolume, maxVolume, minSize, maxSize, vol);
             
             // Only set the new size if it's bigger than the old size
             if (newSize > _currentSize)

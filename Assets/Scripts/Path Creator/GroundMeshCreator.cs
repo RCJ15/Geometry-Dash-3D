@@ -26,6 +26,8 @@ namespace GD3D
 
         [SerializeField] private float textureTiling = 1;
 
+        private Dictionary<string, Mesh> oldMeshes = new Dictionary<string, Mesh>();
+
         [SerializeField, HideInInspector]
         private GameObject meshHolder;
 
@@ -51,25 +53,15 @@ namespace GD3D
             meshRenderer = meshHolder.GetComponent<MeshRenderer>();
             extendedSidesMeshRenderer = extendedSidesMeshHolder.GetComponent<MeshRenderer>();
 
-            // Create new materials for the top, bottom and sides by cloning the original materials
-            Material topMat = new Material(groundTopMaterial);
-            Material bottomMat = new Material(groundBottomMaterial);
-            Material sidesMat = new Material(sidesMaterial);
-            Material sidesExtendedMat = new Material(extendedSidesMaterial);
-
-            // Apply new materials
-            meshRenderer.materials = new Material[] { topMat, bottomMat, sidesMat };
-            extendedSidesMeshRenderer.materials = new Material[] { sidesExtendedMat };
-
             // Calculate the texture tiling
             float length = path.length;
             float tiling = textureTiling;
 
-            topMat.mainTextureScale = new Vector2(width / tiling, length / tiling);
+            meshRenderer.materials[0].mainTextureScale = new Vector2(width / tiling, length / tiling);
 
-            sidesMat.mainTextureScale = new Vector2(length / tiling, height / tiling);
+            meshRenderer.materials[2].mainTextureScale = new Vector2(length / tiling, height / tiling);
 
-            sidesExtendedMat.mainTextureScale = new Vector2(length / tiling, extendedHeight / tiling);
+            extendedSidesMeshRenderer.material.mainTextureScale = new Vector2(length / tiling, extendedHeight / tiling);
         }
 
         protected override void PathUpdated()
@@ -299,7 +291,22 @@ namespace GD3D
 
             if (mesh == null)
             {
+                if (oldMeshes.ContainsKey(name))
+                {
+                    DestroyImmediate(oldMeshes[name]);
+                }
+
                 mesh = new Mesh();
+                mesh.name = gameObject.name + " Mesh";
+
+                if (oldMeshes.ContainsKey(name))
+                {
+                    oldMeshes[name] = mesh;
+                }
+                else
+                {
+                    oldMeshes.Add(name, mesh);
+                }
             }
 
             meshFilter.sharedMesh = mesh;

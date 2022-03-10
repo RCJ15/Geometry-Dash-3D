@@ -94,6 +94,26 @@ namespace QuickOutline
 
         void Awake()
         {
+            // Add this to make meshes with mutliple sub meshes work
+            foreach (var skinnedMeshRenderer in GetComponentsInChildren<SkinnedMeshRenderer>())
+            {
+                if (skinnedMeshRenderer.sharedMesh.subMeshCount > 1)
+                {
+                    skinnedMeshRenderer.sharedMesh.subMeshCount++;
+                    skinnedMeshRenderer.sharedMesh.SetTriangles(skinnedMeshRenderer.sharedMesh.triangles, skinnedMeshRenderer.sharedMesh.subMeshCount - 1);
+                }
+            }
+
+            foreach (var meshFilter in GetComponentsInChildren<MeshFilter>())
+            {
+                // Must use mesh not sharedMesh otherwise unity will litterally freaking crash god this gave me headache i hate ajkdbyhujkcdgyghxcujyhklb.adsihuasdoöij
+                // This has been your daily dosage of programmer pain :)
+                if (meshFilter.mesh.subMeshCount > 1)
+                {
+                    meshFilter.mesh.subMeshCount++;
+                    meshFilter.mesh.SetTriangles(meshFilter.sharedMesh.triangles, meshFilter.sharedMesh.subMeshCount - 1);
+                }
+            }
 
             // Cache renderers
             renderers = GetComponentsInChildren<Renderer>();

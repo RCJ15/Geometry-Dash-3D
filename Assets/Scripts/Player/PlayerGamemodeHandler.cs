@@ -15,6 +15,7 @@ namespace GD3D.Player
         public Gamemode CurrentGamemode;
 
         public bool upsideDown;
+        private bool startUpsideDown;
         private bool oldUpsideDown;
 
         public Action<bool> OnChangeGravity;
@@ -52,6 +53,9 @@ namespace GD3D.Player
             _startGamemode = CurrentGamemode;
             ChangeGamemode(_startGamemode);
 
+            // Set start values
+            startUpsideDown = upsideDown;
+
             // Subscribe to events
             player.OnDeath += OnDeath;
             player.OnRespawn += OnRespawn;
@@ -62,9 +66,9 @@ namespace GD3D.Player
         /// </summary>
         private void OnDeath()
         {
+            upsideDown = startUpsideDown;
+            
             _activeGamemodeScript.OnDeath();
-
-            ChangeGamemode(_startGamemode);
         }
 
         /// <summary>
@@ -73,6 +77,8 @@ namespace GD3D.Player
         private void OnRespawn()
         {
             _activeGamemodeScript.OnRespawn();
+
+            ChangeGamemode(_startGamemode);
         }
 
         /// <summary>

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1724722748292280658}
-  - component: {fileID: 1724722748292280659}
+  - component: {fileID: 1753037245880026253}
   - component: {fileID: 1724722748292280656}
   - component: {fileID: 1724722748292280657}
   - component: {fileID: 1724722748292280669}
@@ -34,7 +34,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1724722748292280659
+--- !u!114 &1753037245880026253
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -43,13 +43,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 1724722748292280662}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e4dec3f15c479a42881ed21c2694287, type: 3}
+  m_Script: {fileID: 11500000, guid: 488dd66034721f542901279a230102d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Lifetime: 0.2
-  ObjectsToKill: []
-  UnscaledTime: 0
-  KillThisObject: 1
+  OnSpawnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1724722748292280669}
+        m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
+        m_MethodName: SetTrigger
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Respawn
+          m_BoolArgument: 0
+        m_CallState: 2
+  PoolKey: 
 --- !u!120 &1724722748292280656
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -158,7 +170,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a4073f4b59d09e408a4111ec79b6716, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _points: 100
+  _points: 15
   _ringSize: 2
   _lookAtCamera: 1
   _updateMode: 2

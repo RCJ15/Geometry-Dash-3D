@@ -27,6 +27,8 @@ namespace GD3D
         private MeshRenderer meshRenderer;
         private Mesh mesh;
 
+        private Mesh oldMesh;
+
         private void Awake()
         {
 #if UNITY_EDITOR
@@ -38,17 +40,11 @@ namespace GD3D
             meshRenderer = meshHolder.GetComponent<MeshRenderer>();
             meshFilter = meshHolder.GetComponent<MeshFilter>();
 
-            // Create new materials for the top, bottom and sides by cloning the original materials
-            Material newMat = new Material(material);
-
-            // Apply new materials
-            meshRenderer.materials = new Material[] { newMat };
-
             // Calculate the side texture tiling
             float length = path.length;
             float tiling = textureTiling;
 
-            newMat.mainTextureScale = new Vector2(length / tiling, height / tiling);
+            meshRenderer.material.mainTextureScale = new Vector2(length / tiling, height / tiling);
         }
 
         protected override void PathUpdated()
@@ -229,7 +225,15 @@ namespace GD3D
 
             if (mesh == null)
             {
+                if (oldMesh != null)
+                {
+                    DestroyImmediate(oldMesh);
+                }
+
                 mesh = new Mesh();
+                mesh.name = gameObject.name + " Mesh";
+
+                oldMesh = mesh;
             }
 
             meshFilter.sharedMesh = mesh;

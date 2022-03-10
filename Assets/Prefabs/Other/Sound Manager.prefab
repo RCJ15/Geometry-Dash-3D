@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076e5f11c42776947938dfed15a0afb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sounds:
+  sounds:
   - name: Achievement
     clip: {fileID: 8300000, guid: 29d09b00561ae514c93e97b9c5956958, type: 3}
     soundVolume: 1
@@ -108,9 +108,10 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: a3ef64a8f779214429bccce0c34c0463, type: 3}
     soundVolume: 1
     pitchSlider: 1
-  _soundGroups: []
-  _maxSounds: 20
-  _soundEffectMixer: {fileID: 0}
-  HaveAutoNaming: 0
+  soundGroups: []
+  poolKey: Sounds
+  maxSounds: 10
+  soundEffectMixer: {fileID: 3151925576109640895, guid: fef739d45b4773644aa3d080ea60b5d4, type: 2}
+  HaveAutoNaming: 1
   FancyAutoNaming: 1
   AudioClipQueue: []

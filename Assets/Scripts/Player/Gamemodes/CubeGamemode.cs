@@ -24,21 +24,14 @@ namespace GD3D.Player
 
         [Header("Effects")]
         [SerializeField] private ParticleSystem slideParticles;
-        [SerializeField] private GameObject jumpParticles;
-        [SerializeField] private GameObject landParticles;
+        [SerializeField] private ParticleSystem jumpParticles;
+        [SerializeField] private ParticleSystem landParticles;
 
         // The time spent in the air per jump is about 0.44 seconds
 
         public override void Start()
         {
             base.Start();
-
-            // Update slide particles color
-            ParticleSystemRenderer slideParticlesRenderer = slideParticles.GetComponent<ParticleSystemRenderer>();
-
-            slideParticlesRenderer.material = new Material(slideParticlesRenderer.material);
-
-            MaterialColorer.UpdateRendererMaterials(slideParticlesRenderer, GamemodeHandler.PlayerColor1, true, true);
         }
 
         public override void OnEnable()
@@ -48,6 +41,12 @@ namespace GD3D.Player
             ResetRotation();
 
             _jumpCooldownTimer = 0;
+
+            // Play Slide particles if on the ground
+            if (onGround)
+            {
+                slideParticles.Play();
+            }
         }
 
         public override void OnDisable()
@@ -114,7 +113,7 @@ namespace GD3D.Player
             _targetRot.y = Mathf.Round(_targetRot.y / 90) * 90;
             _targetRot.z = Mathf.Round(_targetRot.z / 90) * 90;
 
-            Object.Instantiate(landParticles, _transform.position, Quaternion.identity, _transform);
+            landParticles.Play();
 
             // Enable slide particles
             slideParticles.Play();
@@ -170,7 +169,7 @@ namespace GD3D.Player
             // Restart the jump cooldown
             _jumpCooldownTimer = jumpCooldown;
 
-            Object.Instantiate(jumpParticles, _transform.position, Quaternion.identity, _transform);
+            jumpParticles.Play();
         }
 
         public override void OnDeath()

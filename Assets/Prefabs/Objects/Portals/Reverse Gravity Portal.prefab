@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7831111278986586734}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0, z: 0.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7831111279264902317}
@@ -113,6 +113,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7831111278986586733}
+  - {fileID: 1519570603569616111}
+  - {fileID: 6982189548865156854}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -129,13 +131,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   multiTrigger: 0
-  spawnOnEnter: {fileID: 0}
+  spawnEffect: {fileID: 1477620443957660200}
+  flashTime: 0.5
   onEnterPortal:
     m_PersistentCalls:
       m_Calls: []
   updateColors: 1
   color: {r: 1, g: 0.9647059, b: 0.29803923, a: 1}
   mesh: {fileID: 7831111278986586735}
+  particles: {fileID: 385961708059901412}
   materialIndex: 1
   upsideDown: 1
 --- !u!114 &7831111279264902319
@@ -151,7 +155,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pathCreator: {fileID: 0}
-  distance: 231
+  Distance: 0
   zOffset: 0
   yRotationOffset: 0
   justCreated: 0
@@ -170,5 +174,145 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 2.75, y: 4, z: 1}
+  m_Size: {x: 2.75, y: 4.5, z: 0.6}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1001 &627049969640095273
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 7831111279264902317}
+    m_Modifications:
+    - target: {fileID: 2136152947610200774, guid: 7dfabb69b47b57641b5f44e3ee08f9c6, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2136152947610200774, guid: 7dfabb69b47b57641b5f44e3ee08f9c6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2136152947610200774, guid: 7dfabb69b47b57641b5f44e3ee08f9c6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2136152947610200774, guid: 7dfabb69b47b57641b5f44e3ee08f9c6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2136152947610200774, guid: 7dfabb69b47b57641b5f44e3ee08f9c6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2136152947610200774, guid: 7dfabb69b47b57641b5f44e3ee08f9c6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2136152947610200774, guid: 7dfabb69b47b57641b5f44e3ee08f9c6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2136152947610200774, guid: 7dfabb69b47b57641b5f44e3ee08f9c6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2136152947610200774, guid: 7dfabb69b47b57641b5f44e3ee08f9c6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2136152947610200774, guid: 7dfabb69b47b57641b5f44e3ee08f9c6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2136152947610200774, guid: 7dfabb69b47b57641b5f44e3ee08f9c6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3727218570854948115, guid: 7dfabb69b47b57641b5f44e3ee08f9c6, type: 3}
+      propertyPath: m_Name
+      value: Portal Sucking Particles
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7dfabb69b47b57641b5f44e3ee08f9c6, type: 3}
+--- !u!4 &1519570603569616111 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2136152947610200774, guid: 7dfabb69b47b57641b5f44e3ee08f9c6, type: 3}
+  m_PrefabInstance: {fileID: 627049969640095273}
+  m_PrefabAsset: {fileID: 0}
+--- !u!199 &385961708059901412 stripped
+ParticleSystemRenderer:
+  m_CorrespondingSourceObject: {fileID: 1002205402248577997, guid: 7dfabb69b47b57641b5f44e3ee08f9c6, type: 3}
+  m_PrefabInstance: {fileID: 627049969640095273}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &5429511361873165695
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 7831111279264902317}
+    m_Modifications:
+    - target: {fileID: 3151613431718136713, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3151613431718136713, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3151613431718136713, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3151613431718136713, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3151613431718136713, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3151613431718136713, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3151613431718136713, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3151613431718136713, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3151613431718136713, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3151613431718136713, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3151613431718136713, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3151613431718136715, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
+      propertyPath: m_Name
+      value: Portal Enter Effect
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
+--- !u!4 &6982189548865156854 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3151613431718136713, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
+  m_PrefabInstance: {fileID: 5429511361873165695}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1477620443957660200 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6906534074951022423, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
+  m_PrefabInstance: {fileID: 5429511361873165695}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a17d1ad30cccc52449f560dce3e677b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

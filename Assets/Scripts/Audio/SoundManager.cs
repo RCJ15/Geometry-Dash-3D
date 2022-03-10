@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
+using GD3D.ObjectPooling;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -18,13 +19,15 @@ namespace GD3D.Audio
         public static SoundManager Instance;
 
         [Header("Sounds")]
-        [SerializeField] internal Sound[] _sounds;
-        [SerializeField] internal SoundGroup[] _soundGroups;
+        [SerializeField] internal Sound[] sounds;
+        [SerializeField] internal SoundGroup[] soundGroups;
 
         [Header("Other Stuff")]
-        [SerializeField] private int _maxSounds = 20;
+        [SerializeField] private int maxSounds = 50;
+        private ObjectPool<SoundObject> pool;
 
-        [SerializeField] private AudioMixerGroup _soundEffectMixer;
+        [Space]
+        [SerializeField] private AudioMixerGroup soundEffectMixer;
 
 #if UNITY_EDITOR
         // Auto Naming
@@ -42,6 +45,15 @@ namespace GD3D.Audio
         {
             // Set the instance
             Instance = this;
+
+            // Create a new GameObject and use it as the sound template when we create the pool
+            GameObject soundGameObject = new GameObject("Sound");
+
+            soundGameObject.AddComponent<AudioSource>();
+            SoundObject sound = soundGameObject.AddComponent<SoundObject>();
+
+            // Create sound pool
+            pool = new ObjectPool<SoundObject>(sound, maxSounds);
         }
 
         /// <summary>
@@ -62,13 +74,20 @@ namespace GD3D.Audio
         /// Only works if <paramref name="is3D"/> is true.</param>
         public static void PlaySoundClip(AudioClip clip, float volume, float pitch, AudioMixerGroup outputGroup, Vector3 position, bool is3D, Vector2 range, bool playInBothEars = false)
         {
-            // Create a new game object and set it's name, tag and position
-            GameObject sound = new GameObject(clip.name);
-            sound.transform.position = position;
-            sound.tag = "Sound";
+            // Get sound object
+            ObjectPool<SoundObject> pool = Instance.pool;
 
-            // Add a audio source component to the game object and set it to be the right sound options
-            AudioSource audio = sound.AddComponent<AudioSource>();
+            // Don't spawn any sound if the pool is empty (max sounds have been reached)
+            if (pool.IsEmpty())
+            {
+                return;
+            }
+
+            // Spawn a sound from the pool
+            SoundObject sound = pool.SpawnFromPool();
+
+            // Get the AudioSource on the sound and set it to be the right sound options
+            AudioSource audio = sound.GetSource;
             audio.playOnAwake = false;
             audio.clip = clip;
             audio.volume = volume;
@@ -80,15 +99,7 @@ namespace GD3D.Audio
             audio.maxDistance = range.y;
 
             // Play the sound
-            audio.Play();
-
-            // Add a kill script to the sound to destroy the sound after it's finished playing
-            // This makes sure there aren't any empty game objects taking up precious space
-            KillObjectsAfterTime killScript = sound.AddComponent<KillObjectsAfterTime>();
-            killScript.UnscaledTime = true;
-
-            // Set the time to kill to be the sounds lenght and also add 0.01 seconds just to be safe
-            killScript.Lifetime = clip.length + 0.01f;
+            sound.Play();
         }
 
         /// <summary>
@@ -107,7 +118,7 @@ namespace GD3D.Audio
         /// Only works if <paramref name="is3D"/> is true.</param>
         /// <param name="isGroupedSound">This will make the audio clip be a sound group instead of a regular single sound.<para/>
         /// A grouped sound is instead a collection of mutliple sounds, all in the same list.<para/>
-        /// This also means that this method will search in <see cref="_soundGroups"/> instead of <see cref="_sounds"/> instead.</param>
+        /// This also means that this method will search in <see cref="soundGroups"/> instead of <see cref="sounds"/> instead.</param>
         /// <returns>If the sound was played successfully or not.</returns>
         public static bool PlaySound(string name, Vector3 position, float pitch, bool is3D, Vector2 range, bool playInBothEars, bool isGroupedSound)
         {
@@ -126,12 +137,6 @@ namespace GD3D.Audio
                 return false;
             }
 
-            // If the limit of sounds have been reached then return
-            if (GameObject.FindGameObjectsWithTag("Sound").Length >= soundManager._maxSounds)
-            {
-                return false;
-            }
-
             // Create a new temporary volume variable.
             float volume = 0;
 
@@ -141,7 +146,7 @@ namespace GD3D.Audio
             // If it's a group sound, search for the sound in sound groups
             if (isGroupedSound)
             {
-                foreach (SoundGroup s in soundManager._soundGroups)
+                foreach (SoundGroup s in soundManager.soundGroups)
                 {
                     // Check if the names are the same. If it is then the right sound has been found!
                     if (s.groupName == name)
@@ -157,7 +162,7 @@ namespace GD3D.Audio
             // If it's not a grouped sound, then search in regular sounds instead
             else
             {
-                foreach (Sound s in soundManager._sounds)
+                foreach (Sound s in soundManager.sounds)
                 {
                     // Check if the names are the same. If it is then the right sound has been found!
                     if (s.name == name)
@@ -178,7 +183,7 @@ namespace GD3D.Audio
             }
 
             // Play the sound
-            PlaySoundClip(clip, volume, pitch, soundManager._soundEffectMixer, position, is3D, range, playInBothEars);
+            PlaySoundClip(clip, volume, pitch, soundManager.soundEffectMixer, position, is3D, range, playInBothEars);
 
             // The sound was successfully played!
             return true;
@@ -190,7 +195,7 @@ namespace GD3D.Audio
         /// <param name="name">The name of the sound. Be warned that this is case sensitive.</param>
         /// <param name="isGroupedSound">This will make the audio clip be a sound group instead of a regular single sound.<para/>
         /// A grouped sound is instead a collection of mutliple sounds, all in the same list.<para/>
-        /// This also means that this method will search in <see cref="_soundGroups"/> instead of <see cref="_sounds"/> instead.</param>
+        /// This also means that this method will search in <see cref="soundGroups"/> instead of <see cref="sounds"/> instead.</param>
         /// <returns>If the sound was played successfully or not.</returns>
         public static bool PlaySound(string name, bool isGroupedSound = false)
         {
@@ -204,7 +209,7 @@ namespace GD3D.Audio
         /// <param name="pitch">The pitch of the sound.</param>
         /// <param name="isGroupedSound">This will make the audio clip be a sound group instead of a regular single sound.<para/>
         /// A grouped sound is instead a collection of mutliple sounds, all in the same list.<para/>
-        /// This also means that this method will search in <see cref="_soundGroups"/> instead of <see cref="_sounds"/> instead.</param>
+        /// This also means that this method will search in <see cref="soundGroups"/> instead of <see cref="sounds"/> instead.</param>
         /// <returns>If the sound was played successfully or not.</returns>
         public static bool PlaySound(string name, float pitch, bool isGroupedSound = false)
         {
@@ -221,7 +226,7 @@ namespace GD3D.Audio
         /// <param name="playInBothEars">If the sound should be able to play in both ears.</param>
         /// <param name="isGroupedSound">This will make the audio clip be a sound group instead of a regular single sound.<para/>
         /// A grouped sound is instead a collection of mutliple sounds, all in the same list.<para/>
-        /// This also means that this method will search in <see cref="_soundGroups"/> instead of <see cref="_sounds"/> instead.</param>
+        /// This also means that this method will search in <see cref="soundGroups"/> instead of <see cref="sounds"/> instead.</param>
         /// <returns>If the sound was played successfully or not.</returns>
         public static bool PlaySound(string name, Vector3 position, Vector2 range, bool playInBothEars = false, bool isGroupedSound = false)
         {
@@ -239,7 +244,7 @@ namespace GD3D.Audio
         /// <param name="playInBothEars">If the sound should be able to play in both ears.</param>
         /// <param name="isGroupedSound">This will make the audio clip be a sound group instead of a regular single sound.<para/>
         /// A grouped sound is instead a collection of mutliple sounds, all in the same list.<para/>
-        /// This also means that this method will search in <see cref="_soundGroups"/> instead of <see cref="_sounds"/> instead.</param>
+        /// This also means that this method will search in <see cref="soundGroups"/> instead of <see cref="sounds"/> instead.</param>
         /// <returns>If the sound was played successfully or not.</returns>
         public static bool PlaySound(string name, Vector3 position, float pitch, Vector2 range, bool playInBothEars = false, bool isGroupedSound = false)
         {
@@ -333,9 +338,9 @@ namespace GD3D.Audio
                 Undo.RecordObject(soundManager, "Auto name all Sounds");
 
                 // First change single sounds
-                List<Sound> newSoundList = soundManager._sounds.ToList();
+                List<Sound> newSoundList = soundManager.sounds.ToList();
 
-                foreach (Sound sound in soundManager._sounds)
+                foreach (Sound sound in soundManager.sounds)
                 {
                     if (sound.clip != null)
                     {
@@ -343,12 +348,12 @@ namespace GD3D.Audio
                     }
                 }
 
-                soundManager._sounds = newSoundList.ToArray();
+                soundManager.sounds = newSoundList.ToArray();
 
                 // Second change group sounds
-                List<SoundGroup> newSoundGroupList = soundManager._soundGroups.ToList();
+                List<SoundGroup> newSoundGroupList = soundManager.soundGroups.ToList();
 
-                foreach (SoundGroup soundGroup in soundManager._soundGroups)
+                foreach (SoundGroup soundGroup in soundManager.soundGroups)
                 {
                     for (int i = 0; i < soundGroup.clips.Length; i++)
                     {
@@ -359,7 +364,7 @@ namespace GD3D.Audio
                     }
                 }
 
-                soundManager._soundGroups = newSoundGroupList.ToArray();
+                soundManager.soundGroups = newSoundGroupList.ToArray();
             }
 
             if (GUILayout.Button("Remove all duplicate names"))
@@ -367,10 +372,10 @@ namespace GD3D.Audio
                 Undo.RecordObject(soundManager, "Remove all duplicates");
 
                 // First single sounds
-                List<Sound> newSoundList = soundManager._sounds.ToList();
+                List<Sound> newSoundList = soundManager.sounds.ToList();
                 List<string> registeredNames = new List<string>();
 
-                foreach (Sound sound in soundManager._sounds)
+                foreach (Sound sound in soundManager.sounds)
                 {
                     if (registeredNames.Contains(sound.name))
                     {
@@ -382,13 +387,13 @@ namespace GD3D.Audio
                     }
                 }
 
-                soundManager._sounds = newSoundList.ToArray();
+                soundManager.sounds = newSoundList.ToArray();
 
                 // Second group sounds
-                List<SoundGroup> newSoundGroupList = soundManager._soundGroups.ToList();
+                List<SoundGroup> newSoundGroupList = soundManager.soundGroups.ToList();
                 List<string> registeredGroupNames = new List<string>();
 
-                foreach (SoundGroup soundGroup in soundManager._soundGroups)
+                foreach (SoundGroup soundGroup in soundManager.soundGroups)
                 {
                     if (registeredGroupNames.Contains(soundGroup.groupName))
                     {
@@ -400,7 +405,7 @@ namespace GD3D.Audio
                     }
                 }
 
-                soundManager._soundGroups = newSoundGroupList.ToArray();
+                soundManager.soundGroups = newSoundGroupList.ToArray();
             }
 
             if (GUILayout.Button("Remove all null clips"))
@@ -408,9 +413,9 @@ namespace GD3D.Audio
                 Undo.RecordObject(soundManager, "Remove all null clips");
 
                 // First single sounds
-                List<Sound> newSoundList = soundManager._sounds.ToList();
+                List<Sound> newSoundList = soundManager.sounds.ToList();
 
-                foreach (Sound sound in soundManager._sounds)
+                foreach (Sound sound in soundManager.sounds)
                 {
                     if (sound.clip == null)
                     {
@@ -418,10 +423,10 @@ namespace GD3D.Audio
                     }
                 }
 
-                soundManager._sounds = newSoundList.ToArray();
+                soundManager.sounds = newSoundList.ToArray();
 
                 // Second group sounds
-                foreach (SoundGroup soundGroup in soundManager._soundGroups)
+                foreach (SoundGroup soundGroup in soundManager.soundGroups)
                 {
                     List<AudioClip> newClips = soundGroup.clips.ToList();
 
@@ -448,7 +453,7 @@ namespace GD3D.Audio
             {
                 Undo.RecordObject(soundManager, "Added audio clip queue as seperate single sounds");
 
-                List<Sound> newSoundList = soundManager._sounds.ToList();
+                List<Sound> newSoundList = soundManager.sounds.ToList();
 
                 foreach (AudioClip clip in soundManager.AudioClipQueue)
                 {
@@ -466,7 +471,7 @@ namespace GD3D.Audio
                     newSoundList.Add(newSound);
                 }
 
-                soundManager._sounds = newSoundList.ToArray();
+                soundManager.sounds = newSoundList.ToArray();
 
                 soundManager.AudioClipQueue.Clear();
             }
@@ -475,7 +480,7 @@ namespace GD3D.Audio
             {
                 Undo.RecordObject(soundManager, "Added audio clip queue as one single sound group");
 
-                List<SoundGroup> newSoundGroupList = soundManager._soundGroups.ToList();
+                List<SoundGroup> newSoundGroupList = soundManager.soundGroups.ToList();
 
                 List<AudioClip> newClips = new List<AudioClip>();
 
@@ -497,7 +502,7 @@ namespace GD3D.Audio
 
                 newSoundGroupList.Add(newSoundGroup);
 
-                soundManager._soundGroups = newSoundGroupList.ToArray();
+                soundManager.soundGroups = newSoundGroupList.ToArray();
 
                 soundManager.AudioClipQueue.Clear();
             }
@@ -519,12 +524,12 @@ namespace GD3D.Audio
         private void OnChange()
         {
             // Check if the length has changed
-            if (oldSoundLength != soundManager._sounds.Length)
+            if (oldSoundLength != soundManager.sounds.Length)
             {
                 // Check if sounds have been added (the new length is longer than the old)
-                if (soundManager._sounds.Length > oldSoundLength)
+                if (soundManager.sounds.Length > oldSoundLength)
                 {
-                    Sound newSound = soundManager._sounds[soundManager._sounds.Length - 1];
+                    Sound newSound = soundManager.sounds[soundManager.sounds.Length - 1];
 
                     if (string.IsNullOrEmpty(newSound.name) && newSound.clip == null && newSound.soundVolume == 0 && newSound.pitchSlider == 0)
                     {
@@ -535,16 +540,16 @@ namespace GD3D.Audio
                 }
 
                 // Set new length
-                oldSoundLength = soundManager._sounds.Length;
+                oldSoundLength = soundManager.sounds.Length;
             }
 
             // Check if the length has changed
-            if (oldSoundGroupLength != soundManager._soundGroups.Length)
+            if (oldSoundGroupLength != soundManager.soundGroups.Length)
             {
                 // Check if sounds have been added (the new length is longer than the old)
-                if (soundManager._soundGroups.Length > oldSoundGroupLength)
+                if (soundManager.soundGroups.Length > oldSoundGroupLength)
                 {
-                    SoundGroup newSoundGroup = soundManager._soundGroups[soundManager._soundGroups.Length - 1];
+                    SoundGroup newSoundGroup = soundManager.soundGroups[soundManager.soundGroups.Length - 1];
 
                     if (string.IsNullOrEmpty(newSoundGroup.groupName) && newSoundGroup.clips.Length <= 0 && newSoundGroup.soundVolume == 0 && newSoundGroup.pitchSlider == 0)
                     {
@@ -555,18 +560,18 @@ namespace GD3D.Audio
                 }
 
                 // Set new length
-                oldSoundGroupLength = soundManager._soundGroups.Length;
+                oldSoundGroupLength = soundManager.soundGroups.Length;
             }
 
             // Check if auto naming is enabled
             if (soundManager.HaveAutoNaming)
             {
-                if (soundManager._sounds.Length >= 1)
+                if (soundManager.sounds.Length >= 1)
                 {
                     // Loop through all sounds and check for the specific sound that has had a clip name change
-                    for (int i = 0; i < soundManager._sounds.Length; i++)
+                    for (int i = 0; i < soundManager.sounds.Length; i++)
                     {
-                        Sound newSound = soundManager._sounds[i];
+                        Sound newSound = soundManager.sounds[i];
 
                         if (newSound.clip == null)
                             continue;
@@ -592,7 +597,7 @@ namespace GD3D.Audio
 
                     // Update names
                     oldSoundClipNames.Clear();
-                    foreach (Sound sound in soundManager._sounds)
+                    foreach (Sound sound in soundManager.sounds)
                     {
                         if (sound.clip != null)
                         {
@@ -605,12 +610,12 @@ namespace GD3D.Audio
                     }
                 }
 
-                if (soundManager._soundGroups.Length >= 1)
+                if (soundManager.soundGroups.Length >= 1)
                 {
                     // Loop through all sound groups and check for the specific sound that has had a clip name change
-                    for (int i = 0; i < soundManager._soundGroups.Length; i++)
+                    for (int i = 0; i < soundManager.soundGroups.Length; i++)
                     {
-                        SoundGroup newSound = soundManager._soundGroups[i];
+                        SoundGroup newSound = soundManager.soundGroups[i];
 
                         if (i > oldSoundGroupsClipNames.Count - 1 || newSound.clips.Length <= 0)
                         {
@@ -650,13 +655,13 @@ namespace GD3D.Audio
 
                     // Update names
                     oldSoundGroupsClipNames.Clear();
-                    for (int i = 0; i < soundManager._soundGroups.Length; i++)
+                    for (int i = 0; i < soundManager.soundGroups.Length; i++)
                     {
                         oldSoundGroupsClipNames.Add(new List<string>());
 
-                        for (int c = 0; c < soundManager._soundGroups[i].clips.Length; c++)
+                        for (int c = 0; c < soundManager.soundGroups[i].clips.Length; c++)
                         {
-                            AudioClip clip = soundManager._soundGroups[i].clips[c];
+                            AudioClip clip = soundManager.soundGroups[i].clips[c];
 
                             if (clip == null)
                             {
@@ -687,7 +692,7 @@ namespace GD3D.Audio
 
             newName = AddSpacesToSentence(newName);
 
-            newName = MathE.FirstLettersUpper(newName);
+            newName = Helpers.FirstLettersUpper(newName);
 
             // Remove numbers at the end
             int stepsGoneBack = 1;

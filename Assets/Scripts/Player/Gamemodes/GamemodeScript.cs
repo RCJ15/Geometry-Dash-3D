@@ -41,22 +41,34 @@ namespace GD3D.Player
         /// <summary>
         /// Shortcut for getting "upsideDown"
         /// </summary>
-        internal bool upsideDown => GamemodeHandler.upsideDown;
-        internal float upsideDownMultiplier => upsideDown ? -1 : 1;
+        protected bool upsideDown => GamemodeHandler.upsideDown;
+        /// <summary>
+        /// Will return -1 if the player is upside down, otherwise it'll be 1. Multiply stuff with this for upside down behaviour
+        /// </summary>
+        protected float upsideDownMultiplier => upsideDown ? -1 : 1;
 
         /// <summary>
-        /// Shortcut for setting and getting "rb.velocity.y"
+        /// Shortcut for setting and getting the <see cref="PlayerScript.rb"/> Y velocity
         /// </summary>
-        internal float YVelocity
+        protected float YVelocity
         {
             get => GamemodeHandler.YVelocity;
             set => GamemodeHandler.YVelocity = value;
         }
 
         /// <summary>
-        /// Shortcut for getting "p.dead"
+        /// Shortcut for getting <see cref="PlayerMain.dead"/>
         /// </summary>
-        internal bool dead => Player.dead;
+        protected bool dead => Player.dead;
+
+        /// <summary>
+        /// Shortcut for getting and setting <see cref="PlayerTrailManager.HaveTrail"/>
+        /// </summary>
+        protected bool HaveTrail
+        {
+            get => PlayerTrailManager.HaveTrail;
+            set => PlayerTrailManager.HaveTrail = value;
+        }
 
         /// <summary>
         /// Start is called before the first frame update
@@ -72,6 +84,15 @@ namespace GD3D.Player
         /// </summary>
         public virtual void OnEnable()
         {
+            // Fix trials being active through portals n stuff
+            UpdateTrail();
+
+            // Special case for special object trail mode
+            if (trailMode == TrailMode.specialObjects)
+            {
+                HaveTrail = false;
+            }
+
             // Call OnChangeGravity in case there is a upside down mishap
             OnChangeGravity(upsideDown);
         }
@@ -98,13 +119,28 @@ namespace GD3D.Player
         /// </summary>
         private void UpdateTrail()
         {
-            if (trailMode == TrailMode.never && PlayerTrailManager.HaveTrail)
+            switch (trailMode)
             {
-                PlayerTrailManager.HaveTrail = false;
-            }
-            else if (trailMode == TrailMode.always && !PlayerTrailManager.HaveTrail)
-            {
-                PlayerTrailManager.HaveTrail = true;
+                // Trail is never on, used for no gamemode
+                case TrailMode.never:
+                    HaveTrail = false;
+                    return;
+
+                // Trail is permanent, used for ship
+                case TrailMode.always:
+                    HaveTrail = true;
+                    return;
+
+                // Trail is only on when a special object is interacted with, used for the cube
+                // Interacting with a special object is hitting a jump orb or hitting a jump pad
+                // Portals will enable the trails themselves in their own script (like gravity portals for example)
+                case TrailMode.specialObjects:
+                    // Disable trail if on ground
+                    if (onGround && HaveTrail)
+                    {
+                        HaveTrail = false;
+                    }
+                    return;
             }
         }
 

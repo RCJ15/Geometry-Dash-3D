@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GD3D.ObjectPooling;
 
 namespace GD3D.Player
 {
@@ -14,13 +15,13 @@ namespace GD3D.Player
         private static PlayerTrailManager Instance;
 
         [Header("Trails")]
-        [SerializeField] private int trailAmount = 50;
+        [SerializeField] private int trailAmount = 10;
         [SerializeField] private PlayerTrail[] trailCopyables; // For the different types of trails
+
+        private ObjectPool<PlayerTrail> pool;
 
         private bool _haveTrail = false;
         private PlayerTrail _currentTrail;
-
-        private Queue<PlayerTrail> _trails = new Queue<PlayerTrail>();
 
         /// <summary>
         /// Returns if the player has a trail currently or not. <para/>
@@ -40,14 +41,16 @@ namespace GD3D.Player
             // We don't have a trail and the value is true, so spawn a trail
             if (enable && !_haveTrail)
             {
-                _currentTrail = _trails.Dequeue();
-                _currentTrail.Attach(_transform);
+                // Only spawn trail if the pool isn't empty
+                if (!pool.IsEmpty())
+                {
+                    _currentTrail = pool.SpawnFromPool();
+                }
             }
             // We have a trail currently and the value is false, so remove the current trail
             else if (!enable && _haveTrail && _currentTrail != null)
             {
-                _currentTrail.Detach();
-                _trails.Enqueue(_currentTrail);
+                _currentTrail.DisableTrail();
 
                 _currentTrail = null;
             }
@@ -60,8 +63,6 @@ namespace GD3D.Player
         {
             // Set instance
             Instance = this;
-
-            print("Reminder to use icon customization for this");
         }
 
         public override void Start()
@@ -71,25 +72,16 @@ namespace GD3D.Player
             // Subscribe to events
             player.OnDeath += OnDeath;
 
-            GenerateTrails(trailCopyables[0], trailAmount);
-        }
+            print("Reminder to use icon customization for this");
+            PlayerTrail trailToCopy = trailCopyables[0];
 
-        private void GenerateTrails(PlayerTrail copy, int amount)
-        {
-            for (int i = 0; i < amount; i++)
-            {
-                GameObject newObj = Instantiate(copy.gameObject, _transform.position, Quaternion.identity, null);
-                PlayerTrail newTrail = newObj.GetComponent<PlayerTrail>();
-
-                // Update color
-                newTrail.UpdateColor(PlayerColor2);
-
-                // Disable the trail
-                newTrail.ToggleTrail(false);
-
-                // Add to queue
-                _trails.Enqueue(newTrail);
-            }
+            pool = new ObjectPool<PlayerTrail>(trailToCopy, trailAmount, 
+                (obj) =>
+                {
+                    obj.UpdateColor(PlayerColor2);
+                    obj.ParentTransform = _transform;
+                }
+            );
         }
 
         private void OnDeath()

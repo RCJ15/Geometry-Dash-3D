@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace GD3D
 {
+    /// <summary>
+    /// Kills an object or some objects after a certain amount of given time
+    /// </summary>
     public class KillObjectsAfterTime : MonoBehaviour
     {
         public float Lifetime;
@@ -11,19 +14,17 @@ namespace GD3D
         public bool UnscaledTime;
         public bool KillThisObject = true;
 
-        /// <summary>
-        /// Start is called before the first frame update
-        /// </summary>
-        void Start()
+        private void Start()
         {
             StartCoroutine(Despawn());
         }
 
         /// <summary>
-        /// Starts a timer that'll destroy objects when it runs out
+        /// Starts a timer that'll destroy the object or some objects when it runs out
         /// </summary>
         private IEnumerator Despawn()
         {
+            // Wait
             if (UnscaledTime)
             {
                 yield return new WaitForSecondsRealtime(Lifetime);
@@ -33,11 +34,16 @@ namespace GD3D
                 yield return new WaitForSeconds(Lifetime);
             }
 
-            foreach (GameObject g in ObjectsToKill)
+            // Kill objects in the array (if it has any of course)
+            if (ObjectsToKill.Length > 0)
             {
-                Destroy(g);
+                foreach (GameObject g in ObjectsToKill)
+                {
+                    Destroy(g);
+                }
             }
 
+            // Kill this object
             if (KillThisObject)
             {
                 Destroy(gameObject);

@@ -1,6 +1,8 @@
+using GD3D.Player;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GD3D.Easing;
 
 namespace GD3D.Camera
 {
@@ -12,16 +14,20 @@ namespace GD3D.Camera
     /// </summary>
     public class CameraBehaviour : MonoBehaviour
     {
+        //-- Constants
+        public const float FOV_MIN = 1;
+        public const float FOV_MAX = 179;
+
         //-- Instance
         public static CameraBehaviour Instance;
 
         [Header("Camera Settings")]
-        [SerializeField] private Vector3 generalOffset = new Vector3(6f, 3.5f, 0f);
+        [SerializeField] private Vector3 extraStartOffset = new Vector3(0, -1, 0);
 
-        [Space]
-        public float XOffset;
-        public float ZOffset = -10;
-        public Vector3 Rotation = new Vector3(15, 0, 0);
+        [SerializeField] private Vector3 offset = new Vector3(6, 3.5f, -10);
+        private Vector3 _startOffset;
+
+        [SerializeField] private Vector3 rotation = new Vector3(15, 0, 0);
 
         [Space]
         public Transform Target;
@@ -54,10 +60,16 @@ namespace GD3D.Camera
         private Vector3 _shakeOffset;
 
         //-- Start values
-        private Vector3 startPos;
-        private Quaternion startRot;
+        private Vector3 _startPos;
+        private Quaternion _startRot;
 
         private Transform _transform;
+        private PlayerMain _player;
+
+        //-- Tweens
+        private LTDescr currentOffsetTween;
+        private LTDescr currentRotationTween;
+        private LTDescr currentFovTween;
 
         private void Awake()
         {
@@ -65,22 +77,52 @@ namespace GD3D.Camera
             Instance = this;
 
             _transform = transform;
+
+            // Set the start values for when we want to reset the values back to their original starting value
+            _startOffset = offset;
         }
 
         private void Start()
         {
             // Get references
-            _cam = MathE.Camera;
+            _cam = Helpers.Camera;
 
-            startPos = _transform.position;
-            startRot = _transform.rotation;
+            // Set the start pos and tp to that position immediately cuz otherwise the camera will be weird
+            _startPos = Target.position + offset + extraStartOffset;
+            _transform.position = _startPos;
+            _position = _startPos;
+            _targetPosition = _startPos;
 
-            _position = _transform.position;
+            // Also set start rotation
+            _startRot = _transform.rotation;
+
+            // Get player
+            _player = PlayerMain.Instance;
+
+            // Subscribe to events
+            _player.OnRespawn += OnRespawn;
+        }
+
+        private void OnRespawn()
+        {
+            // Reset position
+            _transform.position = _startPos;
+            _targetPosition = _startPos;
+            _position = _startPos;
+
+            // Reset rotation
+            _transform.rotation = _startRot;
+            rotation = _startRot.eulerAngles;
         }
 
         private void Update()
         {
             UpdateShake();
+        }
+
+        public void ResetOffset()
+        {
+            offset = _startOffset;
         }
 
         private void UpdateShake()
@@ -99,7 +141,7 @@ namespace GD3D.Camera
             if (_frequencyTimer <= 0)
             {
                 // Shake the camera
-                float shakePower = MathE.Map(0, _length, 0, 1, _lengthTimer);
+                float shakePower = Helpers.Map(0, _length, 0, 1, _lengthTimer);
                 _shakeOffset = Random.insideUnitSphere * _strength * shakePower;
 
                 // Reset timer
@@ -125,7 +167,7 @@ namespace GD3D.Camera
             _position.z = _targetPosition.z;
 
             // Set position
-            _transform.position = _position + generalOffset + new Vector3(XOffset, 0, ZOffset) + _shakeOffset;
+            _transform.position = _position + offset + _shakeOffset;
         }
 
         private void FixedUpdate()
@@ -150,10 +192,82 @@ namespace GD3D.Camera
 
             // Lerp towards targetY and targetZ
             _position.y = Mathf.Lerp(_position.y, _targetPosition.y, yLerpDelta);
-
-            // Rotate
-            _transform.rotation = Quaternion.Slerp(_transform.rotation, Quaternion.Euler(Rotation), slerpRotationValue * Time.deltaTime);
         }
+
+        #region Tweening
+        /// <summary>
+        /// Tweens the current offset to the given <paramref name="target"/> offset using the given <paramref name="easingType"/> over the given <paramref name="time"/>.
+        /// </summary>
+        public void TweenOffset(Vector3 target, EasingType easingType, float time)
+        {
+            // Cancel the current tween (if there is one currently)
+            if (currentOffsetTween != null)
+            {
+                currentOffsetTween.cancel();
+            }
+
+            Vector3 startValue = offset;
+
+            // Start the tween
+            currentOffsetTween = LeanTween.value(0, 1, time).
+                SetGDEase(easingType).
+                setOnUpdate((t) =>
+                {
+                    offset = Vector3.Lerp(startValue, target, t);
+                }
+            );
+        }
+
+        /// <summary>
+        /// Tweens the current rotation to the given <paramref name="target"/> rotation using the given <paramref name="easingType"/> over the given <paramref name="time"/>.
+        /// </summary>
+        public void TweenRotation(Vector3 target, EasingType easingType, float time)
+        {
+            // Cancel the current tween (if there is one currently)
+            if (currentRotationTween != null)
+            {
+                currentRotationTween.cancel();
+            }
+
+            Vector3 startValue = rotation;
+
+            // Start the tween
+            currentRotationTween = LeanTween.value(0, 1, time).
+                SetGDEase(easingType).
+                setOnUpdate((t) =>
+                {
+                    rotation = Vector3.Lerp(startValue, target, t);
+
+                    _transform.rotation = Quaternion.Euler(rotation);
+                }
+            );
+        }
+
+        /// <summary>
+        /// Tweens the current FOV to the given <paramref name="target"/> FOV using the given <paramref name="easingType"/> over the given <paramref name="time"/>.
+        /// </summary>
+        public void TweenFov(float target, EasingType easingType, float time)
+        {
+            target = Mathf.Clamp(target, FOV_MIN, FOV_MAX);
+
+            // Cancel the current tween (if there is one currently)
+            if (currentFovTween != null)
+            {
+                currentFovTween.cancel();
+            }
+
+            Vector3 startValue = rotation;
+
+            // Start the tween
+            currentFovTween = LeanTween.value(_cam.fieldOfView, target, time).
+                SetGDEase(easingType).
+                setOnUpdate((t) =>
+                {
+                    _cam.fieldOfView = t;
+                }
+            );
+        }
+        #endregion
 
         /// <summary>
         /// Shakes the camera

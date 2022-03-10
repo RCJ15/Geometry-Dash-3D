@@ -42,6 +42,15 @@ namespace GD3D
             UpdateLines();
         }
 
+        private void OnEnable()
+        {
+            // Update lines if the update mode is not onAwake
+            if (_updateMode != UpdateMode.onAwake)
+            {
+                UpdateLines();
+            }
+        }
+
         /// <summary>
         /// Update is called once per frame
         /// </summary>
@@ -115,11 +124,11 @@ namespace GD3D
         private Vector3 GetPos(int index)
         {
             // Calculate the angle
-            float angle = MathE.Map(0, _points, 0, 360, index);
-            angle = MathE.LoopValue(angle, 0, 360);
+            float angle = Helpers.Map(0, _points, 0, 360, index);
+            angle = Helpers.LoopValue(angle, 0, 360);
 
             // Convert the angle into a normal
-            Vector2 dir = MathE.AngleToNormal(angle);
+            Vector2 dir = Helpers.AngleToNormal(angle);
 
             // Calculate the new position
             Vector3 newPos = dir * _ringSize;

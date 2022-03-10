@@ -157,15 +157,15 @@ namespace GD3D.Player
 
             // Left stick
             s_exactLeftStickInput = LockVector2Axis(s_exactLeftStickInput, JoystickDeadzone);
-            s_leftStickInput = MathE.RoundVector2(s_exactLeftStickInput);
+            s_leftStickInput = Helpers.RoundVector2(s_exactLeftStickInput);
 
             // Right stick
             s_exactRightStickInput = LockVector2Axis(s_exactRightStickInput, JoystickDeadzone);
-            s_rightStickInput = MathE.RoundVector2(s_exactRightStickInput);
+            s_rightStickInput = Helpers.RoundVector2(s_exactRightStickInput);
 
             // Dpad
             s_exactDpadInput = LockVector2Axis(s_exactDpadInput, DpadDeadzone);
-            s_dpadInput = MathE.RoundVector2(s_exactDpadInput);
+            s_dpadInput = Helpers.RoundVector2(s_exactDpadInput);
         }
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace GD3D.Player
         /// <returns>The <paramref name="axisValue"/> unless it's inside the <paramref name="deadZone"/> range, then it'll return 0.</returns>
         private float LockAxis(float axisValue, float deadZone)
         {
-            bool setTo0 = MathE.ValueWithinRange(axisValue, -deadZone, deadZone);
+            bool setTo0 = Helpers.ValueWithinRange(axisValue, -deadZone, deadZone);
 
             float lockedAxisValue = setTo0 ? 0 : axisValue;
 

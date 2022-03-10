@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GD3D.Camera;
+using GD3D.Level;
 
 namespace GD3D
 {
@@ -70,6 +71,7 @@ namespace GD3D
 
             _roof.position = new Vector3(0, borderMoveDistance, 0);
 
+            // By default the borders are off
             BordersActive = false;
         }
 
@@ -89,6 +91,14 @@ namespace GD3D
         {
             // Get the camera
             _cam = CameraBehaviour.Instance;
+
+            // Add the roofs renderer to the LevelColors object so it's colored properly
+            Renderer renderer = _roof.GetComponent<Renderer>();
+
+            LevelColors.GetColorData(
+                LevelColors.ColorType.ground).RenderMaterialData.Add(
+                new LevelColors.RendererMaterialData(renderer, 0, true)
+            );
         }
 
         /// <summary>

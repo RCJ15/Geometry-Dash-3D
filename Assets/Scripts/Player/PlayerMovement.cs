@@ -30,11 +30,11 @@ namespace GD3D.Player
 
         public float TravelAmount => _travelAmount;
 
-        [Header("Z Movement")]
-        [SerializeField] private float zSpeed = 1;
+        [Header("3D Mode (Moving on second axis)")]
+        [SerializeField] private float speed3D = 1;
 
-        public bool _canMoveOnZ;
-        private float _zOffset;
+        public bool _in3DMode;
+        private float _3DOffset;
 
         /// <summary>
         /// Start is called before the first frame update
@@ -81,7 +81,7 @@ namespace GD3D.Player
             Vector3 targetPos = path.GetPointAtDistance(_travelAmount, EndOfPathInstruction.Stop);
             Vector3 direction = path.GetNormalAtDistance(_travelAmount, EndOfPathInstruction.Stop);
 
-            targetPos += direction * _zOffset;
+            targetPos += direction * _3DOffset;
 
             // Ignore Y
             targetPos.y = _transform.position.y;
@@ -99,15 +99,15 @@ namespace GD3D.Player
 
         private void ZAxisMovement()
         {
-            if (!_canMoveOnZ)
+            if (!_in3DMode)
                 return;
 
             // Z Speed
             float zInput = Input.GetAxisRaw("Horizontal");
 
             // Change offset
-            _zOffset += (-zInput / 10) * zSpeed;
-            _zOffset = Mathf.Clamp(_zOffset, -4.5f, 4.5f);
+            _3DOffset += (-zInput / 10) * speed3D;
+            _3DOffset = Mathf.Clamp(_3DOffset, -4.5f, 4.5f);
         }
 
         public void ChangeSpeed(GameSpeed newSpeed)

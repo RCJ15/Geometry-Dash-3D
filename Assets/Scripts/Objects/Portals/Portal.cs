@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using GD3D.Player;
+using GD3D.ObjectPooling;
 
 namespace GD3D.Objects
 {
@@ -16,7 +17,8 @@ namespace GD3D.Objects
         private bool _cantBeEntered;
 
         [Space]
-        [SerializeField] private GameObject spawnOnEnter;
+        [SerializeField] private PortalSpawnEffect spawnEffect;
+        [SerializeField] private float flashTime = 0.5f;
         [SerializeField] private UnityEvent onEnterPortal;
 
         [Header("Portal Color")]
@@ -25,8 +27,10 @@ namespace GD3D.Objects
 
         [Space]
         [SerializeField] protected MeshRenderer mesh;
+        [SerializeField] protected ParticleSystemRenderer particles;
         [SerializeField] private int materialIndex;
 
+        protected Material _mainMat => mesh.materials[materialIndex];
         protected PlayerMain _player;
 
         public virtual void Start()
@@ -34,36 +38,27 @@ namespace GD3D.Objects
             _player = PlayerMain.Instance;
 
             // Update the mesh color to match the portal color
-            if (updateColors && mesh != null)
+            if (updateColors && mesh != null && particles != null)
             {
-                // Clone the material at the correct index
-                Material newMat = new Material(mesh.materials[materialIndex]);
+                // Update the color
+                MaterialColorer.UpdateMaterialColor(_mainMat, color, true, true);
 
-                // Update color
-                MaterialColorer.UpdateMaterialColor(newMat, color, true, true);
+                Color newColor = color;
+                newColor.a = particles.material.color.a;
 
-                // Re-apply the newly colored material
-                // Have to this weird thing because "mesh.materials[materialIndex] = newMat;" doesn't work for some reason
-                List<Material> materialList = new List<Material>();
-
-                // Loop through the materials
-                for (int i = 0; i < mesh.materials.Length; i++)
-                {
-                    // Add the new material if the index is the same as the material index
-                    if ( i == materialIndex)
-                    {
-                        materialList.Add(newMat);
-                    }
-                    // Otherwise add regular materials to the list
-                    else
-                    {
-                        materialList.Add(mesh.materials[i]);
-                    }
-                }
-
-                // Set the materials
-                mesh.materials = materialList.ToArray();
+                MaterialColorer.UpdateMaterialColor(particles.material, newColor, true, true);
             }
+
+            // Subsribe to events
+            _player.OnRespawn += OnRespawn;
+        }
+
+        /// <summary>
+        /// Override this to do stuff when the player dies
+        /// </summary>
+        public virtual void OnRespawn()
+        {
+            _cantBeEntered = false;
         }
 
         /// <summary>
@@ -72,7 +67,8 @@ namespace GD3D.Objects
         public abstract void OnEnterPortal();
 
         /// <summary>
-        /// Override this to determine a custom portal condition that has to be met in order for the player to enter the portal
+        /// Override this to determine a custom portal condition that has to be met in order for the player to enter the portal. <para/>
+        /// So this must return true in order for the portal to be entered.
         /// </summary>
         public virtual bool CustomPortalCondition()
         {
@@ -92,24 +88,17 @@ namespace GD3D.Objects
             {
                 OnEnterPortal();
 
+                // Flash Color
+                StartCoroutine(FlashWhite(flashTime));
+
                 // Trigger event
                 onEnterPortal?.Invoke();
 
-                // Spawn object
-                if (spawnOnEnter != null)
+                // Trigger spawn effect
+                if (spawnEffect != null)
                 {
-                    GameObject newObj = Instantiate(spawnOnEnter, transform.position, Quaternion.identity);
-                    
-                    // Change the color of the newly spawned object
-                    if (updateColors)
-                    {
-                        Renderer newObjRend = newObj.GetComponent<Renderer>();
-
-                        if (newObjRend != null)
-                        {
-                            MaterialColorer.UpdateRendererMaterials(newObjRend, color, true, true);
-                        }
-                    }
+                    spawnEffect.SetColors(color);
+                    spawnEffect.Animate();
                 }
 
                 // Disable if not multi trigger
@@ -117,7 +106,36 @@ namespace GD3D.Objects
                 {
                     _cantBeEntered = true;
                 }
+
+                // invoke player event
+                _player.OnEnterPortal?.Invoke(this);
             }
+        }
+
+        /// <summary>
+        /// Makes the portals main color flash white during the given <paramref name="time"/>
+        /// </summary>
+        private IEnumerator FlashWhite(float time)
+        {
+            float currentTimer = time;
+
+            // Pseudo update method
+            while (currentTimer > 0)
+            {
+                float t = currentTimer / time;
+
+                // Change the color
+                Color targetColor = Color.Lerp(color, Color.white, Helpers.Map(0, 1, 0.2f, 1, t));
+                MaterialColorer.UpdateMaterialColor(_mainMat, targetColor, true, true);
+
+                // Wait for next frame
+                currentTimer -= Time.deltaTime;
+
+                yield return new WaitForEndOfFrame();
+            }
+
+            // Reset the color
+            MaterialColorer.UpdateMaterialColor(_mainMat, color, true, true);
         }
     }
 }

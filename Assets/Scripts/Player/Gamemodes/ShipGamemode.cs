@@ -39,7 +39,7 @@ namespace GD3D.Player
 
             _holdingClickKey = GamemodeHandler._clickKey.Pressed(PressMode.hold);
 
-            // Make constant particles constantly play while in ship gamemode
+            // Make constant particles constantly play whilst in ship gamemode
             constantParticles.Play();
         }
 

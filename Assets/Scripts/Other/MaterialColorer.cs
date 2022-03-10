@@ -42,6 +42,20 @@ namespace GD3D
         [SerializeField] private bool _updateEmmision;
         [SerializeField] private bool _updateSpecular;
 
+        public int SetMaterialIndex
+        {
+            set
+            {
+                if (_colorMode == ColorMode.copyFromAnother)
+                {
+                    return;
+                }
+
+                // Set material index
+                _materialIndex = value;
+            }
+        }
+
         /// <summary>
         /// Finds the correct renderer
         /// </summary>
@@ -183,6 +197,25 @@ namespace GD3D
             set { GetRenderer.materials = value; }
         }
 
+        private void OnDestroy()
+        {
+            // Destroy instances of newly created material
+
+            switch (GetColorMode)
+            {
+                case ColorMode.single:
+                    Destroy(materials[GetMaterialIndex]);
+                    break;
+
+                case ColorMode.array:
+                    foreach (Material mat in materials)
+                    {
+                        Destroy(mat);
+                    }
+                    break;
+            }
+        }
+
         /// <summary>
         /// Awake is called when the script instance is being loaded
         /// </summary>
@@ -199,64 +232,6 @@ namespace GD3D
                     throw new System.Exception($"{_copyFromObject.name} does not have a {nameof(IMaterialColorable)} attached to it");
                 }
             }
-
-            // Create a new list of materials
-            List<Material> newMaterials = new List<Material>();
-
-            // Change the newly created materials list
-            if (GetColorMode == ColorMode.array)
-            {
-                // Loop through all existing materials
-                for (int i = 0; i < Mathf.Clamp(GetColors.Length, 0, materials.Length); i++)
-                {
-                    Material mat = materials[i];
-
-                    // Create a new material that copies the orignal material
-                    Material newMat = new Material(mat);
-
-                    // Add the material to the list
-                    newMaterials.Add(newMat);
-                }
-
-                // If the new materials list is shorter than the old list,
-                // then add the old materials to the list
-                if (newMaterials.Count < materials.Length)
-                {
-                    for (int i = newMaterials.Count; i < materials.Length; i++)
-                    {
-                        newMaterials.Add(materials[i]);
-                    }
-                }
-            }
-
-            // Change one of the materials to be new
-            // The material that is changed is controlled by the material index
-            if (GetColorMode == ColorMode.single)
-            {
-                // Loop through all the materials
-                for (int i = 0; i < materials.Length; i++)
-                {
-                    Material mat = materials[i];
-
-                    // If the I matches the material index, then create a new material
-                    if (i == GetMaterialIndex)
-                    {
-                        // Create a new material that copies the orignal material
-                        Material newMat = new Material(mat);
-
-                        // Add the material to the list
-                        newMaterials.Add(newMat);
-                    }
-                    // Otherwise just add the material to the list
-                    else
-                    {
-                        newMaterials.Add(mat);
-                    }
-                }
-            }
-
-            // Set the new materials
-            materials = newMaterials.ToArray();
 
             // Always update colors on awake so nothing ugly is seen on the first frame
             UpdateColors();
@@ -355,7 +330,7 @@ namespace GD3D
             for (int i = 0; i < renderer.materials.Length; i++)
             {
                 // Update each material to have the correct color
-                UpdateMaterialColor(renderer.materials[i], color, true, true);
+                UpdateMaterialColor(renderer.materials[i], color, updateEmission, updateSpecular);
             }
         }
 

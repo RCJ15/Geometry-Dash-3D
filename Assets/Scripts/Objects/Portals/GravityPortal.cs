@@ -13,10 +13,13 @@ namespace GD3D.Objects
         [Header("Gravity Portal")]
         [SerializeField] private bool upsideDown;
 
+        public bool UpsideDown => upsideDown;
+
         public override void OnEnterPortal()
         {
             // Switch to be upside down
             _player.gamemode.upsideDown = upsideDown;
+            _player.YVelocity /= 2;
 
             // Enable the players trail
             PlayerTrailManager.HaveTrail = true;

@@ -203,7 +203,7 @@ namespace GD3D.CustomInput
                 for (int i = 0; i < maxKeys; i++)
                 {
                     // Add it to the list if it's in range of the old keyboardKeys array
-                    if (MathE.ValueInRangeOfArray(i, keyboardKeys))
+                    if (Helpers.ValueInRangeOfArray(i, keyboardKeys))
                     {
                         fixedKeyboardKeys.Add(keyboardKeys[i]);
                     }
@@ -228,7 +228,7 @@ namespace GD3D.CustomInput
                 for (int i = 0; i < maxKeys; i++)
                 {
                     // Add it to the list if it's in range of the old gamepadKeys array
-                    if (MathE.ValueInRangeOfArray(i, gamepadKeys))
+                    if (Helpers.ValueInRangeOfArray(i, gamepadKeys))
                     {
                         fixedGamepadKeys.Add(gamepadKeys[i]);
                     }

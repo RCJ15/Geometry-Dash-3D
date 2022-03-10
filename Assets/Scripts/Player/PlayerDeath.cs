@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GD3D.Audio;
+using GD3D.ObjectPooling;
 
 namespace GD3D.Player
 {
@@ -14,8 +15,41 @@ namespace GD3D.Player
         [SerializeField] private LayerMask deathLayer;
         private bool _touchingDeath;
 
-        [Header("Effects")]
-        [SerializeField] private GameObject deathEffect;
+        [Header("Death Effect Pooling")]
+        [SerializeField] private int poolSize = 2;
+        private ObjectPool<PoolObject> pool;
+
+        [Space]
+        [SerializeField] private PoolObject deathEffect;
+
+        public override void Start()
+        {
+            base.Start();
+
+            // Setup the deathEffect obj by creating a copy and setting the copy
+            GameObject obj = Instantiate(deathEffect.gameObject, transform.position, Quaternion.identity);
+            obj.name = deathEffect.gameObject.name;
+
+            // Change the particles color to match the first player color
+            ParticleSystemRenderer particles = obj.GetComponentInChildren<ParticleSystemRenderer>();
+
+            MaterialColorer.UpdateRendererMaterials(particles, PlayerColor1, true, true);
+
+            // Change the death sphere color to match the player colors
+            MaterialColorer colorer = obj.GetComponentInChildren<MaterialColorer>();
+
+            // Make sure to have the same alpha value
+            Color playerColor = PlayerColor1;
+            playerColor.a = colorer.GetColor.a;
+
+            colorer.GetColor = playerColor;
+
+            // Create deathEffect pool
+            pool = new ObjectPool<PoolObject>(obj, poolSize);
+
+            // Destroy the newly created object because we have no use out of it anymore
+            Destroy(obj);
+        }
 
         public override void Update()
         {
@@ -51,21 +85,10 @@ namespace GD3D.Player
             }
 
             // Spawn death effect
-            GameObject obj = Instantiate(deathEffect, transform.position, Quaternion.identity);
+            PoolObject obj = pool.SpawnFromPool(transform.position);
 
-            // Change the death particles color to match the first player color
-            ParticleSystemRenderer particles = obj.GetComponentInChildren<ParticleSystemRenderer>();
-
-            MaterialColorer.UpdateRendererMaterials(particles, PlayerColor1, true, true);
-
-            // Change the death sphere color to match the player colors
-            MaterialColorer colorer = obj.GetComponentInChildren<MaterialColorer>();
-
-            // Make sure to have the same alpha value
-            Color playerColor = PlayerColor1;
-            playerColor.a = colorer.GetColor.a;
-
-            colorer.GetColor = playerColor;
+            // Remove after a second
+            obj.RemoveAfterTime(1);
 
             // Play death sound
             SoundManager.PlaySound("Player Explode", 1);

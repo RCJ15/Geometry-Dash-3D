@@ -9,34 +9,46 @@ using UnityEditorInternal;
 namespace GD3D.Player
 {
     /// <summary>
-    /// 
+    /// Contains data about the players mesh
     /// </summary>
     public class PlayerMesh : PlayerScript
     {
         [SerializeField] private GamemodeMeshObject[] gamemodeMeshData;
 
-        private Dictionary<Gamemode, GameObject> _meshDataDictionary = new Dictionary<Gamemode, GameObject>();
+        private Dictionary<Gamemode, GameObject> _meshObjectDictionary = new Dictionary<Gamemode, GameObject>();
         private Dictionary<Gamemode, Collider> _meshHitboxDictionary = new Dictionary<Gamemode, Collider>();
+
+        private Dictionary<Gamemode, MeshFilter> _meshTrailDictionary = new Dictionary<Gamemode, MeshFilter>();
+        private Dictionary<Gamemode, int> _trailMaterialIndexDictionary = new Dictionary<Gamemode, int>();
 
         [Space]
 
         private GameObject _currentMeshObject;
         private Collider _currentMeshHitbox;
 
+        private MeshFilter _currentTrailMesh;
+        private int _currentTrailMaterialIndex;
+
         public GameObject CurrentMeshObject => _currentMeshObject;
         public Collider CurrentMeshHitbox => _currentMeshHitbox;
+
+        public MeshFilter CurrentTrailMesh => _currentTrailMesh;
+        public int CurrentTrailMaterialIndex => _currentTrailMaterialIndex;
 
         private void Awake()
         {
             foreach (GamemodeMeshObject meshData in gamemodeMeshData)
             {
                 // Create the new mesh dictionaries
-                _meshDataDictionary.Add(meshData.gamemode, meshData.meshObject);
-                _meshHitboxDictionary.Add(meshData.gamemode, meshData.meshHitbox);
+                _meshObjectDictionary.Add(meshData.Gamemode, meshData.MeshObject);
+                _meshHitboxDictionary.Add(meshData.Gamemode, meshData.MeshHitbox);
+
+                _meshTrailDictionary.Add(meshData.Gamemode, meshData.MeshTrail);
+                _trailMaterialIndexDictionary.Add(meshData.Gamemode, meshData.MeshTrailMaterialIndex);
 
                 // Disable all meshes by default
-                meshData.meshObject.SetActive( false);
-                meshData.meshHitbox.enabled = false;
+                meshData.MeshObject.SetActive( false);
+                meshData.MeshHitbox.enabled = false;
             }
         }
 
@@ -54,7 +66,7 @@ namespace GD3D.Player
         private void OnChangeGamemode(Gamemode newGamemode)
         {
             // Return if the given gamemode does not exist
-            if (!_meshDataDictionary.ContainsKey(newGamemode))
+            if (!_meshObjectDictionary.ContainsKey(newGamemode))
             {
                 return;
             }
@@ -64,7 +76,7 @@ namespace GD3D.Player
             ToggleCurrentHitbox(false);
 
             // Get the meshObject with the given gamemode key and enable it
-            GameObject meshObject = _meshDataDictionary[newGamemode];
+            GameObject meshObject = _meshObjectDictionary[newGamemode];
             meshObject.SetActive(true);
 
             // Set new currentMeshObject
@@ -75,6 +87,10 @@ namespace GD3D.Player
             meshHitbox.enabled = true;
 
             _currentMeshHitbox = meshHitbox;
+
+            // Also do the same thing but for the trails stuff
+            _currentTrailMesh = _meshTrailDictionary[newGamemode];
+            _currentTrailMaterialIndex = _trailMaterialIndexDictionary[newGamemode];
         }
 
         /// <summary>
@@ -109,9 +125,15 @@ namespace GD3D.Player
         [System.Serializable]
         public class GamemodeMeshObject
         {
-            public Gamemode gamemode;
-            public GameObject meshObject;
-            public Collider meshHitbox;
+            public Gamemode Gamemode;
+
+            [Space]
+            public GameObject MeshObject;
+            public Collider MeshHitbox;
+
+            [Space]
+            public MeshFilter MeshTrail;
+            public int MeshTrailMaterialIndex;
         }
     }
 }

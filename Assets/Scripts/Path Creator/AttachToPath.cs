@@ -113,6 +113,8 @@ namespace GD3D
                 {
                     attachToPath.Reset();
                     OnEnable();
+
+                    serializedObject.ApplyModifiedProperties();
                 }
 
                 if (attachToPath.pathCreator == null)
@@ -128,6 +130,7 @@ namespace GD3D
                     }
                     else
                     {
+                        PrefabUtility.RecordPrefabInstancePropertyModifications(attachToPath);
                         attachToPath.oldZOffset = attachToPath.zOffset;
                         attachToPath.oldDistance = attachToPath.Distance;
 
@@ -135,6 +138,8 @@ namespace GD3D
                     }
 
                     attachToPath.oldPos = attachToPath.Transform.position;
+
+                    serializedObject.ApplyModifiedProperties();
                 }
             }
 

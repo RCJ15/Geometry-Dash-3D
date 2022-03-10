@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GD3D.CustomInput;
+using GD3D.Objects;
 
 namespace GD3D.Player
 {
@@ -31,6 +31,7 @@ namespace GD3D.Player
         //-- Events
         public Action OnDeath;
         public Action OnRespawn;
+        public Action<Portal> OnEnterPortal;
 
         // Start values
         internal Vector3 startPos;

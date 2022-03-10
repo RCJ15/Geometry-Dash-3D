@@ -6,6 +6,25 @@ I *WILL* (probably) make a youtube video about how I made this game and this git
 Buy normal geometry dash and support the creator: 
 https://store.steampowered.com/app/322170/Geometry_Dash/
 
+# How To Open The Project
+**Step 1**
+Make sure you have Unity 2020.3.30f1 installed (you can obviously use another version but this is the version I used).
+
+**Step 2**
+Download or clone the repository to your local device. Remember where you saved the project and make sure it's unzipped but you probably already know to do that.
+
+**Step 3**
+Open Unity Hub.
+
+**Step 4**
+Press "Add" on the projects tab in Unity Hub, then find where you saved the project and add the folder to Unity Hub.
+
+**Step 5**
+Open the project and wait for it to load.
+
+**Step 6**
+You're now finished and ready to modify the game in whichever way you want! :)
+
 # Game Plan
 These things below are what I plan on creating for this game.
 
