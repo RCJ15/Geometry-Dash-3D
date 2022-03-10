@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GD3D.Objects;
+using GD3D.CustomInput;
 
 namespace GD3D.Player
 {
@@ -31,12 +32,22 @@ namespace GD3D.Player
         //-- Events
         public Action OnDeath;
         public Action OnRespawn;
+        public Action<PressMode> OnClick;
         public Action<Portal> OnEnterPortal;
 
-        // Start values
+        //-- Start values
         internal Vector3 startPos;
         internal Vector3 startScale;
         internal Quaternion startRotation;
+
+        //-- Input
+        public Key ClickKey;
+
+        public bool KeyDown;
+        public bool KeyHold;
+        public bool KeyUp;
+
+        private readonly static Array s_pressModeValues = Enum.GetValues(typeof(PressMode));
 
         private void Awake()
         {
@@ -47,6 +58,9 @@ namespace GD3D.Player
             startPos = transform.position;
             startScale = transform.localScale;
             startRotation = transform.rotation;
+
+            // Get input key
+            ClickKey = PlayerInput.GetKey("Click");
 
             GetPlayerScripts();
         }
@@ -65,6 +79,40 @@ namespace GD3D.Player
             spawn = GetChildComponent<PlayerSpawn>();
             cam = GetChildComponent<PlayerCamera>();
             gamemode = GetChildComponent<PlayerGamemodeHandler>();
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            // Loop through all press modes (there are only 3)
+            foreach (PressMode mode in s_pressModeValues)
+            {
+                bool keyPressed = ClickKey.Pressed(mode);
+
+                // Set public input bools
+                switch (mode)
+                {
+                    case PressMode.hold:
+                        KeyHold = keyPressed;
+                        break;
+
+                    case PressMode.down:
+                        KeyDown = keyPressed;
+                        break;
+
+                    case PressMode.up:
+                        KeyUp = keyPressed;
+                        break;
+                }
+
+                // Check if the key is pressed with this press mode
+                if (keyPressed)
+                {
+                    // Call the OnClick event with this press mode
+                    OnClick?.Invoke(mode);
+                }
+            }
         }
 
         /// <summary>

@@ -14,11 +14,21 @@ namespace GD3D.Player
         private Gamemode _startGamemode;
         public Gamemode CurrentGamemode;
 
-        public bool upsideDown;
-        private bool startUpsideDown;
-        private bool oldUpsideDown;
+        //-- Upside down
+        public bool UpsideDown;
+        private bool _startUpsideDown;
+        private bool _oldUpsideDown;
 
         public Action<bool> OnChangeGravity;
+
+        //-- Small
+        public bool IsSmall;
+        private bool _startSmall;
+        private bool _oldIsSmall;
+
+        [Space]
+        [SerializeField] private LayerMask groundLayer;
+        public LayerMask GroundLayer => groundLayer;
 
         [Header("Gamemodes")]
         public CubeGamemode Cube;
@@ -30,6 +40,7 @@ namespace GD3D.Player
         public SpiderGamemode Spider;
 
         private GamemodeScript _activeGamemodeScript;
+        public GamemodeScript CurrentGamemodeScript => _activeGamemodeScript;
 
         /// <summary>
         /// Subscribe to this event to be notified whenever the player changes gamemode
@@ -54,7 +65,8 @@ namespace GD3D.Player
             ChangeGamemode(_startGamemode);
 
             // Set start values
-            startUpsideDown = upsideDown;
+            _startUpsideDown = UpsideDown;
+            _startSmall = IsSmall;
 
             // Subscribe to events
             player.OnDeath += OnDeath;
@@ -66,7 +78,8 @@ namespace GD3D.Player
         /// </summary>
         private void OnDeath()
         {
-            upsideDown = startUpsideDown;
+            UpsideDown = _startUpsideDown;
+            IsSmall = _startSmall;
             
             _activeGamemodeScript.OnDeath();
         }
@@ -99,13 +112,23 @@ namespace GD3D.Player
             base.Update();
 
             // Check if the players gravity has changed
-            if (oldUpsideDown != upsideDown)
+            if (_oldUpsideDown != UpsideDown)
             {
                 // If it has, then invoke the OnChangeGravity events
-                oldUpsideDown = upsideDown;
+                _oldUpsideDown = UpsideDown;
 
-                OnChangeGravity?.Invoke(upsideDown);
-                _activeGamemodeScript.OnChangeGravity(upsideDown);
+                OnChangeGravity?.Invoke(UpsideDown);
+                _activeGamemodeScript.OnChangeGravity(UpsideDown);
+            }
+
+            // Check if the players size has changed
+            if (_oldIsSmall != IsSmall)
+            {
+                // If it has, then invoke the OnChangeGravity events
+                _oldIsSmall = IsSmall;
+
+                OnChangeGravity?.Invoke(UpsideDown);
+                _activeGamemodeScript.OnChangeGravity(UpsideDown);
             }
 
             // Call Update() in activeGamemodeScript
@@ -120,9 +143,9 @@ namespace GD3D.Player
             _activeGamemodeScript?.FixedUpdate();
         }
 
-        public override void OnClick(PressMode mode)
+        public override void OnClickKey(PressMode mode)
         {
-            base.OnClick(mode);
+            base.OnClickKey(mode);
 
             // Call OnClick() in activeGamemodeScript
             _activeGamemodeScript?.OnClick(mode);
@@ -152,7 +175,7 @@ namespace GD3D.Player
         /// <summary>
         /// Converts the given <see cref="GamemodeScript"/> to <see cref="Gamemode"/>
         /// </summary>
-        private Gamemode GamemodeToType(GamemodeScript g)
+        public Gamemode GamemodeToType(GamemodeScript g)
         {
             // Self explanatory how this works
             switch (g)
@@ -186,7 +209,7 @@ namespace GD3D.Player
         /// <summary>
         /// Converts the given <see cref="Gamemode"/> to <see cref="GamemodeScript"/>
         /// </summary>
-        private GamemodeScript TypeToGamemode(Gamemode type)
+        public GamemodeScript TypeToGamemode(Gamemode type)
         {
             // Self explanatory how this works
             switch (type)
@@ -229,7 +252,7 @@ namespace GD3D.Player
             }
 
             Gizmos.color = Color.red;
-            currentGamemodeScript.DrawGroundDetectGizmo(transform, upsideDown);
+            currentGamemodeScript.DrawGroundDetectGizmo(transform, UpsideDown);
         }
 #endif
     }
@@ -271,5 +294,29 @@ namespace GD3D.Player
         /// Ball gamemode, but way cooler
         /// </summary>
         spider = 6,
+    }
+
+    /// <summary>
+    /// Contains data about which Y Velocity to set depending on the players size
+    /// </summary>
+    [Serializable]
+    public class GamemodeSizedFloat
+    {
+        public float BigValue;
+        public float SmallValue;
+
+        /// <summary>
+        /// Returns one either the big or small value, depends on if <paramref name="isSmall"/> is true or not
+        /// </summary>
+        public float GetValue(bool isSmall)
+        {
+            return isSmall ? SmallValue : BigValue;
+        }
+
+        public GamemodeSizedFloat(float big, float small)
+        {
+            BigValue = big;
+            SmallValue = small;
+        }
     }
 }

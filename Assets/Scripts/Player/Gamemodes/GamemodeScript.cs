@@ -12,23 +12,25 @@ namespace GD3D.Player
     public class GamemodeScript
     {
         [Header("Gravity")]
-        [SerializeField] internal float gravity = 85;
+        [SerializeField] protected float gravity = 85;
 
         [Tooltip("X = Min Terminal Velocity \nY = Max Terminal Velocity \nWhen upside down, these are swaped")]
-        [SerializeField] internal Vector2 terminalVelocity = new Vector2(28.4f, 28.4f);
+        [SerializeField] protected Vector2 terminalVelocity = new Vector2(28.4f, 28.4f);
 
         [Header("Ground Detection")]
         [SerializeField] private Vector3 groundOffset;
         [SerializeField] private Vector3 groundDetectSize = new Vector3(0.54f, 0.54f, 0.54f);
-        [SerializeField] private LayerMask groundLayer;
 
         [Header("Other")]
         [SerializeField] private TrailMode trailMode = TrailMode.never;
 
+        [Tooltip("Allows the player to hold in the air to buffer a orb whilst in this gamemode. \nSet this to false for airborne gamemodes, like the Ship.")]
+        public bool BufferOrbs = false;
+
         internal bool onGround;
         private bool _landedOnGround;
 
-        internal float XRot => Mathf.Clamp(Rigidbody.velocity.z, -1, 1) * 15;
+        protected float XRot => Mathf.Clamp(Rigidbody.velocity.z, -1, 1) * 15;
 
         //-- Component references
         [HideInInspector] public PlayerGamemodeHandler GamemodeHandler;
@@ -39,16 +41,21 @@ namespace GD3D.Player
         internal GameObject _gameObject;
 
         /// <summary>
-        /// Shortcut for getting "upsideDown"
+        /// Shortcut for getting "GamemodeHandler.UpsideDown"
         /// </summary>
-        protected bool upsideDown => GamemodeHandler.upsideDown;
+        protected bool UpsideDown => GamemodeHandler.UpsideDown;
         /// <summary>
         /// Will return -1 if the player is upside down, otherwise it'll be 1. Multiply stuff with this for upside down behaviour
         /// </summary>
-        protected float upsideDownMultiplier => upsideDown ? -1 : 1;
+        protected float UpsideDownMultiplier => UpsideDown ? -1 : 1;
 
         /// <summary>
-        /// Shortcut for setting and getting the <see cref="PlayerScript.rb"/> Y velocity
+        /// Shortcut for getting "GamemodeHandler.IsSmall"
+        /// </summary>
+        protected bool IsSmall => GamemodeHandler.IsSmall;
+
+        /// <summary>
+        /// Shortcut for getting and setting the <see cref="PlayerScript.rb"/> Y velocity
         /// </summary>
         protected float YVelocity
         {
@@ -94,7 +101,7 @@ namespace GD3D.Player
             }
 
             // Call OnChangeGravity in case there is a upside down mishap
-            OnChangeGravity(upsideDown);
+            OnChangeGravity(UpsideDown);
         }
 
         /// <summary>
@@ -151,10 +158,10 @@ namespace GD3D.Player
         {
             // Fix the ground detection for upside down
             Vector3 newGroundOffset = groundOffset;
-            newGroundOffset.y *= upsideDownMultiplier;
+            newGroundOffset.y *= UpsideDownMultiplier;
 
             // Detect if the player is on the ground
-            onGround = Physics.OverlapBox(_transform.position + newGroundOffset, groundDetectSize, Quaternion.identity, groundLayer).Length >= 1;
+            onGround = Physics.OverlapBox(_transform.position + newGroundOffset, groundDetectSize, Quaternion.identity, GamemodeHandler.GroundLayer).Length >= 1;
 
             // Detects if the player has landed back on the ground
             if (!_landedOnGround && onGround)
@@ -194,15 +201,15 @@ namespace GD3D.Player
             // Gravity constant (do none if gravity is 0)
             if (gravity != 0)
             {
-                Rigidbody.AddForce(Vector3.down * gravity * upsideDownMultiplier);
+                Rigidbody.AddForce(Vector3.down * gravity * UpsideDownMultiplier);
             }
 
             // Clamp Y velocity between terminal velocity if it's not 0
             if (terminalVelocity != Vector2.zero)
             {
                 YVelocity = Mathf.Clamp(YVelocity,
-                    upsideDown ? -terminalVelocity.y : -terminalVelocity.x,
-                    upsideDown ? terminalVelocity.x : terminalVelocity.y
+                    UpsideDown ? -terminalVelocity.y : -terminalVelocity.x,
+                    UpsideDown ? terminalVelocity.x : terminalVelocity.y
                     );
             }
         }

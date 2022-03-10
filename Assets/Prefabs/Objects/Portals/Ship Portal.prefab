@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   multiTrigger: 0
-  spawnEffect: {fileID: 732060856122170488}
+  spawnEffect: {fileID: 0}
   flashTime: 0.5
   onEnterPortal:
     m_PersistentCalls:
@@ -58,7 +58,7 @@ MonoBehaviour:
   color: {r: 1, g: 0.101960786, b: 1, a: 1}
   mesh: {fileID: 228550153428493696}
   particles: {fileID: 8983057167919646976}
-  materialIndex: 1
+  materialIndex: 0
   gamemode: 1
   haveBorders: 1
   borderDistance: 10
@@ -94,7 +94,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 2.75, y: 4, z: 1}
+  m_Size: {x: 2.75, y: 4.5, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1741491553787495509
 GameObject:
@@ -155,8 +155,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d580adef76c103447b5b2e2b5fc199c4, type: 2}
   - {fileID: 2100000, guid: 685b303a026d4004e974fa97686f69cd, type: 2}
+  - {fileID: 2100000, guid: d580adef76c103447b5b2e2b5fc199c4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -240,17 +240,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3151613431718136713, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
   m_PrefabInstance: {fileID: 6192516962740300591}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &732060856122170488 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6906534074951022423, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
-  m_PrefabInstance: {fileID: 6192516962740300591}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a17d1ad30cccc52449f560dce3e677b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &8161286026164275917
 PrefabInstance:
   m_ObjectHideFlags: 0

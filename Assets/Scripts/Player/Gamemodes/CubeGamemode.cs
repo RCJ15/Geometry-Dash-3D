@@ -12,9 +12,11 @@ namespace GD3D.Player
     public class CubeGamemode : GamemodeScript
     {
         [Header("Jumping")]
-        [SerializeField] private float jumpHeight = 20f;
+        [SerializeField] private GamemodeSizedFloat jumpHeight = new GamemodeSizedFloat(20f, 12.75f);
+        [SerializeField] protected GamemodeSizedFloat timeInjump = new GamemodeSizedFloat(0.44f, 0.2805f);
         [SerializeField] private float jumpCooldown = 0.2f;
         private float _jumpCooldownTimer;
+
 
         [Header("Cube Rotation")]
         [SerializeField] private Transform objToRotate;
@@ -85,7 +87,7 @@ namespace GD3D.Player
                 _angularVelocity = Vector3.zero;
 
                 // Spin -180 degrees per 0.44 seconds in the Z axis
-                float force = 180 / 0.44f;
+                float force = 180 / timeInjump.GetValue(IsSmall);
 
                 _angularVelocity.z = -force;
 
@@ -96,7 +98,7 @@ namespace GD3D.Player
             // Increase target rotation by angular velocity
             if (_angularVelocity != Vector3.zero)
             {
-                _targetRot += _angularVelocity * Time.deltaTime * upsideDownMultiplier;
+                _targetRot += _angularVelocity * Time.deltaTime * UpsideDownMultiplier;
                 _targetRot.x %= 360;
                 _targetRot.y %= 360;
                 _targetRot.z %= 360;
@@ -164,7 +166,7 @@ namespace GD3D.Player
         private void Jump()
         {
             // Set Y velocity
-            YVelocity = jumpHeight * upsideDownMultiplier;
+            YVelocity = jumpHeight.GetValue(IsSmall) * UpsideDownMultiplier;
 
             // Restart the jump cooldown
             _jumpCooldownTimer = jumpCooldown;

@@ -18,7 +18,7 @@ namespace GD3D.Objects
         public override void OnEnterPortal()
         {
             // Switch to be upside down
-            _player.gamemode.upsideDown = upsideDown;
+            _player.gamemode.UpsideDown = upsideDown;
             _player.YVelocity /= 2;
 
             // Enable the players trail
@@ -28,7 +28,7 @@ namespace GD3D.Objects
         public override bool CustomPortalCondition()
         {
             // This condition is true if the player is not the same upside down as this portal is
-            return _player.gamemode.upsideDown != upsideDown;
+            return _player.gamemode.UpsideDown != upsideDown;
         }
     }
 }

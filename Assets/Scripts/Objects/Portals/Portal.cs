@@ -17,7 +17,7 @@ namespace GD3D.Objects
         private bool _cantBeEntered;
 
         [Space]
-        [SerializeField] private PortalSpawnEffect spawnEffect;
+        [SerializeField] private Animator spawnEffect;
         [SerializeField] private float flashTime = 0.5f;
         [SerializeField] private UnityEvent onEnterPortal;
 
@@ -97,8 +97,7 @@ namespace GD3D.Objects
                 // Trigger spawn effect
                 if (spawnEffect != null)
                 {
-                    spawnEffect.SetColors(color);
-                    spawnEffect.Animate();
+                    spawnEffect.SetTrigger("Portal Enter Effect");
                 }
 
                 // Disable if not multi trigger

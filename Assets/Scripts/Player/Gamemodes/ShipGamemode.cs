@@ -14,8 +14,6 @@ namespace GD3D.Player
         [Header("Flying")]
         [SerializeField] private float flySpeed;
 
-        private bool _holdingClickKey;
-
         [Header("Rotation")]
         [SerializeField] private Transform objToRotate;
         [SerializeField] private float rotateSlerpSpeed = 0.15f;
@@ -33,11 +31,11 @@ namespace GD3D.Player
         [Header("Upside Down Scaling")]
         [SerializeField] private Transform objToScale;
 
+        private bool KeyHold => Player.KeyHold;
+
         public override void OnEnable()
         {
             base.OnEnable();
-
-            _holdingClickKey = GamemodeHandler._clickKey.Pressed(PressMode.hold);
 
             // Make constant particles constantly play whilst in ship gamemode
             constantParticles.Play();
@@ -58,7 +56,7 @@ namespace GD3D.Player
             base.Update();
 
             // Go up/down based on if the click key is being held
-            YVelocity += (flySpeed * Time.deltaTime * (_holdingClickKey ? 1 : -1)) * upsideDownMultiplier;
+            YVelocity += (flySpeed * Time.deltaTime * (KeyHold ? 1 : -1)) * UpsideDownMultiplier;
             
             HandleParticles();
 
@@ -71,21 +69,21 @@ namespace GD3D.Player
         private void HandleParticles()
         {
             // Fly particles
-            if (_holdingClickKey && !flyParticles.isPlaying)
+            if (KeyHold && !flyParticles.isPlaying)
             {
                 flyParticles.Play();
             }
-            else if (!_holdingClickKey && flyParticles.isPlaying)
+            else if (!KeyHold && flyParticles.isPlaying)
             {
                 flyParticles.Stop();
             }
 
             // Slide particles
-            if (onGround && !_holdingClickKey && !slideParticles.isPlaying)
+            if (onGround && !KeyHold && !slideParticles.isPlaying)
             {
                 slideParticles.Play();
             }
-            else if ((!onGround || _holdingClickKey) && slideParticles.isPlaying)
+            else if ((!onGround || KeyHold) && slideParticles.isPlaying)
             {
                 slideParticles.Stop();
             }
@@ -116,26 +114,12 @@ namespace GD3D.Player
             base.FixedUpdate();
 
             // Set rotation
-            Quaternion slerp = Quaternion.Slerp(objToRotate.localRotation, Quaternion.Euler(_targetRot * upsideDownMultiplier), rotateSlerpSpeed);
+            Quaternion slerp = Quaternion.Slerp(objToRotate.localRotation, Quaternion.Euler(_targetRot * UpsideDownMultiplier), rotateSlerpSpeed);
 
             objToRotate.localRotation = slerp;
 
             // Set particles rotation
             particlesParent.localRotation = objToRotate.localRotation;
-        }
-
-        public override void OnClick(PressMode mode)
-        {
-            switch (mode)
-            {
-                case PressMode.down:
-                    _holdingClickKey = true;
-                    break;
-
-                case PressMode.up:
-                    _holdingClickKey = false;
-                    break;
-            }
         }
 
         public override void OnChangeGravity(bool upsideDown)

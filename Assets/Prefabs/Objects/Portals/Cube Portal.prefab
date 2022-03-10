@@ -57,7 +57,7 @@ MonoBehaviour:
   color: {r: 0, g: 1, b: 0, a: 1}
   mesh: {fileID: 4271641313195474661}
   particles: {fileID: 2603981695328221988}
-  materialIndex: 1
+  materialIndex: 0
   gamemode: 0
   haveBorders: 0
   borderDistance: 10
@@ -93,7 +93,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 2.75, y: 4, z: 1}
+  m_Size: {x: 2.75, y: 4.5, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4271641313195474660
 GameObject:
@@ -154,8 +154,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d580adef76c103447b5b2e2b5fc199c4, type: 2}
   - {fileID: 2100000, guid: 685b303a026d4004e974fa97686f69cd, type: 2}
+  - {fileID: 2100000, guid: d580adef76c103447b5b2e2b5fc199c4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

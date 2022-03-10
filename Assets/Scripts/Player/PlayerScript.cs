@@ -10,16 +10,11 @@ namespace GD3D.Player
     /// </summary>
     public class PlayerScript : MonoBehaviour
     {
-        //-- Input
-        internal Key _clickKey;
-
         //-- Component references
-        internal PlayerMain player;
-        internal Rigidbody rb;
+        protected PlayerMain player;
+        protected Rigidbody rb;
 
-        internal Transform _transform;
-
-        private static System.Array s_pressModeValues = null;
+        protected Transform _transform;
 
         /// <summary>
         /// Shortcut for setting and getting "rb.velocity.y"
@@ -47,16 +42,10 @@ namespace GD3D.Player
         {
             _transform = transform;
 
-            // Set the enum array
-            if (s_pressModeValues == null)
-            {
-                s_pressModeValues = System.Enum.GetValues(typeof(PressMode));
-            }
-
-            // Get input key
-            _clickKey = PlayerInput.GetKey("Click");
-
             GetComponents();
+
+            // Subscribe to events
+            player.OnClick += OnClickKey;
         }
 
         /// <summary>
@@ -97,16 +86,7 @@ namespace GD3D.Player
         /// </summary>
         public virtual void Update()
         {
-            // Loop through all press modes (there are only 3)
-            foreach (PressMode mode in s_pressModeValues)
-            {
-                // Check if the key is pressed with this press mode
-                if (_clickKey.Pressed(mode))
-                {
-                    // Call on click with this press mode
-                    OnClick(mode);
-                }
-            }
+
         }
 
         /// <summary>
@@ -121,7 +101,7 @@ namespace GD3D.Player
         /// OnClick is called when the player presses the main gameplay button. <para/>
         /// <paramref name="mode"/> determines whether the button was just pressed, held or just released.
         /// </summary>
-        public virtual void OnClick(PressMode mode)
+        public virtual void OnClickKey(PressMode mode)
         {
 
         }
