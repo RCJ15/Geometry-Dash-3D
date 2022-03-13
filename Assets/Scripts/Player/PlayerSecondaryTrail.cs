@@ -19,6 +19,8 @@ namespace GD3D.Player
 
         public override void OnCreated()
         {
+            base.OnCreated();
+
             // Get components
             _meshFilter = GetComponent<MeshFilter>();
             _meshRenderer = GetComponent<MeshRenderer>();

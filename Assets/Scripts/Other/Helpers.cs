@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 /// <summary>
 /// Helper methods exist here. <para/>
@@ -538,8 +540,6 @@ public struct Helpers
     #endregion
 
     #region Timers
-    public delegate void TimerEvent();
-
     /// <summary>
     /// Starts a timer coroutine on the given MonoBehaviour that is delayed by the specified time (Shortcut)
     /// </summary>
@@ -548,7 +548,7 @@ public struct Helpers
     /// <param name="onComplete">Called when the timer is finished</param>
     /// <param name="unscaledTime">Will use unscaled time if true</param>
     /// <returns>The coroutine ran</returns>
-    public static Coroutine TimerSeconds(MonoBehaviour executeOn, float time, TimerEvent onComplete = null, bool unscaledTime = false)
+    public static Coroutine TimerSeconds(MonoBehaviour executeOn, float time, Action onComplete = null, bool unscaledTime = false)
     {
         if (!unscaledTime)
         {
@@ -566,7 +566,7 @@ public struct Helpers
     /// <param name="onComplete">Called when the timer is finished</param>
     /// <param name="fixedFrame">Will instead wait for fixed update if true</param>
     /// <returns>The coroutine ran</returns>
-    public static Coroutine TimerEndOfFrame(MonoBehaviour executeOn, TimerEvent onComplete = null, bool fixedFrame = false)
+    public static Coroutine TimerEndOfFrame(MonoBehaviour executeOn, Action onComplete = null, bool fixedFrame = false)
     {
         if (!fixedFrame)
         {
@@ -585,11 +585,11 @@ public struct Helpers
     /// <param name="instruction">The instruction to preform</param>
     /// <param name="onComplete">Called when the timer is finished</param>
     /// <returns>The coroutine ran</returns>
-    public static Coroutine Timer(MonoBehaviour executeOn, YieldInstruction instruction, TimerEvent onComplete = null)
+    public static Coroutine Timer(MonoBehaviour executeOn, YieldInstruction instruction, Action onComplete = null)
     {
         return executeOn.StartCoroutine(TimerIEnumrator(instruction, onComplete));
     }
-    public static IEnumerator TimerIEnumrator(YieldInstruction instruction, TimerEvent onComplete = null)
+    public static IEnumerator TimerIEnumrator(YieldInstruction instruction, Action onComplete = null)
     {
         yield return instruction;
 
@@ -603,11 +603,11 @@ public struct Helpers
     /// <param name="instruction">The instruction to preform</param>
     /// <param name="onComplete">Called when the timer is finished</param>
     /// <returns>The coroutine ran</returns>
-    public static Coroutine Timer(MonoBehaviour executeOn, CustomYieldInstruction instruction, TimerEvent onComplete = null)
+    public static Coroutine Timer(MonoBehaviour executeOn, CustomYieldInstruction instruction, Action onComplete = null)
     {
         return executeOn.StartCoroutine(TimerIEnumrator(instruction, onComplete));
     }
-    public static IEnumerator TimerIEnumrator(CustomYieldInstruction instruction, TimerEvent onComplete = null)
+    public static IEnumerator TimerIEnumrator(CustomYieldInstruction instruction, Action onComplete = null)
     {
         yield return instruction;
 

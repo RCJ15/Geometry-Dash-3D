@@ -15,6 +15,8 @@ namespace GD3D.Audio
 
         public override void OnCreated()
         {
+            base.OnCreated();
+
             // Get component
             source = GetComponent<AudioSource>();
         }

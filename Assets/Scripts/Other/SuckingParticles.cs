@@ -41,7 +41,8 @@ namespace GD3D
             _particleSystem.GetParticles(_particles);
 
             // Modify the particles
-            for (int i = 0; i < _particles.Length; i++)
+            int particleLength = _particles.Length;
+            for (int i = 0; i < particleLength; i++)
             {
                 // Get the particle
                 ParticleSystem.Particle p = _particles[i];
@@ -72,6 +73,11 @@ namespace GD3D
         // Draw kill radius in the editor
         private void OnDrawGizmosSelected()
         {
+            if (suckPoint == null)
+            {
+                return;
+            }
+
             Gizmos.color = Color.blue;
 
             Gizmos.DrawWireSphere(suckPoint.position, suckKillRadius);

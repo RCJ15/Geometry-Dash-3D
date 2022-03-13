@@ -18,10 +18,12 @@ namespace GD3D.Player
         [SerializeField] private int trailAmount = 10;
         [SerializeField] private PlayerTrail[] trailCopyables; // For the different types of trails
 
-        private ObjectPool<PlayerTrail> pool;
+        private ObjectPool<PlayerTrail> _pool;
 
         private bool _haveTrail = false;
         private PlayerTrail _currentTrail;
+
+        private Transform _trailPosition;
 
         /// <summary>
         /// Returns if the player has a trail currently or not. <para/>
@@ -36,23 +38,37 @@ namespace GD3D.Player
         /// <summary>
         /// Toggles if the player has a trail or not depending on if <paramref name="enable"/> is true or not.
         /// </summary>
-        public void SetTrail(bool enable)
+        public void SetTrail(bool enable, bool forced = false)
         {
             // We don't have a trail and the value is true, so spawn a trail
-            if (enable && !_haveTrail)
+            if (enable && (!_haveTrail || forced))
             {
-                // Only spawn trail if the pool isn't empty
-                if (!pool.IsEmpty())
+                // Disable old trail
+                if (_currentTrail != null)
                 {
-                    _currentTrail = pool.SpawnFromPool();
+                    _currentTrail.DisableTrail();
+
+                    _currentTrail = null;
+                }
+
+                // Only spawn trail if the pool isn't empty
+                if (!_pool.IsEmpty())
+                {
+                    _currentTrail = _pool.SpawnFromPool();
+
+                    _currentTrail.transform.SetParent(_trailPosition);
+                    _currentTrail.transform.localPosition = Vector3.zero;
                 }
             }
             // We have a trail currently and the value is false, so remove the current trail
-            else if (!enable && _haveTrail && _currentTrail != null)
+            else if (!enable && (_haveTrail || forced) && _currentTrail != null)
             {
-                _currentTrail.DisableTrail();
+                if (_currentTrail != null)
+                {
+                    _currentTrail.DisableTrail();
 
-                _currentTrail = null;
+                    _currentTrail = null;
+                }
             }
 
             // Set it to the given value regardless
@@ -71,23 +87,45 @@ namespace GD3D.Player
 
             // Subscribe to events
             player.OnDeath += OnDeath;
+            player.gamemode.OnChangeGamemode += (gamemode) => OnChangeGamemode(gamemode, true);
 
             print("Reminder to use icon customization for this");
             PlayerTrail trailToCopy = trailCopyables[0];
 
-            pool = new ObjectPool<PlayerTrail>(trailToCopy, trailAmount, 
+            _pool = new ObjectPool<PlayerTrail>(trailToCopy, trailAmount, 
                 (obj) =>
                 {
                     obj.UpdateColor(PlayerColor2);
                     obj.ParentTransform = _transform;
                 }
             );
+
+            // Update gamemode manually
+            OnChangeGamemode(player.gamemode.CurrentGamemode, false);
         }
 
         private void OnDeath()
         {
             // Disable the players trail when they die
             HaveTrail = false;
+        }
+
+        private void OnChangeGamemode(Gamemode gamemode, bool resetTrail)
+        {
+            // Set the position
+            _trailPosition = player.mesh.CurrentTrailPosition;
+
+            // Set it to this object if it's null
+            if (_trailPosition == null)
+            {
+                _trailPosition = _transform;
+            }
+
+            // Reset trail
+            if (resetTrail)
+            {
+                SetTrail(true, true);
+            }
         }
     }
 }

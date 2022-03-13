@@ -155,7 +155,8 @@ namespace GD3D.ObjectPooling
             bool shrink = _queue.Count > newSize;
 
             // Loop for amount of difference
-            for (int i = 0; i < Mathf.Abs(difference); i++)
+            int absDifference = Mathf.Abs(difference);
+            for (int i = 0; i < absDifference; i++)
             {
                 // Shrink and destroy old objects
                 if (shrink)

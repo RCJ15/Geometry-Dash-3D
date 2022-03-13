@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GD3D.Player;
+using GD3D.ObjectPooling;
 
 namespace GD3D.Objects
 {
@@ -14,17 +15,77 @@ namespace GD3D.Objects
         [SerializeField] private bool multiTrigger;
         private bool _cantBeTouched = false;
 
+        [Space]
+        [SerializeField] private ParticleSystemRenderer particles;
+
+        [Space]
+        [SerializeField] private PoolObject triggerEffect;
+        [SerializeField] private int triggerPoolSize = 3;
+        private ObjectPool<PoolObject> _triggerPool;
+
+        [SerializeField] private Transform triggerEffectPos;
+
+        [Header("Jump Pad Color")]
+        [SerializeField] private Color padColor = Color.white;
+        [SerializeField] private float particleAlpha = 0.4f;
+        [SerializeField] private bool updateColors = true;
+
+        [Space]
+        [SerializeField] protected MeshRenderer meshRenderer;
+
+        //-- Player Related
         protected PlayerMain _player;
 
         private LayerMask playerLayer;
 
+        //-- Other Stuff
+        protected Transform _transform;
+
+        public virtual void Awake()
+        {
+            // Set transform
+            _transform = transform;
+
+            // Setup the triggerEffect and ringEffect by creating a copy and setting the copy for both objects
+            GameObject triggerObj = Instantiate(triggerEffect.gameObject, _transform.position, Quaternion.identity);
+            triggerObj.name = triggerEffect.gameObject.name;
+            triggerObj.transform.localPosition = Vector3.zero;
+
+            if (updateColors)
+            {
+                // Change the MaterialColorer to match the player colors
+                MaterialColorer colorer = triggerObj.GetComponentInChildren<MaterialColorer>();
+
+                // Make sure to have the same alpha value
+                Color playerColor = padColor;
+                playerColor.a = colorer.GetColor.a;
+
+                colorer.GetColor = playerColor;
+
+                // Also set colors for the particles
+                Color particleColor = padColor;
+                particleColor.a = particleAlpha;
+
+                MaterialColorer.UpdateMaterialColor(particles.material, particleColor, true, true);
+
+                // Also update colors of the mesh
+                MaterialColorer.UpdateRendererMaterials(meshRenderer, padColor, false, false);
+            }
+
+            // Create pools
+            _triggerPool = new ObjectPool<PoolObject>(triggerObj, triggerPoolSize);
+
+            // Destroy the newly created objects because we have no use out of them anymore
+            Destroy(triggerObj);
+        }
+
         public virtual void Start()
         {
-            // Set player layer
-            playerLayer = LayerMask.NameToLayer("Player");
-
             // Get player instance
             _player = PlayerMain.Instance;
+
+            // Set player layer
+            playerLayer = _player.GetLayer;
         }
 
         /// <summary>
@@ -47,15 +108,22 @@ namespace GD3D.Objects
             if (col.gameObject.layer == playerLayer)
             {
                 // Return if the correct conditions haven't been met
-                if (_cantBeTouched || !CustomJumpPadCondition())
+                if (_player.dead || _cantBeTouched || !CustomJumpPadCondition())
                 {
                     return;
                 }
 
-                // Make it so this pad cant be touched if it's not multiTrigger
+                // Make it so this pad cant be touched afterwards if it's not multiTrigger
                 if (!multiTrigger)
                 {
                     _cantBeTouched = true;
+                }
+
+                // Spawn trigger effect
+                if (!_triggerPool.IsEmpty())
+                {
+                    PoolObject triggerEffect = _triggerPool.SpawnFromPool(triggerEffectPos.position, triggerEffectPos.rotation);
+                    triggerEffect.RemoveAfterTime(0.3f);
                 }
 
                 // Enable the player trail

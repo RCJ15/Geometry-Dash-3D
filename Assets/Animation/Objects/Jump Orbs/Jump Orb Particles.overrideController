@@ -1,0 +1,13 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Jump Orb Particles
+  m_Controller: {fileID: 9100000, guid: 94cd3338d6a440b488a76cfe4a86b3c6, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: ac58bbfa6024d7b47980b38be6e7bbee, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: faa831c0ba699744d89fca0740e9c345, type: 2}

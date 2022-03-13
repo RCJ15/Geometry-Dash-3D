@@ -214,7 +214,8 @@ namespace GD3D.UI
 
         private bool ProcessTouchEvents()
         {
-            for (int i = 0; i < input.touchCount; ++i)
+            int inputTouchCount = input.touchCount;
+            for (int i = 0; i < inputTouchCount; ++i)
             {
                 Touch touch = input.GetTouch(i);
 

@@ -17,7 +17,6 @@ namespace GD3D.Player
         [SerializeField] private float jumpCooldown = 0.2f;
         private float _jumpCooldownTimer;
 
-
         [Header("Cube Rotation")]
         [SerializeField] private Transform objToRotate;
         [SerializeField] private float rotateSlerpSpeed = 0.55f;
@@ -74,6 +73,15 @@ namespace GD3D.Player
             }
 
             AngularVelocity();
+
+            // Jump when the input buffer is above 0, the player is on the ground and the jump cooldown has ran out
+            if ((Player.KeyHold || InputBufferAbove0) && onGround && _jumpCooldownTimer <= 0)
+            {
+                Jump();
+
+                // Reset buffer time
+                InputBuffer = 0;
+            }
         }
 
         /// <summary>
@@ -98,7 +106,7 @@ namespace GD3D.Player
             // Increase target rotation by angular velocity
             if (_angularVelocity != Vector3.zero)
             {
-                _targetRot += _angularVelocity * Time.deltaTime * UpsideDownMultiplier;
+                _targetRot += Time.deltaTime * UpsideDownMultiplier * _angularVelocity;
                 _targetRot.x %= 360;
                 _targetRot.y %= 360;
                 _targetRot.z %= 360;
@@ -140,24 +148,6 @@ namespace GD3D.Player
 
             // Do gravity & terminal velocity
             base.FixedUpdate();
-        }
-
-        public override void OnClick(PressMode mode)
-        {
-            // Can't jump if not on ground or if the jump is on cooldown
-            if (!onGround || _jumpCooldownTimer > 0)
-            {
-                return;
-            }
-
-            // Check the press mode
-            switch (mode)
-            {
-                // The button was held down
-                case PressMode.hold:
-                    Jump();
-                    break;
-            }
         }
 
         /// <summary>

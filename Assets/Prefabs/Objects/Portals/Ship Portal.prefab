@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   multiTrigger: 0
-  spawnEffect: {fileID: 0}
+  spawnEffect: {fileID: 2252898715516906830}
   flashTime: 0.5
   onEnterPortal:
     m_PersistentCalls:
@@ -238,6 +238,11 @@ PrefabInstance:
 --- !u!4 &9100924828317098150 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3151613431718136713, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
+  m_PrefabInstance: {fileID: 6192516962740300591}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &2252898715516906830 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5382885863240156769, guid: 8232bf31620d6214b8ae01ad4cc8c06e, type: 3}
   m_PrefabInstance: {fileID: 6192516962740300591}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8161286026164275917

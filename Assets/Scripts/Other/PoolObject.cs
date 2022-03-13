@@ -11,16 +11,27 @@ namespace GD3D.ObjectPooling
     {
         [SerializeField] protected UnityEvent OnSpawnEvent;
 
-        private Type poolType;
-        private object pool;
-        private MethodInfo removeMethodInfo;
+        [Space]
+        [SerializeField] protected bool playAnimOnSpawn;
+        protected Animator anim;
+
+        private Type _poolType;
+        private object _pool;
+        private MethodInfo _removeMethodInfo;
 
         /// <summary>
         /// Override this to determine what happens when the object has just been created from the pool (is only called once so it's basically a Start() method)
         /// </summary>
         public virtual void OnCreated()
         {
+            // Get animator
+            anim = GetComponent<Animator>();
 
+            // If that fails, get animator from children
+            if (anim == null)
+            {
+                anim = GetComponentInChildren<Animator>();
+            }
         }
 
         /// <summary>
@@ -29,6 +40,24 @@ namespace GD3D.ObjectPooling
         public virtual void OnSpawn()
         {
             OnSpawnEvent?.Invoke();
+
+            // Play anim on spawn
+            if (playAnimOnSpawn)
+            {
+                PlayAnim();
+            }
+        }
+
+        /// <summary>
+        /// Will play the Reset animation
+        /// </summary>
+        public void PlayAnim()
+        {
+            // Play reset anim
+            if (anim != null)
+            {
+                anim.SetTrigger("Reset");
+            }
         }
 
         /// <summary>
@@ -66,7 +95,7 @@ namespace GD3D.ObjectPooling
         /// </summary>
         public void Remove()
         {
-            removeMethodInfo.Invoke(pool, new object[] { this });
+            _removeMethodInfo.Invoke(_pool, new object[] { this });
         }
 
         /// <summary>
@@ -74,10 +103,10 @@ namespace GD3D.ObjectPooling
         /// </summary>
         public void SetPool<PoolType, ObjType>(PoolType pool) where PoolType : ObjectPool<ObjType> where ObjType : PoolObject
         {
-            poolType = typeof(PoolType);
-            this.pool = pool;
+            _poolType = typeof(PoolType);
+            _pool = pool;
 
-            removeMethodInfo = poolType.GetMethod("RemoveFromPool");
+            _removeMethodInfo = _poolType.GetMethod("RemoveFromPool");
         }
     }
 }

@@ -17,7 +17,7 @@ namespace GD3D.Player
 
         [Header("Death Effect Pooling")]
         [SerializeField] private int poolSize = 2;
-        private ObjectPool<PoolObject> pool;
+        private ObjectPool<PoolObject> _pool;
 
         [Space]
         [SerializeField] private PoolObject deathEffect;
@@ -45,7 +45,7 @@ namespace GD3D.Player
             colorer.GetColor = playerColor;
 
             // Create deathEffect pool
-            pool = new ObjectPool<PoolObject>(obj, poolSize);
+            _pool = new ObjectPool<PoolObject>(obj, poolSize);
 
             // Destroy the newly created object because we have no use out of it anymore
             Destroy(obj);
@@ -85,7 +85,7 @@ namespace GD3D.Player
             }
 
             // Spawn death effect
-            PoolObject obj = pool.SpawnFromPool(transform.position);
+            PoolObject obj = _pool.SpawnFromPool(transform.position);
 
             // Remove after a second
             obj.RemoveAfterTime(1);

@@ -45,7 +45,7 @@ namespace GD3D
             Vector3 direction = path.GetNormalAtDistance(Distance, EndOfPathInstruction.Stop);
 
             // Apply offset
-            targetPos += direction * zOffset;
+            targetPos += zOffset * direction;
 
             // Neutrilize Y
             targetPos.y = Transform.position.y;

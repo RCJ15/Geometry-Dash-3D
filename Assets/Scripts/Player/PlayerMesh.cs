@@ -20,6 +20,8 @@ namespace GD3D.Player
 
         private Dictionary<Gamemode, MeshFilter> _meshTrailDictionary = new Dictionary<Gamemode, MeshFilter>();
         private Dictionary<Gamemode, int> _trailMaterialIndexDictionary = new Dictionary<Gamemode, int>();
+        
+        private Dictionary<Gamemode, Transform> _trailPositionDictionary = new Dictionary<Gamemode, Transform>();
 
         [Space]
 
@@ -29,11 +31,17 @@ namespace GD3D.Player
         private MeshFilter _currentTrailMesh;
         private int _currentTrailMaterialIndex;
 
+        private Transform _currentTrailPosition;
+
+        #region Properties
         public GameObject CurrentMeshObject => _currentMeshObject;
         public Collider CurrentMeshHitbox => _currentMeshHitbox;
 
         public MeshFilter CurrentTrailMesh => _currentTrailMesh;
         public int CurrentTrailMaterialIndex => _currentTrailMaterialIndex;
+
+        public Transform CurrentTrailPosition => _currentTrailPosition;
+        #endregion
 
         private void Awake()
         {
@@ -45,6 +53,8 @@ namespace GD3D.Player
 
                 _meshTrailDictionary.Add(meshData.Gamemode, meshData.MeshTrail);
                 _trailMaterialIndexDictionary.Add(meshData.Gamemode, meshData.MeshTrailMaterialIndex);
+
+                _trailPositionDictionary.Add(meshData.Gamemode, meshData.TrailPosition);
 
                 // Disable all meshes by default
                 meshData.MeshObject.SetActive( false);
@@ -91,6 +101,7 @@ namespace GD3D.Player
             // Also do the same thing but for the trails stuff
             _currentTrailMesh = _meshTrailDictionary[newGamemode];
             _currentTrailMaterialIndex = _trailMaterialIndexDictionary[newGamemode];
+            _currentTrailPosition = _trailPositionDictionary[newGamemode];
         }
 
         /// <summary>
@@ -134,6 +145,9 @@ namespace GD3D.Player
             [Space]
             public MeshFilter MeshTrail;
             public int MeshTrailMaterialIndex;
+
+            [Space]
+            public Transform TrailPosition;
         }
     }
 }

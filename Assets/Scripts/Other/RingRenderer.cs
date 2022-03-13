@@ -15,15 +15,20 @@ namespace GD3D
     public class RingRenderer : MonoBehaviour
     {
         [Header("Ring Stats")]
-        [SerializeField] private int _points = 100;
-        [SerializeField] private float _ringSize = 1;
+        [SerializeField] private int points = 100;
+        [SerializeField] private float ringSize = 1;
 
         [Header("Camera")]
-        [SerializeField] private bool _lookAtCamera = true;
+        [SerializeField] private bool lookAtCamera = true;
         private Transform _cam;
 
+        [Header("Color")]
+        [SerializeField] private bool modifyColor = false;
+        [SerializeField] private Color startColor = Color.white;
+        [SerializeField] private Color endColor = Color.white;
+
         [Header("Update mode")]
-        [SerializeField] private UpdateMode _updateMode;
+        [SerializeField] private UpdateMode updateMode;
 
         private LineRenderer _lr;
 
@@ -39,15 +44,15 @@ namespace GD3D
             _cam = UnityEngine.Camera.main.transform;
 
             // Always update in awake regardless of the update mode
-            UpdateLines();
+            DoUpdate();
         }
 
         private void OnEnable()
         {
             // Update lines if the update mode is not onAwake
-            if (_updateMode != UpdateMode.onAwake)
+            if (updateMode != UpdateMode.onAwake)
             {
-                UpdateLines();
+                DoUpdate();
             }
         }
 
@@ -57,9 +62,9 @@ namespace GD3D
         private void Update()
         {
             // Update every frame if the update mode is set to every frame
-            if (_updateMode == UpdateMode.everyFrame)
+            if (updateMode == UpdateMode.everyFrame)
             {
-                UpdateLines();
+                DoUpdate();
             }
         }
 
@@ -69,9 +74,23 @@ namespace GD3D
         private void FixedUpdate()
         {
             // Update every fixed frame if the update mode is set to every fixed frame
-            if (_updateMode == UpdateMode.everyFixedFrame)
+            if (updateMode == UpdateMode.everyFixedFrame)
             {
-                UpdateLines();
+                DoUpdate();
+            }
+        }
+        
+        /// <summary>
+        /// Shortcut so I don't have to type this out every single time I need to update something in this script
+        /// </summary>
+        private void DoUpdate()
+        {
+            UpdateLines();
+            
+            // Update colors
+            if (modifyColor)
+            {
+                UpdateColor();
             }
         }
 
@@ -87,14 +106,14 @@ namespace GD3D
             }
 
             // Render no ring if there are no points or the size is 0
-            if (_points <= 0 || _ringSize <= 0)
+            if (points <= 0 || ringSize <= 0)
             {
                 _lr.positionCount = 0;
                 return;
             }
 
             // Look at the camera if we are supposed to do that
-            if (_lookAtCamera && _cam != null)
+            if (lookAtCamera && _cam != null)
             {
                 transform.LookAt(_cam, Vector3.up);
             }
@@ -103,7 +122,7 @@ namespace GD3D
             List<Vector3> poses = new List<Vector3>();
 
             // Loop for the amount of points needed
-            for (int i = 0; i < _points; i++)
+            for (int i = 0; i < points; i++)
             {
                 // Add the position to the list
                 poses.Add(GetPos(i));
@@ -119,19 +138,28 @@ namespace GD3D
         }
 
         /// <summary>
+        /// Updates the lines start and end color to match the <see cref="startColor"/> and the <see cref="endColor"/>
+        /// </summary>
+        public void UpdateColor()
+        {
+            _lr.startColor = startColor;
+            _lr.endColor = endColor;
+        }
+
+        /// <summary>
         /// Returns the position of the ring at the given <paramref name="index"/>
         /// </summary>
         private Vector3 GetPos(int index)
         {
             // Calculate the angle
-            float angle = Helpers.Map(0, _points, 0, 360, index);
+            float angle = Helpers.Map(0, points, 0, 360, index);
             angle = Helpers.LoopValue(angle, 0, 360);
 
             // Convert the angle into a normal
             Vector2 dir = Helpers.AngleToNormal(angle);
 
             // Calculate the new position
-            Vector3 newPos = dir * _ringSize;
+            Vector3 newPos = dir * ringSize;
 
             // Return the position
             return transform.TransformPoint(newPos);
@@ -158,15 +186,15 @@ namespace GD3D
             }
 
             // Render no ring if there are no points or the size is 0
-            if (_points <= 0 || _ringSize <= 0)
+            if (points <= 0 || ringSize <= 0)
             {
                 return;
             }
 
             // Simply draws the ring but with gizmos
-            for (int i = 0; i < _points; i++)
+            for (int i = 0; i < points; i++)
             {
-                float t = (float)i / (float)_points;
+                float t = (float)i / (float)points;
 
                 // Get the color
                 Gizmos.color = _lr.colorGradient.Evaluate(t);

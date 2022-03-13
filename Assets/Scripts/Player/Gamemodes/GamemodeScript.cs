@@ -41,6 +41,19 @@ namespace GD3D.Player
         internal GameObject _gameObject;
 
         /// <summary>
+        /// Shortcut for getting and setting "Player.InputBufferTime"
+        /// </summary>
+        protected float InputBuffer
+        {
+            get => Player.InputBuffer;
+            set => Player.InputBuffer = value;
+        }
+        /// <summary>
+        /// Shortcut for if the players input buffer is above 0. Use this for more lenient jump timings like in the cube or robot.
+        /// </summary>
+        protected bool InputBufferAbove0 => Player.InputBuffer > 0;
+
+        /// <summary>
         /// Shortcut for getting "GamemodeHandler.UpsideDown"
         /// </summary>
         protected bool UpsideDown => GamemodeHandler.UpsideDown;
@@ -201,7 +214,7 @@ namespace GD3D.Player
             // Gravity constant (do none if gravity is 0)
             if (gravity != 0)
             {
-                Rigidbody.AddForce(Vector3.down * gravity * UpsideDownMultiplier);
+                Rigidbody.AddForce(gravity * UpsideDownMultiplier * Vector3.down);
             }
 
             // Clamp Y velocity between terminal velocity if it's not 0

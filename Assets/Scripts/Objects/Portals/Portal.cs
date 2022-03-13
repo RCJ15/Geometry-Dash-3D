@@ -97,7 +97,7 @@ namespace GD3D.Objects
                 // Trigger spawn effect
                 if (spawnEffect != null)
                 {
-                    spawnEffect.SetTrigger("Portal Enter Effect");
+                    spawnEffect.SetTrigger("Reset");
                 }
 
                 // Disable if not multi trigger

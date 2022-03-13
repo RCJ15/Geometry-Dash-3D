@@ -327,7 +327,8 @@ namespace GD3D
         public static void UpdateRendererMaterials(Renderer renderer, Color color, bool updateEmission, bool updateSpecular)
         {
             // Loop through the amount of materials the mesh has
-            for (int i = 0; i < renderer.materials.Length; i++)
+            int length = renderer.materials.Length;
+            for (int i = 0; i < length; i++)
             {
                 // Update each material to have the correct color
                 UpdateMaterialColor(renderer.materials[i], color, updateEmission, updateSpecular);
@@ -341,7 +342,8 @@ namespace GD3D
         {
             // Loop through the length of either colors or the matrials
             // The one that's the smallest in length will be used
-            for (int i = 0; i < Mathf.Min(colors.Length, renderer.materials.Length); i++)
+            int length = Mathf.Min(colors.Length, renderer.materials.Length);
+            for (int i = 0; i < length; i++)
             {
                 // Update each material to have the correct color
                 UpdateMaterialColor(renderer.materials[i], colors[i], updateEmission, updateSpecular);

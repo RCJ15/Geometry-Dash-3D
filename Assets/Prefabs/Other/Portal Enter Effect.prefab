@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3151613431718136713}
-  - component: {fileID: 6906534074951022423}
   - component: {fileID: 2673283917634524608}
   - component: {fileID: 1168839836403384449}
   - component: {fileID: 5398551731483344203}
@@ -35,18 +34,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6906534074951022423
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3151613431718136715}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a17d1ad30cccc52449f560dce3e677b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!33 &2673283917634524608
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -112,7 +99,7 @@ MonoBehaviour:
   _renderer: {fileID: 1168839836403384449}
   _particles: {fileID: 0}
   _colorMode: 0
-  _color: {r: 1, g: 1, b: 1, a: 0.29803923}
+  _color: {r: 1, g: 1, b: 1, a: 0}
   _materialIndex: 0
   _colors:
   - {r: 1, g: 1, b: 1, a: 1}
@@ -130,7 +117,7 @@ Animator:
   m_GameObject: {fileID: 3151613431718136715}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 4533accc3e49e5440a49159d30658a4a, type: 2}
+  m_Controller: {fileID: 22100000, guid: 3863cd5ce881acf4fb936c4464ffb838, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

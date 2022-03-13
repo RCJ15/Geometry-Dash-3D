@@ -42,9 +42,9 @@ namespace GD3D.Player
 
         [Header("Pool")]
         [SerializeField] private int poolSize = 20;
-        private ObjectPool<PlayerSecondaryTrail> pool;
+        private ObjectPool<PlayerSecondaryTrail> _pool;
 
-        private MeshFilter meshFilter;
+        private MeshFilter _meshFilter;
 
         private void Awake()
         {
@@ -70,7 +70,7 @@ namespace GD3D.Player
             colorer.GetColor = playerColor;
 
             // Create pool
-            pool = new ObjectPool<PlayerSecondaryTrail>(obj, poolSize);
+            _pool = new ObjectPool<PlayerSecondaryTrail>(obj, poolSize);
 
             // Destroy the newly created object because we have no use out of it anymore
             Destroy(obj);
@@ -87,7 +87,7 @@ namespace GD3D.Player
         {
             base.Update();
 
-            if (pool.IsEmpty() || !HaveTrail || player.dead)
+            if (_pool.IsEmpty() || !HaveTrail || player.dead)
             {
                 return;
             }
@@ -99,11 +99,11 @@ namespace GD3D.Player
             }
 
             // Spawn trail
-            PlayerSecondaryTrail trail = pool.SpawnFromPool(meshFilter.transform.position, meshFilter.transform.rotation);
+            PlayerSecondaryTrail trail = _pool.SpawnFromPool(_meshFilter.transform.position, _meshFilter.transform.rotation);
             trail.RemoveAfterTime(trailLifetime);
 
             // Tween scale
-            trail.transform.localScale = meshFilter.transform.lossyScale - (Vector3.one * 0.01f);
+            trail.transform.localScale = _meshFilter.transform.lossyScale - (Vector3.one * 0.01f);
             trail.transform.LeanScale(trail.transform.localScale / 2, trailLifetime).setEase(LeanTweenType.linear);
 
             _currentTimeBtwTrails = timeBtwTrails;
@@ -117,12 +117,12 @@ namespace GD3D.Player
         private void OnChangeGamemode(Gamemode mode)
         {
             // Get mesh filter
-            meshFilter = player.mesh.CurrentTrailMesh;
+            _meshFilter = player.mesh.CurrentTrailMesh;
 
-            foreach (PlayerSecondaryTrail trail in pool.Queue)
+            foreach (PlayerSecondaryTrail trail in _pool.Queue)
             {
                 // Update mesh
-                trail.UpdateMesh(meshFilter.sharedMesh, player.mesh.CurrentTrailMaterialIndex);
+                trail.UpdateMesh(_meshFilter.sharedMesh, player.mesh.CurrentTrailMaterialIndex);
             }
         }
     }

@@ -88,7 +88,8 @@ namespace GD3D
                 bool isLeft = pathIndex == 0;
 
                 // Generate 2 triangles
-                for (int i = 0; i < newPath.NumPoints; i++)
+                int numPoints = newPath.NumPoints;
+                for (int i = 0; i < numPoints; i++)
                 {
                     Vector3 localUp = Vector3.up; // Force it to be the world up regardless
                     Vector3 localRight = Vector3.Cross(localUp, newPath.GetTangent(i));
@@ -114,7 +115,8 @@ namespace GD3D
                     {
                         int[] triangleMap = isLeft ? triangleMapLeft : triangleMapRight;
 
-                        for (int j = 0; j < triangleMap.Length; j++)
+                        int triangleLength = triangleMap.Length;
+                        for (int j = 0; j < triangleLength; j++)
                         {
                             int index = vertIndex + triangleMap[j];
 
@@ -133,61 +135,6 @@ namespace GD3D
 
                 pathIndex++;
             }
-
-            //int[] triangleMap = {
-            //    2, 0, 4,
-            //    2, 4, 6,
-
-            //    1, 3, 5,
-            //    5, 3, 7,
-            //};
-
-            //for (int i = 0; i < path.NumPoints; i++)
-            //{
-            //    Vector3 localUp = Vector3.up; // Force it to be the world up regardless
-            //    Vector3 localRight = Vector3.Cross(localUp, path.GetTangent(i));
-
-            //    // Find position to left and right of current path vertex
-            //    Vector3 vertSideA = path.GetPoint(i) - localRight * Mathf.Abs(width);
-            //    Vector3 vertSideB = path.GetPoint(i) + localRight * Mathf.Abs(width);
-
-            //    // Add vertices
-            //    verts[vertIndex + 0] = vertSideA + (localUp * height / 2); // Top Left
-            //    verts[vertIndex + 1] = vertSideB + (localUp * height / 2); // Top Right
-            //    verts[vertIndex + 2] = vertSideA - (localUp * height / 2); // Bottom Left
-            //    verts[vertIndex + 3] = vertSideB - (localUp * height / 2); // Bottom Right
-
-            //    // Set uvs
-            //    uvs[vertIndex + 0] = new Vector2(path.times[i], 1); // Top Left
-            //    uvs[vertIndex + 1] = new Vector2(path.times[i], 1); // Top Right
-            //    uvs[vertIndex + 2] = new Vector2(path.times[i], 0); // Bottom Left
-            //    uvs[vertIndex + 3] = new Vector2(path.times[i], 0); // Bottom Right
-
-            //    // Normals
-            //    normals[vertIndex + 0] = localRight;
-            //    normals[vertIndex + 1] = -localRight;
-            //    normals[vertIndex + 2] = localRight;
-            //    normals[vertIndex + 3] = -localRight;
-
-            //    // Set triangle indices
-            //    if (i < path.NumPoints - 1 || path.isClosedLoop)
-            //    {
-            //        for (int j = 0; j < triangleMap.Length; j++)
-            //        {
-            //            int index = vertIndex + triangleMap[j];
-
-            //            if (index > verts.Length - 1)
-            //            {
-            //                continue;
-            //            }
-
-            //            triangles[triIndex + j] = index;
-            //        }
-            //    }
-
-            //    vertIndex += 4;
-            //    triIndex += triangleMap.Length;
-            //}
 
             mesh.Clear();
             mesh.vertices = verts;
@@ -249,10 +196,13 @@ namespace GD3D
 
         private VertexPath[] GetFixedPaths(float distance)
         {
+            VertexPath path = this.path;
+
             List<Vector3> rightPoints = new List<Vector3>();
             List<Vector3> leftPoints = new List<Vector3>();
 
-            for (int i = 0; i < path.NumPoints; i++)
+            int numPoints = path.NumPoints;
+            for (int i = 0; i < numPoints; i++)
             {
                 Vector3 localUp = Vector3.up; // Force it to be the world up regardless
                 Vector3 localRight = Vector3.Cross(localUp, path.GetTangent(i));

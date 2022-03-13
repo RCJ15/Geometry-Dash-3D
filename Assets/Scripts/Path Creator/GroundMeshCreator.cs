@@ -78,6 +78,8 @@ namespace GD3D
 
         void CreateGroundMesh()
         {
+            VertexPath path = this.path;
+
             Vector3[] verts = new Vector3[path.NumPoints * 8];
             Vector2[] uvs = new Vector2[verts.Length];
             Vector3[] normals = new Vector3[verts.Length];
@@ -106,7 +108,8 @@ namespace GD3D
                 13, 15, 5
             };
 
-            for (int i = 0; i < path.NumPoints; i++)
+            int numPoints = path.NumPoints;
+            for (int i = 0; i < numPoints; i++)
             {
                 Vector3 localUp = Vector3.up; // Force it to be the world up regardless
                 Vector3 localRight = Vector3.Cross(localUp, path.GetTangent(i));
@@ -156,14 +159,16 @@ namespace GD3D
                 // Set triangle indices
                 if (i < path.NumPoints - 1 || path.isClosedLoop)
                 {
-                    for (int j = 0; j < triangleMap.Length; j++)
+                    int triangleLength = triangleMap.Length;
+                    for (int j = 0; j < triangleLength; j++)
                     {
                         roadTriangles[triIndex + j] = (vertIndex + triangleMap[j]) % verts.Length;
                         // reverse triangle map for under road so that triangles wind the other way and are visible from underneath
                         underRoadTriangles[triIndex + j] = (vertIndex + triangleMap[triangleMap.Length - 1 - j] + 2) % verts.Length;
                     }
 
-                    for (int j = 0; j < sidesTriangleMap.Length; j++)
+                    int sidesTriangleLength = sidesTriangleMap.Length;
+                    for (int j = 0; j < sidesTriangleLength; j++)
                     {
                         int index = (vertIndex + sidesTriangleMap[j]) % verts.Length;
 
@@ -188,6 +193,8 @@ namespace GD3D
 
         public void GenerateGroundExtendedSides()
         {
+            VertexPath path = this.path;
+
             Vector3[] verts = new Vector3[path.NumPoints * 4];
             Vector2[] uvs = new Vector2[verts.Length];
             Vector3[] normals = new Vector3[verts.Length];
@@ -206,7 +213,8 @@ namespace GD3D
                 3, 5, 7,
             };
 
-            for (int i = 0; i < path.NumPoints; i++)
+            int numPoints = path.NumPoints;
+            for (int i = 0; i < numPoints; i++)
             {
                 Vector3 localUp = Vector3.up; // Force it to be the world up regardless
                 Vector3 localRight = Vector3.Cross(localUp, path.GetTangent(i));

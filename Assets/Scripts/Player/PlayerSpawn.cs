@@ -12,7 +12,7 @@ namespace GD3D.Player
     public class PlayerSpawn : PlayerScript
     {
         [SerializeField] private int poolSize = 4;
-        private ObjectPool<PoolObject> pool;
+        private ObjectPool<PoolObject> _pool;
 
         [SerializeField] private PoolObject respawnRing;
 
@@ -42,7 +42,7 @@ namespace GD3D.Player
             lr.endColor = PlayerColor1;
 
             // Create pool
-            pool = new ObjectPool<PoolObject>(obj, poolSize,
+            _pool = new ObjectPool<PoolObject>(obj, poolSize,
                 (poolObj) =>
                 {
                     poolObj.transform.SetParent(_transform);
@@ -135,7 +135,7 @@ namespace GD3D.Player
         private void SpawnRespawnRing()
         {
             // Spawn the ring
-            PoolObject obj = pool.SpawnFromPool(_transform.position);
+            PoolObject obj = _pool.SpawnFromPool(_transform.position);
             obj.RemoveAfterTime(0.5f);
         }
     }

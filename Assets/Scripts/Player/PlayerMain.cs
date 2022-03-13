@@ -29,6 +29,21 @@ namespace GD3D.Player
         //-- Other Stuff
         internal bool dead;
 
+        private int _layerInt = -9999;
+        public int GetLayer
+        {
+            get
+            {
+                // Cache layer
+                if (_layerInt < 0)
+                {
+                    _layerInt = gameObject.layer;
+                }
+
+                return _layerInt;
+            }
+        }
+
         //-- Events
         public Action OnDeath;
         public Action OnRespawn;
@@ -41,11 +56,25 @@ namespace GD3D.Player
         internal Quaternion startRotation;
 
         //-- Input
-        public Key ClickKey;
+        private Key _clickKey;
 
-        public bool KeyDown;
-        public bool KeyHold;
-        public bool KeyUp;
+        private bool _keyDown;
+        private bool _keyHold;
+        private bool _keyUp;
+
+        [SerializeField] private float inputBufferTime = 0.1f;
+        private float _currentInputBufferTime;
+
+        public float InputBuffer
+        {
+            get => _currentInputBufferTime;
+            set => _currentInputBufferTime = value;
+        }
+
+        public Key ClickKey => _clickKey;
+        public bool KeyDown => _keyDown;
+        public bool KeyHold => _keyHold;
+        public bool KeyUp => _keyUp;
 
         private readonly static Array s_pressModeValues = Enum.GetValues(typeof(PressMode));
 
@@ -60,7 +89,7 @@ namespace GD3D.Player
             startRotation = transform.rotation;
 
             // Get input key
-            ClickKey = PlayerInput.GetKey("Click");
+            _clickKey = PlayerInput.GetKey("Click");
 
             GetPlayerScripts();
         }
@@ -94,15 +123,15 @@ namespace GD3D.Player
                 switch (mode)
                 {
                     case PressMode.hold:
-                        KeyHold = keyPressed;
+                        _keyHold = keyPressed;
                         break;
 
                     case PressMode.down:
-                        KeyDown = keyPressed;
+                        _keyDown = keyPressed;
                         break;
 
                     case PressMode.up:
-                        KeyUp = keyPressed;
+                        _keyUp = keyPressed;
                         break;
                 }
 
@@ -112,6 +141,16 @@ namespace GD3D.Player
                     // Call the OnClick event with this press mode
                     OnClick?.Invoke(mode);
                 }
+            }
+
+            // Input buffer time
+            if (KeyDown)
+            {
+                _currentInputBufferTime = inputBufferTime;
+            }
+            else if (_currentInputBufferTime > 0)
+            {
+                _currentInputBufferTime -= Time.deltaTime;
             }
         }
 

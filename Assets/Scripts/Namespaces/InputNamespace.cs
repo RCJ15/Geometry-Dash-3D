@@ -189,6 +189,8 @@ namespace GD3D.CustomInput
         /// </summary>
         public void FixArrays()
         {
+            int maxKeys = this.maxKeys;
+
             // IF the max keys are 0 or below, then return
             if (maxKeys <= 0)
                 return;
