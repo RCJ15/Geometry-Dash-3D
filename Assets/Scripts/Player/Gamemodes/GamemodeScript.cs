@@ -30,18 +30,31 @@ namespace GD3D.Player
         internal bool onGround;
         private bool _landedOnGround;
 
-        protected float XRot => Mathf.Clamp(Rigidbody.velocity.z, -1, 1) * 15;
-
         //-- Component references
         [HideInInspector] public PlayerGamemodeHandler GamemodeHandler;
         [HideInInspector] public PlayerMain Player;
+        [HideInInspector] public PlayerMovement PlayerMovement;
         [HideInInspector] public Rigidbody Rigidbody;
 
         internal Transform _transform;
         internal GameObject _gameObject;
 
+        //-- Properties (shortcuts)
         /// <summary>
-        /// Shortcut for getting and setting "Player.InputBufferTime"
+        /// Shortcut for getting <see cref="PlayerMovement.Current3DOffset"/>
+        /// </summary>
+        protected float Current3DOffset => PlayerMovement.Current3DOffset;
+        /// <summary>
+        /// Shortcut for getting <see cref="PlayerMovement.OffsetVelocity"/>
+        /// </summary>
+        protected float OffsetVelocity => PlayerMovement.OffsetVelocity;
+        /// <summary>
+        /// Is basically just the OffsetVelocity but multiplied by -200
+        /// </summary>
+        protected float XRot => OffsetVelocity * -200;
+
+        /// <summary>
+        /// Shortcut for getting and setting <see cref="PlayerMain.InputBuffer"/>
         /// </summary>
         protected float InputBuffer
         {
@@ -49,21 +62,22 @@ namespace GD3D.Player
             set => Player.InputBuffer = value;
         }
         /// <summary>
-        /// Shortcut for if the players input buffer is above 0. Use this for more lenient jump timings like in the cube or robot.
+        /// Returns true if the players input buffer is above 0. Use this for more lenient jump timings like in the cube or robot.
         /// </summary>
         protected bool InputBufferAbove0 => Player.InputBuffer > 0;
 
         /// <summary>
-        /// Shortcut for getting "GamemodeHandler.UpsideDown"
+        /// Shortcut for getting <see cref="PlayerGamemodeHandler.UpsideDown"/>
         /// </summary>
         protected bool UpsideDown => GamemodeHandler.UpsideDown;
         /// <summary>
-        /// Will return -1 if the player is upside down, otherwise it'll be 1. Multiply stuff with this for upside down behaviour
+        /// Will return -1 if the player is upside down, otherwise it'll be 1. <para/>
+        /// Multiply stuff with this for upside down behaviour
         /// </summary>
         protected float UpsideDownMultiplier => UpsideDown ? -1 : 1;
 
         /// <summary>
-        /// Shortcut for getting "GamemodeHandler.IsSmall"
+        /// Shortcut for getting <see cref="PlayerGamemodeHandler.IsSmall"/>
         /// </summary>
         protected bool IsSmall => GamemodeHandler.IsSmall;
 
@@ -79,7 +93,7 @@ namespace GD3D.Player
         /// <summary>
         /// Shortcut for getting <see cref="PlayerMain.dead"/>
         /// </summary>
-        protected bool dead => Player.dead;
+        protected bool Dead => Player.dead;
 
         /// <summary>
         /// Shortcut for getting and setting <see cref="PlayerTrailManager.HaveTrail"/>

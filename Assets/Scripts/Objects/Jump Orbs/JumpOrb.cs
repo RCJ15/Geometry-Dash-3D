@@ -170,6 +170,9 @@ namespace GD3D
             return true;
         }
 
+        /// <summary>
+        /// Override this to decide what happens when the player dies
+        /// </summary>
         public virtual void OnDeath()
         {
             // Set CantHitOrbs to false
@@ -177,6 +180,8 @@ namespace GD3D
             {
                 CantHitOrbs = false;
             }
+
+            _cantBePressed = false;
         }
 
         public virtual void OnTriggerEnter(Collider col)

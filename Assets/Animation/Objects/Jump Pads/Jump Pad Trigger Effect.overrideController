@@ -7,5 +7,7 @@ AnimatorOverrideController:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Jump Pad Trigger Effect
-  m_Controller: {fileID: 0}
-  m_Clips: []
+  m_Controller: {fileID: 9100000, guid: 4533accc3e49e5440a49159d30658a4a, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 8f02d1eeefdd7e54892294467169f7ed, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 90f2fd7a3af3b6b43922ab66fce695b7, type: 2}

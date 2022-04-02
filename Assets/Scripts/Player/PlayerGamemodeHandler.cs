@@ -102,6 +102,7 @@ namespace GD3D.Player
         {
             script.GamemodeHandler = this;
             script.Player = player;
+            script.PlayerMovement = player.movement;
             script.Rigidbody = rb;
 
             script.Start();

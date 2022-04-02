@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8592000551241358399}
   m_Layer: 0
   m_Name: Pulse Antenna Medium
-  m_TagString: Untagged
+  m_TagString: Pulse Antenna
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -46,9 +46,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pathCreator: {fileID: 0}
-  distance: 150
-  zOffset: 0
-  yRotationOffset: 90
+  Distance: 0
+  ZOffset: 0
+  YRotationOffset: 0
   justCreated: 0
   subcribed: 1
   oldDistance: 150

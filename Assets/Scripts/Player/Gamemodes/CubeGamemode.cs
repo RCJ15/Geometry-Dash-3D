@@ -61,7 +61,7 @@ namespace GD3D.Player
         public override void Update()
         {
             // Don't do anything if the player is dead
-            if (dead)
+            if (Dead)
                 return;
 
             base.Update();
@@ -99,7 +99,7 @@ namespace GD3D.Player
 
                 _angularVelocity.z = -force;
 
-                // Set the angular velocity X to the rigidbodies current Z velocity
+                // Set the angular velocity X to the XRot
                 _targetRot.x = XRot;
             }
 
@@ -138,7 +138,7 @@ namespace GD3D.Player
         public override void FixedUpdate()
         {
             // Don't do anything if the player is dead
-            if (dead)
+            if (Dead)
                 return;
 
             // Set rotation

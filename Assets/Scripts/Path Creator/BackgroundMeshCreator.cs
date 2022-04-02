@@ -4,6 +4,9 @@ using UnityEngine;
 using PathCreation;
 using PathCreation.Utility;
 using PathCreation.Examples;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace GD3D
 {
@@ -233,4 +236,24 @@ namespace GD3D
             return new VertexPath[] { new VertexPath(leftPath, transform), new VertexPath(rightPath, transform) };
         }
     }
+
+#if UNITY_EDITOR
+    [CustomEditor(typeof(BackgroundMeshCreator))]
+    public class BackgroundMeshCreatorAutoUpdater : Editor
+    {
+        private BackgroundMeshCreator backgroundMeshCreator;
+
+        private void OnEnable()
+        {
+            // Get backgroundMeshCreator
+            backgroundMeshCreator = (BackgroundMeshCreator)target;
+        }
+
+        private void OnDisable()
+        {
+            // Auto update
+            backgroundMeshCreator.TriggerUpdate();
+        }
+    }
+#endif
 }

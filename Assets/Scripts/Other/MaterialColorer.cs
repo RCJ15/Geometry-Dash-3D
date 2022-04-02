@@ -28,6 +28,7 @@ namespace GD3D
         [SerializeField] internal ColorMode _colorMode;
 
         [SerializeField] private Color _color = Color.white;
+        [SerializeField] private bool _onlyModifyAlpha;
         [SerializeField] private int _materialIndex;
 
         [SerializeField] private Color[] _colors = new Color[] { Color.white };
@@ -289,7 +290,7 @@ namespace GD3D
         /// </summary>
         private void SetArrayColor(Color[] colors)
         {
-            UpdateRendererMaterials(GetRenderer, colors, _updateEmmision, _updateSpecular);
+            UpdateRendererMaterials(GetRenderer, colors, _updateEmmision, _updateSpecular, _onlyModifyAlpha);
         }
 
         /// <summary>
@@ -297,15 +298,20 @@ namespace GD3D
         /// </summary>
         private void SetSingleColor(Color color)
         {
-            UpdateMaterialColor(materials[_materialIndex], color, _updateEmmision, _updateSpecular);
+            UpdateMaterialColor(materials[_materialIndex], color, _updateEmmision, _updateSpecular, _onlyModifyAlpha);
         }
 
         /// <summary>
         /// Updates the given materials color to match the given color
         /// </summary>
-        public static void UpdateMaterialColor(Material mat, Color color, bool updateEmission, bool updateSpecular)
+        public static void UpdateMaterialColor(Material mat, Color color, bool updateEmission, bool updateSpecular, bool onlyModifyAlpha = false)
         {
             // Set the color
+            if (onlyModifyAlpha)
+            {
+                color = new Color(mat.color.r, mat.color.g, mat.color.b, color.a);
+            }
+
             mat.color = color;
 
             // Set the emission color if updateEmmision is true
@@ -324,21 +330,21 @@ namespace GD3D
         /// <summary>
         /// Updates each of the given renderers materials to match the given color
         /// </summary>
-        public static void UpdateRendererMaterials(Renderer renderer, Color color, bool updateEmission, bool updateSpecular)
+        public static void UpdateRendererMaterials(Renderer renderer, Color color, bool updateEmission, bool updateSpecular, bool onlyModifyAlpha = false)
         {
             // Loop through the amount of materials the mesh has
             int length = renderer.materials.Length;
             for (int i = 0; i < length; i++)
             {
                 // Update each material to have the correct color
-                UpdateMaterialColor(renderer.materials[i], color, updateEmission, updateSpecular);
+                UpdateMaterialColor(renderer.materials[i], color, updateEmission, updateSpecular, onlyModifyAlpha);
             }
         }
 
         /// <summary>
         /// Updates each of the given renderers materials to match the correct color in the given color array
         /// </summary>
-        public static void UpdateRendererMaterials(Renderer renderer, Color[] colors, bool updateEmission, bool updateSpecular)
+        public static void UpdateRendererMaterials(Renderer renderer, Color[] colors, bool updateEmission, bool updateSpecular, bool onlyModifyAlpha = false)
         {
             // Loop through the length of either colors or the matrials
             // The one that's the smallest in length will be used
@@ -346,7 +352,7 @@ namespace GD3D
             for (int i = 0; i < length; i++)
             {
                 // Update each material to have the correct color
-                UpdateMaterialColor(renderer.materials[i], colors[i], updateEmission, updateSpecular);
+                UpdateMaterialColor(renderer.materials[i], colors[i], updateEmission, updateSpecular, onlyModifyAlpha);
             }
         }
 
@@ -389,6 +395,7 @@ namespace GD3D
     /// The custom editor for the Material Colorer.
     /// </summary>
     [CustomEditor(typeof(MaterialColorer))]
+    [CanEditMultipleObjects]
     public class MaterialColorerEditor : Editor
     {
         private MaterialColorer materialColorer;
@@ -434,6 +441,8 @@ namespace GD3D
                     Serialize("_copyFromObject");
                     break;
             }
+
+            Serialize("_onlyModifyAlpha");
 
             //-- Update mode
             EditorGUILayout.Space();

@@ -14,14 +14,15 @@ namespace GD3D
     public class AttachToPath : MonoBehaviour
     {
         [SerializeField] private PathCreator pathCreator;
+        public PathCreator PathCreator => pathCreator;
         private VertexPath path => pathCreator.path;
 
         [Header("Position Settings")]
         public float Distance;
-        [SerializeField] private float zOffset;
+        public float ZOffset;
 
         [Header("Rotation")]
-        [SerializeField] private float yRotationOffset;
+        public float YRotationOffset;
 
         private Transform _transform;
         private Transform Transform
@@ -45,7 +46,7 @@ namespace GD3D
             Vector3 direction = path.GetNormalAtDistance(Distance, EndOfPathInstruction.Stop);
 
             // Apply offset
-            targetPos += zOffset * direction;
+            targetPos += ZOffset * direction;
 
             // Neutrilize Y
             targetPos.y = Transform.position.y;
@@ -61,7 +62,7 @@ namespace GD3D
             targetRot.z = transform.rotation.eulerAngles.z;
 
             // Apply offset
-            targetRot.y += yRotationOffset;
+            targetRot.y += YRotationOffset;
 
             Transform.rotation = Quaternion.Euler(targetRot);
         }
@@ -99,7 +100,6 @@ namespace GD3D
 
             public override void OnInspectorGUI()
             {
-
                 if (attachToPath.pathCreator != null)
                 {
                     EditorGUI.BeginChangeCheck();
@@ -124,14 +124,14 @@ namespace GD3D
 
                 if (EditorGUI.EndChangeCheck() || attachToPath.Transform.position != attachToPath.oldPos)
                 {
-                    if (attachToPath.zOffset == attachToPath.oldZOffset && attachToPath.Distance == attachToPath.oldDistance)
+                    if (attachToPath.ZOffset == attachToPath.oldZOffset && attachToPath.Distance == attachToPath.oldDistance)
                     {
                         Update();
                     }
                     else
                     {
                         PrefabUtility.RecordPrefabInstancePropertyModifications(attachToPath);
-                        attachToPath.oldZOffset = attachToPath.zOffset;
+                        attachToPath.oldZOffset = attachToPath.ZOffset;
                         attachToPath.oldDistance = attachToPath.Distance;
 
                         attachToPath.UpdatePosition();
@@ -171,7 +171,7 @@ namespace GD3D
                 attachToPath.oldPos = attachToPath.Transform.position;
                 attachToPath.justCreated = false;
 
-                attachToPath.oldZOffset = attachToPath.zOffset;
+                attachToPath.oldZOffset = attachToPath.ZOffset;
                 attachToPath.oldDistance = attachToPath.Distance;
 
                 Update();

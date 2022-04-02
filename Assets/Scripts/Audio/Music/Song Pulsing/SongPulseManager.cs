@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Random = UnityEngine.Random;
 
 namespace GD3D.Audio.Pulsing
 {
@@ -22,6 +23,8 @@ namespace GD3D.Audio.Pulsing
 
         private int _sampleAmount;
         private float _frequencyMultiplier;
+
+        [SerializeField] private Sprite[] pulseAntennaSprites;
 
         void Start()
         {
@@ -44,7 +47,7 @@ namespace GD3D.Audio.Pulsing
             _frequencyMultiplier = (float)44100 / (float)_source.clip.frequency;
 
             // Get the correct sample amount for the duration of updateStep
-            int totalSamples = _source.clip.samples * _source.clip.channels;
+            int totalSamples = _source.clip.samples;
 
             float samplesPerSecond = (float)totalSamples / (float)_source.clip.length;
 
@@ -53,6 +56,18 @@ namespace GD3D.Audio.Pulsing
             _sampleAmount = Mathf.CeilToInt(samplesPerUpdateStep);
 
             _clipSampleData = new float[_sampleAmount];
+
+            // Randomize the pulse antenna sprite
+            int face = Random.Range(0, 3);
+            Sprite sprite = pulseAntennaSprites[face];
+
+            // Set sprites of all pulse antennas
+            foreach (GameObject pulseAntenna in GameObject.FindGameObjectsWithTag("Pulse Antenna"))
+            {
+                SpriteRenderer spriteRenderer = pulseAntenna.GetComponentInChildren<SpriteRenderer>();
+
+                spriteRenderer.sprite = sprite;
+            }
         }
 
         private void FixedUpdate()
@@ -82,7 +97,7 @@ namespace GD3D.Audio.Pulsing
                 vol += Mathf.Abs(sample);
             }
 
-            vol /= _clipSampleData.Length;
+            vol /= (float)_clipSampleData.Length;
 
             // Fix it so it works on all frequencies
             vol *= _frequencyMultiplier;

@@ -1,29 +1,9 @@
 fileFormatVersion: 2
-guid: 3fbee415a65c38642a61ba519278754e
+guid: 567cfcb8b7175a04297ae2082cc5b6ef
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Basic Block Bottom
-    second: {fileID: 2100000, guid: 5a0078e41e1ace24dada39329cc8ecc8, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Basic Block Edges
-    second: {fileID: 2100000, guid: 0cf401c0a1125284a85099be2da188f5, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Basic Block Sides
-    second: {fileID: 2100000, guid: b2f59e7eca2a73f419da10e31c6c05cf, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Basic Block Top
-    second: {fileID: 2100000, guid: a92702b58df79dc4099bd9cbf152e552, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -54,7 +34,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 0.5
+    globalScale: 1
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -105,7 +85,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.5
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

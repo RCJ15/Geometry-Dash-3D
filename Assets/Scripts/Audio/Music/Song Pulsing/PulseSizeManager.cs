@@ -1,9 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace GD3D.Audio.Pulsing
 {
+    /// <summary>
+    /// Changes 
+    /// </summary>
     public class PulseSizeManager : SongPulseObject
     {
         [Header("General Info")]
@@ -33,6 +37,10 @@ namespace GD3D.Audio.Pulsing
 
         private void Awake()
         {
+            // Remove all empty slots in the dictionary
+            pulseSizeManagers = pulseSizeManagers.Where(pair => pair.Value != null)
+                              .ToDictionary(pair => pair.Key, pair => pair.Value);
+
             // Destroy itself if the pulse type already exists
             if (pulseSizeManagers.ContainsKey(pulseType))
             {

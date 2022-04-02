@@ -22,6 +22,15 @@ namespace GD3D.Player
             new Key("Click",
                 Key.NewKeys(KeyboardKey.UpArrow, KeyboardKey.W, KeyboardKey.LeftMouseButton, KeyboardKey.Space, KeyboardKey.Return, KeyboardKey.KeypadEnter),
                 Key.NewKeys(GamepadKey.AButton, GamepadKey.BButton, GamepadKey.XButton, GamepadKey.YButton)),
+            
+            //-- 3D Mode
+            new Key("3D Move Left",
+                Key.NewKeys(KeyboardKey.LeftArrow, KeyboardKey.A),
+                Key.NewKeys(GamepadKey.LeftStickLeft, GamepadKey.DpadLeft)),
+
+            new Key("3D Move Right",
+                Key.NewKeys(KeyboardKey.RightArrow, KeyboardKey.D),
+                Key.NewKeys(GamepadKey.LeftStickRight, GamepadKey.DpadRight)),
 
             //-- Other
             new Key("Pause",

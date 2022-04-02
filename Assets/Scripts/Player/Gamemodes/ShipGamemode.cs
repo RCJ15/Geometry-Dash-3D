@@ -99,7 +99,7 @@ namespace GD3D.Player
             {
                 _targetRot.z = Rigidbody.velocity.y * xRotationModifier;
 
-                // Set X velocity
+                // Set the angular velocity X to the XRot
                 _targetRot.x = XRot;
             }
             // Otherwise do not rotate at all

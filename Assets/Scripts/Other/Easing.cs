@@ -33,11 +33,11 @@ namespace GD3D.Easing
 
         /// <summary>
         /// Makes the tween stop. <para/>
-        /// Had to make this myself because LeanTween decided to depricate their old method for this
+        /// Had to make this myself because LeanTween decided to make their old method obsolete
         /// </summary>
-        public static LTDescr cancel(this LTDescr tween)
+        public static LTDescr cancel(this LTDescr tween, bool callOnComplete = false)
         {
-            LeanTween.cancel(tween.uniqueId);
+            LeanTween.cancel(tween.uniqueId, callOnComplete);
 
             return tween;
         }
@@ -105,9 +105,9 @@ namespace GD3D.Easing
 
                 case EasingType.exponentialInOut:
                     return LeanTweenType.easeInOutExpo;
-                case EasingType.eponentialIn:
+                case EasingType.exponentialIn:
                     return LeanTweenType.easeInExpo;
-                case EasingType.eponentialOut:
+                case EasingType.exponentialOut:
                     return LeanTweenType.easeOutExpo;
 
                 case EasingType.sineInOut:
@@ -151,8 +151,8 @@ namespace GD3D.Easing
         bounceOut,
 
         exponentialInOut,
-        eponentialIn,
-        eponentialOut,
+        exponentialIn,
+        exponentialOut,
 
         sineInOut,
         sineIn,

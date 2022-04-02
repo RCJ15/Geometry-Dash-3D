@@ -86,6 +86,9 @@ namespace GD3D.Objects
 
             // Set player layer
             playerLayer = _player.GetLayer;
+
+            // Subscribe to events
+            _player.OnDeath += OnDeath;
         }
 
         /// <summary>
@@ -132,6 +135,14 @@ namespace GD3D.Objects
                 // Call OnTouched method
                 OnTouched();
             }
+        }
+
+        /// <summary>
+        /// Override this to decide what happens when the player dies
+        /// </summary>
+        public virtual void OnDeath()
+        {
+            _cantBeTouched = false;
         }
     }
 }

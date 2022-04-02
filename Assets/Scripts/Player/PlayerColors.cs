@@ -49,6 +49,7 @@ namespace GD3D.Player
             {
                 // Get the color depending on the index
                 Color color = materialColorData.playerColorIndex == 2 ? color2 : color1;
+                color.a = materialColorData.Material.color.a;
 
                 // Update color
                 MaterialColorer.UpdateMaterialColor(materialColorData.Material, color, materialColorData.ChangeEmission, materialColorData.ChangeSpecular);
@@ -108,6 +109,8 @@ namespace GD3D.Player
                 {
                     colors.UpdateMaterialColors(colors.Color1, colors.Color2);
                 }
+
+                serializedObject.ApplyModifiedProperties();
             }
 
             private void Serialize(string name)
