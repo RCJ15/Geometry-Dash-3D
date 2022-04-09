@@ -104,7 +104,9 @@ namespace GD3D.Player
 
             // Tween scale
             trail.transform.localScale = _meshFilter.transform.lossyScale - (Vector3.one * 0.01f);
-            trail.transform.LeanScale(trail.transform.localScale / 2, trailLifetime).setEase(LeanTweenType.linear);
+            //trail.transform.LeanScale(trail.transform.localScale / 2, trailLifetime).setEase(LeanTweenType.linear);
+            // IMPLEMENT EASING HERE
+
 
             _currentTimeBtwTrails = timeBtwTrails;
         }

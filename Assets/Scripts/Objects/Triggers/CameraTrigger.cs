@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GD3D.Camera;
-using GD3D.Easing;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -39,6 +38,9 @@ namespace GD3D.Objects
 
         public override void OnTriggered()
         {
+            // IMPLEMENT EASING HERE
+
+            /*
             // Change different camera values based on the mode
             switch (mode)
             {
@@ -57,6 +59,7 @@ namespace GD3D.Objects
                 default:
                     return;
             }
+            */
         }
 
         /// <summary>

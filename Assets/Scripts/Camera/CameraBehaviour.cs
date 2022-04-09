@@ -2,7 +2,6 @@ using GD3D.Player;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GD3D.Easing;
 
 namespace GD3D.Camera
 {
@@ -65,11 +64,6 @@ namespace GD3D.Camera
 
         private Transform _transform;
         private PlayerMain _player;
-
-        //-- Tweens
-        private LTDescr currentOffsetTween;
-        private LTDescr currentRotationTween;
-        private LTDescr currentFovTween;
 
         private void Awake()
         {
@@ -194,6 +188,9 @@ namespace GD3D.Camera
             _position.y = Mathf.Lerp(_position.y, _targetPosition.y, yLerpDelta);
         }
 
+        // IMPLEMENT EASING HERE
+
+        /*
         #region Tweening
         /// <summary>
         /// Tweens the current offset to the given <paramref name="target"/> offset using the given <paramref name="easingType"/> over the given <paramref name="time"/>.
@@ -268,6 +265,7 @@ namespace GD3D.Camera
             );
         }
         #endregion
+        */
 
         /// <summary>
         /// Shakes the camera

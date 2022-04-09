@@ -8,28 +8,27 @@ namespace GD3D.Objects
     /// <summary>
     /// Changes a color linearly over time when triggered
     /// </summary>
-    public class ColorTrigger : Trigger
+    public class ColorTrigger : TimedTrigger
     {
         [Header("Color Settings")]
         [SerializeField] private Color color = Color.white;
         [SerializeField] private LevelColors.ColorType colorType;
-
-        [Space]
-        [SerializeField] private float fadeTime;
+        [SerializeField] private EaseData easeData;
 
         public override void OnTriggered()
         {
-            LevelColors.ChangeColorOverTime(colorType, color, fadeTime);
+            // IMPLEMENT EASING HERE
+
         }
 
-
-#if UNITY_EDITOR
-        protected override void OnDrawGizmos()
+        public override void OnUpdate(float time)
         {
-            base.OnDrawGizmos();
-
-            DrawDurationLine(fadeTime);
+            
         }
-#endif
+
+        public override void OnFinish()
+        {
+
+        }
     }
 }

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GD3D.Easing;
 using GD3D.Player;
 using PathCreation;
 
@@ -89,6 +88,9 @@ namespace GD3D.Objects
 
         private void UpdateLines()
         {
+            // IMPLEMENT EASING HERE
+
+            /*
             // Create a tween that will use our ease type
             LTDescr descr = LeanTween.value(0, 1, vertexAmount).SetGDEase(easeType);
 
@@ -146,6 +148,7 @@ namespace GD3D.Objects
 
             // Cancel the tween because we no longer need it
             descr.cancel();
+            */
         }
 
         private void UpdateColors()

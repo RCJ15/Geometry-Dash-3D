@@ -106,6 +106,7 @@ namespace GD3D.Level
             }
         }
 
+        /*
         /// <summary>
         /// Will linearly change the color of the given color <paramref name="type"/> to the given <paramref name="color"/> over the given <paramref name="time"/>. <para/>
         /// Example: a type of <see cref="ColorType.background"/> will change the background color
@@ -161,6 +162,7 @@ namespace GD3D.Level
             // Set to the given color so it's 100% the correct color when this runs out
             ChangeColor(type, color);
         }
+        */
 
         /// <summary>
         /// Instantly changes the given color <paramref name="type"/> to the given <paramref name="color"/>. <para/>

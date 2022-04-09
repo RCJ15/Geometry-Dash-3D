@@ -2,7 +2,6 @@ using GD3D.Player;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GD3D.Easing;
 
 namespace GD3D.Objects
 {
@@ -51,6 +50,8 @@ namespace GD3D.Objects
             {
                 _playerMovement.Tween3DOffset(_attachToPath.ZOffset, reset3DOffsetTime, reset3DOffsetEasing);
             }
+
+            // IMPLEMENT EASING HERE
         }
 
         public override bool CustomPortalCondition()

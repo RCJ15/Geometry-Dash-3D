@@ -7,7 +7,8 @@ using PathCreation;
 namespace GD3D.Objects
 {
     /// <summary>
-    /// A trigger is an invisble object that will make something happen at a specific point during the level, like changing the background color gradually.
+    /// A trigger is an invisble object that will make something happen at a specific point during the level, like changing the background color gradually. <para/>
+    /// IMPORTANT NOTE: If you're going to create a new trigger that changes a value overtime, inherit from <see cref="TimedTrigger"/> instead as it will be able to be saved in checkpoints.
     /// </summary>
     [RequireComponent(typeof(AttachToPath))]
     public abstract class Trigger : MonoBehaviour
@@ -16,15 +17,17 @@ namespace GD3D.Objects
         [SerializeField] private bool isTouchTriggered;
 
         private bool _hasBeenTriggered;
-        private bool _playerHasPassed; // Could be another way to say that the player has died :skull:
+        private bool _playerHasPassed;
+
+        public bool HasBeenTriggered => _hasBeenTriggered;
 
         //-- References
         protected AttachToPath _attachToPath;
         protected PlayerMain _player;
 
         //-- Properties
-        private float Distance => _attachToPath.Distance;
-        private bool CanTrigger => !_hasBeenTriggered && !_player.dead && CustomTriggerCondition();
+        public float Distance => _attachToPath.Distance;
+        protected bool CanTrigger => !_hasBeenTriggered && !_player.dead && CustomTriggerCondition();
 
         public virtual void Start()
         {
@@ -120,8 +123,7 @@ namespace GD3D.Objects
         }
 
         /// <summary>
-        /// Will draw a gizmo duration line that curves along the current path creator. <para/>
-        /// Currently this is hard coded to only work on normal speed. Sorry :(
+        /// Will draw a gizmo duration line that curves along the current path creator.
         /// </summary>
         protected void DrawDurationLine(float time, int linesPerTile = 3)
         {

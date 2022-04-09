@@ -21,8 +21,17 @@ namespace GD3D.Player
             //-- The main gameplay button
             new Key("Click",
                 Key.NewKeys(KeyboardKey.UpArrow, KeyboardKey.W, KeyboardKey.LeftMouseButton, KeyboardKey.Space, KeyboardKey.Return, KeyboardKey.KeypadEnter),
-                Key.NewKeys(GamepadKey.AButton, GamepadKey.BButton, GamepadKey.XButton, GamepadKey.YButton)),
+                Key.NewKeys(GamepadKey.AButton)),
             
+            //-- Practice Mode
+            new Key("Place Checkpoint Crystal",
+                Key.NewKeys(KeyboardKey.Z),
+                Key.NewKeys(GamepadKey.XButton)),
+
+            new Key("Remove Checkpoint Crystal",
+                Key.NewKeys(KeyboardKey.X),
+                Key.NewKeys(GamepadKey.BButton)),
+
             //-- 3D Mode
             new Key("3D Move Left",
                 Key.NewKeys(KeyboardKey.LeftArrow, KeyboardKey.A),

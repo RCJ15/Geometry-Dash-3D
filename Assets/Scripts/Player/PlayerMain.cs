@@ -29,18 +29,18 @@ namespace GD3D.Player
         //-- Other Stuff
         internal bool dead;
 
-        private int _layerInt = -9999;
+        private int? _layerInt = null;
         public int GetLayer
         {
             get
             {
-                // Cache layer
-                if (_layerInt < 0)
+                // Cache the layer
+                if (_layerInt == null)
                 {
                     _layerInt = gameObject.layer;
                 }
 
-                return _layerInt;
+                return (int)_layerInt;
             }
         }
 

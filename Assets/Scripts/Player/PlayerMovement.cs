@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PathCreation;
-using GD3D.Easing;
 using GD3D.CustomInput;
 
 namespace GD3D.Player
@@ -81,8 +80,6 @@ namespace GD3D.Player
         private float _3DOffset;
         public float Current3DOffset => _3DOffset;
 
-        private LTDescr _current3DOffsetTween;
-
         private void Awake()
         {
             ChangeSpeed(currentSpeed);
@@ -139,8 +136,10 @@ namespace GD3D.Player
 
         private void Extra3DModeMovement()
         {
+            // IMPLEMENT EASING HERE
+
             // Guard clause
-            if (!_in3DMode || _current3DOffsetTween != null)
+            if (!_in3DMode) //|| _current3DOffsetTween != null)
             {
                 if (OffsetVelocity != 0)
                 {
@@ -252,12 +251,14 @@ namespace GD3D.Player
         /// </summary>
         public void Cancel3DOffsetTween()
         {
+            /*
             // Cancel the current 3D offset tween if it exists
             if (_current3DOffsetTween != null)
             {
                 _current3DOffsetTween.cancel();
                 _current3DOffsetTween = null;
             }
+            */
         }
 
         /// <summary>
@@ -265,6 +266,7 @@ namespace GD3D.Player
         /// </summary>
         public void Tween3DOffset(float target, float time = 1, EasingType easeType = EasingType.sineInOut)
         {
+            /*
             Cancel3DOffsetTween();
             
             // Tween to the target value
@@ -275,6 +277,7 @@ namespace GD3D.Player
                     _3DOffset = Mathf.Clamp(value, -4.5f, 4.5f);
                 }
             ).setOnComplete(() => _current3DOffsetTween = null);
+            */
         }
             
         /// <summary>
