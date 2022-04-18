@@ -4,11 +4,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using GD3D.Easing;
 
 namespace GD3D.Level
 {
     /// <summary>
-    /// Contains all the information about the level colors, like background or ground colors for example
+    /// Contains all the information about the level colors, like background or ground colors for example.
     /// </summary>
     public class LevelColors : MonoBehaviour
     {
@@ -22,7 +23,7 @@ namespace GD3D.Level
 
         //-- Dictionaries
         private Dictionary<ColorType, MaterialColorData> _colorDataDictionary = new Dictionary<ColorType, MaterialColorData>();
-        private Dictionary<ColorType, Coroutine> _activeColorChangeCoroutines = new Dictionary<ColorType, Coroutine>();
+        private Dictionary<ColorType, long> _colorDataEasings = new Dictionary<ColorType, long>();
 
         //-- Color Data
         [SerializeField] private MaterialColorTypeData[] colorData;
@@ -43,7 +44,6 @@ namespace GD3D.Level
 
                 // Add to dictionaries
                 _colorDataDictionary.Add(type, colorData);
-                _activeColorChangeCoroutines.Add(type, null);
 
                 // Change the materials to the start color
                 ChangeColor(type, GetStartColor(type));
@@ -56,8 +56,9 @@ namespace GD3D.Level
             player = PlayerMain.Instance;
 
             // Subcribe to events
-            player.OnDeath += OnDeath;
+            player.OnRespawn += StopAllEasings;
             player.OnRespawn += ResetColors;
+            EasingManager.Instance.OnEaseObjectRemove += OnEaseObjectRemove;
         }
 
         #region Scene Unloaded Schenanigans
@@ -78,24 +79,51 @@ namespace GD3D.Level
         }
         #endregion
 
-        private void OnDeath()
+        /// <summary>
+        /// Called when a <see cref="EaseObject"/> is removed.
+        /// </summary>
+        private void OnEaseObjectRemove(long id)
         {
-            // Make all the coroutines stop
-            foreach (var pair in _activeColorChangeCoroutines)
-            {
-                // Get coroutine
-                Coroutine coroutine = pair.Value;
+            // Create a nullable type which will be set to null by default
+            ColorType? typeToRemove = null;
 
-                // If it isn't null, stop it
-                if (coroutine != null)
+            // Loop through the easings
+            foreach (var pair in _colorDataEasings)
+            {
+                // Check if the id matches the value
+                if (pair.Value == id)
                 {
-                    StopCoroutine(coroutine);
+                    // Set the type to the key
+                    typeToRemove = pair.Key;
+                    break;
                 }
+            }
+
+            // Remove the value in the dictionary if the nullable key is not null
+            if (typeToRemove.HasValue)
+            {
+                _colorDataEasings.Remove(typeToRemove.Value);
             }
         }
 
         /// <summary>
-        /// Changes all the the colors and materials to their starting color
+        /// Stops all the current active color easings.
+        /// </summary>
+        public static void StopAllEasings()
+        {
+            // Make all the easings stop
+            foreach (var pair in Instance._colorDataEasings)
+            {
+                // Get the ease object id
+                long id = pair.Value;
+
+                // Cancel the current ease using try remove
+                EasingManager.TryRemoveEaseObject(id);
+            }
+        }
+
+        /// <summary>
+        /// Changes all the the colors and materials to their starting color.
         /// </summary>
         public static void ResetColors()
         {
@@ -106,67 +134,45 @@ namespace GD3D.Level
             }
         }
 
-        /*
         /// <summary>
-        /// Will linearly change the color of the given color <paramref name="type"/> to the given <paramref name="color"/> over the given <paramref name="time"/>. <para/>
-        /// Example: a type of <see cref="ColorType.background"/> will change the background color
+        /// Will add and set the given easing <paramref name="obj"/> to change the given color <paramref name="type"/> to the given <paramref name="color"/>. <para/>
+        /// Will remove and replace the old easing if one already exists for the given color <paramref name="type"/>.
+        /// Example: a type of <see cref="ColorType.background"/> will change the background color over time.
         /// </summary>
-        public static void ChangeColorOverTime(ColorType type, Color color, float time)
+        public static void AddEase(ColorType type, Color color, EaseObject obj)
         {
-            // Shortcut for instance cuz I'm lazy
-            LevelColors I = Instance;
+            // Get the current color
+            Color currentColor = GetCurrentColor(type);
 
-            // Throw error if the given color type doesn't exist
-            if (!I._colorDataDictionary.ContainsKey(type))
+            // Set the easing on update method to change color over time
+            obj.OnUpdate = (obj) =>
             {
-                throw new Exception($"The color type of \"{type}\" does not exist.");
-            }
+                Color newColor = obj.EaseColor(currentColor, color);
 
-            // Stop the currently active coroutine
-            Coroutine currentCoroutine = I._activeColorChangeCoroutines[type];
-            if (currentCoroutine != null)
+                ChangeColor(type, newColor);
+            };
+
+            // Check if an easing does NOT exist for the color type
+            if (!Instance._colorDataEasings.ContainsKey(type))
             {
-                I.StopCoroutine(currentCoroutine);
+                // Add the new easing to the dictionary
+                Instance._colorDataEasings.Add(type, obj.ID);
             }
+            else
+            {
+                long oldId = Instance._colorDataEasings[type];
+                
+                // Replace the old easing in the dictionary
+                Instance._colorDataEasings[type] = obj.ID;
 
-            // Start the new coroutine
-            Coroutine coroutine = I.StartCoroutine(I.ChangeColorOverTimeCoroutine(type, color, time));
-            I._activeColorChangeCoroutines[type] = coroutine;
+                // Remove the old easing in the dictionary
+                EasingManager.RemoveEaseObject(oldId);
+            }
         }
-
-        /// <summary>
-        /// Will linearly change the color of the given color <paramref name="type"/> to the given <paramref name="color"/> over the given <paramref name="time"/>. <para/>
-        /// Example: a type of <see cref="ColorType.background"/> will change the background color
-        /// </summary>
-        private IEnumerator ChangeColorOverTimeCoroutine(ColorType type, Color color, float time)
-        {
-            Color startColor = GetStartColor(type);
-
-            float currentTimer = time;
-
-            // Pseudo FIXED update method
-            while (currentTimer > 0)
-            {
-                float t = currentTimer / time;
-
-                // Change the color
-                Color targetColor = Color.Lerp(color, startColor, t);
-                ChangeColor(type, targetColor);
-
-                // Wait for next frame
-                currentTimer -= Time.fixedDeltaTime;
-
-                yield return new WaitForFixedUpdate();
-            }
-
-            // Set to the given color so it's 100% the correct color when this runs out
-            ChangeColor(type, color);
-        }
-        */
 
         /// <summary>
         /// Instantly changes the given color <paramref name="type"/> to the given <paramref name="color"/>. <para/>
-        /// Example: a type of <see cref="ColorType.background"/> will change the background color
+        /// Example: a type of <see cref="ColorType.background"/> will change the background color.
         /// </summary>
         public static void ChangeColor(ColorType type, Color color)
         {
@@ -174,7 +180,7 @@ namespace GD3D.Level
             MaterialColorData colorData = GetColorData(type);
             colorData.Color = color;
 
-            // Fog is a special case where RenderSettings.fogColor is changed too
+            // Fog is a special case where the actual fog color is changed too
             if (type == ColorType.fog)
             {
                 RenderSettings.fogColor = color;
@@ -199,7 +205,7 @@ namespace GD3D.Level
 
         /// <summary>
         /// Returns the current color that the given color <paramref name="type"/> has. <para/>
-        /// Example: a type of <see cref="ColorType.background"/> will give you the backgrounds current color
+        /// Example: a type of <see cref="ColorType.background"/> will give you the backgrounds current color.
         /// </summary>
         public static Color GetCurrentColor(ColorType type)
         {
@@ -208,7 +214,7 @@ namespace GD3D.Level
 
         /// <summary>
         /// Returns the start color that the given color <paramref name="type"/> has. <para/>
-        /// Example: a type of <see cref="ColorType.background"/> will give you the backgrounds start color
+        /// Example: a type of <see cref="ColorType.background"/> will give you the backgrounds start color.
         /// </summary>
         public static Color GetStartColor(ColorType type)
         {
@@ -217,7 +223,7 @@ namespace GD3D.Level
 
         /// <summary>
         /// Returns the color data that the given color <paramref name="type"/> has. <para/>
-        /// Example: a type of <see cref="ColorType.background"/> will give you the backgrounds color data
+        /// Example: a type of <see cref="ColorType.background"/> will give you the backgrounds color data.
         /// </summary>
         public static MaterialColorData GetColorData(ColorType type)
         {
@@ -232,7 +238,7 @@ namespace GD3D.Level
         }
 
         /// <summary>
-        /// Holds information about what type of color type the color data is
+        /// Holds information about what type of color type the color data is.
         /// </summary>
         [Serializable]
         public class MaterialColorTypeData
@@ -255,7 +261,7 @@ namespace GD3D.Level
         }
 
         /// <summary>
-        /// Holds information about what materials that should be changed on the renderer
+        /// Holds information about what materials that should be changed on the renderer.
         /// </summary>
         [Serializable]
         public class RendererMaterialData
@@ -273,7 +279,7 @@ namespace GD3D.Level
         }
 
         /// <summary>
-        /// An enum used to determine what kind of color the color is
+        /// An enum used to determine what kind of color the color is.
         /// </summary>
         [Serializable]
         public enum ColorType

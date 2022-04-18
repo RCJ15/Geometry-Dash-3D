@@ -2,6 +2,7 @@ using GD3D.Player;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GD3D.Easing;
 
 namespace GD3D.Objects
 {
@@ -15,8 +16,7 @@ namespace GD3D.Objects
         [SerializeField] private bool enable3DMode = true;
 
         [Space]
-        [SerializeField] private float reset3DOffsetTime = 1;
-        [SerializeField] private EasingType reset3DOffsetEasing = EasingType.sineInOut;
+        [SerializeField] private EaseSettings easeSettings = EaseSettings.defaultValue;
 
         private AttachToPath _attachToPath;
         private PlayerMovement _playerMovement;
@@ -43,15 +43,16 @@ namespace GD3D.Objects
             // Cancel current tween if we are enabling 3D mode
             if (enable3DMode)
             {
-                _playerMovement.Cancel3DOffsetTween();
+                _playerMovement.Cancel3DOffsetEase();
             }
             // Start new 3D offset tween if we are disabling 3D mode
             else
             {
-                _playerMovement.Tween3DOffset(_attachToPath.ZOffset, reset3DOffsetTime, reset3DOffsetEasing);
-            }
+                // Create a easing that will be used by the player movement script
+                EaseObject obj = easeSettings.CreateEase();
 
-            // IMPLEMENT EASING HERE
+                _playerMovement.Ease3DOffset(_attachToPath.ZOffset, obj);
+            }
         }
 
         public override bool CustomPortalCondition()

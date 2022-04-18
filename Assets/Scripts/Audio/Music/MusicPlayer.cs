@@ -176,6 +176,12 @@ namespace GD3D.Audio
         /// </summary>
         public void UpdateEndDistance()
         {
+            // Oops
+            if (_player == null || _playerMovement == null || _source == null)
+            {
+                return;
+            }
+
             float playerDist = Path.GetClosestDistanceAlongPath(_player.transform.position);
             float distance = playerDist;
 
@@ -338,6 +344,7 @@ namespace GD3D.Audio
     [CustomEditor(typeof(MusicPlayer))]
     public class MusicPlayerEditor : Editor
     {
+        // This is images encoded in base64 ;)
         private const string PLAY_BUTTON = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAJYSURBVFhHxZe7rhJRFIYXdwMmSAIkBAouCYFwhxBew0ew8AF8BC0sLEjO0Hg6m/MAJnRUlnZa2GlLNDRoJ+GE8V+LvVBGDteZ8CUrZ886Q9Y3+zJ7D9m2/ZSuCQSYT4jriKzrb/iKeIYImn97j5QF8/nctAQWeY54ZG7zDikHRqORPZlM7NlsZjLCd8QLhGciPq7CDQhIgikWizQYDCiVSpkM/UBYiFufz/dTMi6xU0DJ5/PU7XYpl8vJNW79BYEbNG/cEtkroGSzWekRh8g7NN/gL/fO2RwloKTTaer3+1QqleQaP11A4C2aZ4ucJKAkk0npkUKhQH6/n1P3iDvEa4h848SxnCWgxONx6ZFKpeIUGULkCycOcZGAwiI8WavVKgWDm3fYe8QriHxeX+7GFQElGo1Sr9ejRqPhFLEg8mF9uY2rAgqLNJtNarVaFIlETJZYgHtkS8QTASUcDlOn06F2u/2vyEcErxruGW8FlFAoRLVaTYYnFouZLPHcGMrU9ZrVakWLxYKWy6XJCI8RQU97IBAIyIR0PDkvzyHiDsNw74kAj329Xpfxd3Q5T0IZe8VVgQcmHc96XoZbhRVXBHjZcWE8tY3CPpPeueycXCSw58XDy4yX20HOEtA9oFwu2yisT8yFD756nZwkkEgk5Il3bD4n74LKUQK6/eo5APxGcGHu6rMKK3sFMpmM7HKOwreIi09Cyk4B5xEM8PmPC/NycqXwBhZgLMuyx+OxPZ1OTUbgj4WXiCfmdveRMuCB7wHvCitS7i+ef4j8h5S9xjehcrXCAtEfg++ulBk+lqkAAAAASUVORK5CYII=";
         private const string STOP_BUTTON = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABLSURBVFhH7dexDQAgCAVRdGCGYWEl5JeWGizuGrB7odOou6FZrUzr00am1aZmW8cLRES9b+fuNb+6AAAAAAAAAAAAAAAA/AuoObMNCgkPMmti+GMAAAAASUVORK5CYII=";
 

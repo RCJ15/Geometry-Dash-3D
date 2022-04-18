@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GD3D.Player;
+using GD3D.Easing;
 using PathCreation;
 
 namespace GD3D.Objects
@@ -18,8 +19,7 @@ namespace GD3D.Objects
         [SerializeField] private float newOffset = 0;
 
         [Space]
-        [SerializeField] private float easeTime = 1;
-        [SerializeField] private EasingType easeType = EasingType.sineInOut;
+        [SerializeField] private EaseSettings easeSettings = EaseSettings.defaultValue;
 
         [Header("Line")]
         [SerializeField] private float lineDistOffset = -0.5f;
@@ -56,7 +56,7 @@ namespace GD3D.Objects
             // Calculate total distance
             _totalDistance = _attachToPath.Distance;
 
-            float addAmount = (float)easeTime / (float)vertexAmount;
+            float addAmount = (float)easeSettings.Time / (float)vertexAmount;
 
             for (int i = 0; i < vertexAmount; i++)
             {
@@ -69,7 +69,10 @@ namespace GD3D.Objects
 
         public override void OnEnterPortal()
         {
-            _playerMovement.Tween3DOffset(newOffset, easeTime, easeType);
+            // Create a easing that will be used by the player movement script
+            EaseObject obj = easeSettings.CreateEase();
+
+            _playerMovement.Ease3DOffset(newOffset, obj);
         }
 
         private void FixedUpdate()
@@ -88,12 +91,6 @@ namespace GD3D.Objects
 
         private void UpdateLines()
         {
-            // IMPLEMENT EASING HERE
-
-            /*
-            // Create a tween that will use our ease type
-            LTDescr descr = LeanTween.value(0, 1, vertexAmount).SetGDEase(easeType);
-
             // Add points to the line
             List<Vector3> newPositions = new List<Vector3>();
             
@@ -102,11 +99,8 @@ namespace GD3D.Objects
                 // Calculate t
                 float t = (float)i / (float)vertexAmount;
 
-                // Calculate the value using lean tween
-                descr.passed = i;
-
-                descr.updateNow();
-                float val = descr.easeMethod().x;
+                // Calculate the value using the ease data
+                float val = easeSettings.EaseData.Evaluate(t);
 
                 // Calculate distance and offset
                 float dist = Mathf.Lerp(_attachToPath.Distance, _totalDistance, t) + lineDistOffset;
@@ -145,10 +139,6 @@ namespace GD3D.Objects
             // Set line renderers positions
             _line.positionCount = vertexAmount;
             _line.SetPositions(newPositions.ToArray());
-
-            // Cancel the tween because we no longer need it
-            descr.cancel();
-            */
         }
 
         private void UpdateColors()
@@ -219,7 +209,7 @@ namespace GD3D.Objects
             // Draw end
             Gizmos.color = Color.red;
 
-            dist = dist + easeTime * PlayerMovement.NORMAL_SPEED;
+            dist = dist + easeSettings.Time * PlayerMovement.NORMAL_SPEED;
 
             pos = _path.GetPointAtDistance(dist, EndOfPathInstruction.Stop);
             direction = _path.GetNormalAtDistance(dist, EndOfPathInstruction.Stop);

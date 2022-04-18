@@ -10743,8 +10743,36 @@ MonoBehaviour:
   offset: {x: 0, y: 10, z: 0}
   rotation: {x: 15, y: 180, z: 0}
   fov: 50
-  easingType: 11
-  easeTime: 0.5
+  easeSettings:
+    Time: 0.47
+    EaseData:
+      Type: 11
+      EaseRate: 0.7
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    CompleteMode: 0
 --- !u!114 &752277978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10762,7 +10790,7 @@ MonoBehaviour:
   ZOffset: 0
   YRotationOffset: 0
   justCreated: 0
-  subcribed: 0
+  subcribed: 1
   oldDistance: 192.14
   oldZOffset: 0
   oldPos: {x: 42.14, y: 14, z: -0.00022346679}
@@ -20981,7 +21009,7 @@ MonoBehaviour:
   ZOffset: 0
   YRotationOffset: 0
   justCreated: 0
-  subcribed: 1
+  subcribed: 0
   oldDistance: 204.43
   oldZOffset: 0
   oldPos: {x: 53.04, y: 10.5, z: -0.00023614395}
@@ -26011,37 +26039,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTouchTriggered: 0
-  TargetTime: 0
-  CurrentTime: 0
   color: {r: 0.37227085, g: 0, b: 0.735849, a: 1}
   colorType: 1
-  easeData:
-    Type: 19
-    EaseRate: 2
-    CustomCurve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 1
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 1
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
+  easeSettings:
+    Time: 1
+    EaseData:
+      Type: 10
+      EaseRate: 2
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    CompleteMode: 0
 --- !u!114 &1317875989
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26059,7 +26088,7 @@ MonoBehaviour:
   ZOffset: 0
   YRotationOffset: 0
   justCreated: 0
-  subcribed: 1
+  subcribed: 0
   oldDistance: 179.72992
   oldZOffset: 0
   oldPos: {x: 29.729912, y: 11.01, z: -0.00020903336}
@@ -26205,37 +26234,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTouchTriggered: 0
-  TargetTime: 0
-  CurrentTime: 0
   color: {r: 0.6202717, g: 0, b: 1, a: 1}
   colorType: 0
-  easeData:
-    Type: 19
-    EaseRate: 2
-    CustomCurve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 1
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 1
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
+  easeSettings:
+    Time: 1
+    EaseData:
+      Type: 0
+      EaseRate: 2
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    CompleteMode: 0
 --- !u!114 &1376249337
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28143,8 +28173,36 @@ MonoBehaviour:
   offset: {x: 6, y: 3.5, z: 10}
   rotation: {x: 15, y: 0, z: 0}
   fov: 60
-  easingType: 9
-  easeTime: 1
+  easeSettings:
+    Time: 0.5
+    EaseData:
+      Type: 9
+      EaseRate: 2
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    CompleteMode: 0
 --- !u!114 &2010706358
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28211,37 +28269,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTouchTriggered: 0
-  TargetTime: 0
-  CurrentTime: 0
   color: {r: 0.25671697, g: 0, b: 0.5283019, a: 1}
   colorType: 2
-  easeData:
-    Type: 0
-    EaseRate: 2
-    CustomCurve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 1
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 1
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
+  easeSettings:
+    Time: 1
+    EaseData:
+      Type: 0
+      EaseRate: 2
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    CompleteMode: 0
 --- !u!114 &2012554792
 MonoBehaviour:
   m_ObjectHideFlags: 0

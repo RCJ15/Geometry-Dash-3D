@@ -28,7 +28,7 @@ namespace GD3D
 
         private void FixedUpdate()
         {
-            // If particle system is null return
+            // If particle system == null return
             if (_particleSystem == null)
             {
                 return;

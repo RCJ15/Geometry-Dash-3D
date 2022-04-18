@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GD3D.ObjectPooling;
+using GD3D.Easing;
 
 namespace GD3D.Player
 {
@@ -102,11 +103,9 @@ namespace GD3D.Player
             PlayerSecondaryTrail trail = _pool.SpawnFromPool(_meshFilter.transform.position, _meshFilter.transform.rotation);
             trail.RemoveAfterTime(trailLifetime);
 
-            // Tween scale
+            // Ease the scale
             trail.transform.localScale = _meshFilter.transform.lossyScale - (Vector3.one * 0.01f);
-            //trail.transform.LeanScale(trail.transform.localScale / 2, trailLifetime).setEase(LeanTweenType.linear);
-            // IMPLEMENT EASING HERE
-
+            trail.transform.EaseScale(trail.transform.localScale / 2, trailLifetime);
 
             _currentTimeBtwTrails = timeBtwTrails;
         }

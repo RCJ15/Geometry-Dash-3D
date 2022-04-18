@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GD3D.Camera;
+using GD3D.Easing;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -21,9 +22,8 @@ namespace GD3D.Objects
         [Range(1, 179)]
         [SerializeField] private float fov = 60;
 
-        [Header("Tweening Settings")]
-        [SerializeField] private EasingType easingType;
-        [SerializeField] private float easeTime = 1;
+        [Space]
+        [SerializeField] private EaseSettings easeSettings = EaseSettings.defaultValue;
 
         //-- References
         private CameraBehaviour _cam;
@@ -38,28 +38,29 @@ namespace GD3D.Objects
 
         public override void OnTriggered()
         {
-            // IMPLEMENT EASING HERE
+            // Create a easing that will be used by the camera behaviour later
+            EaseObject obj = easeSettings.CreateEase();
 
-            /*
             // Change different camera values based on the mode
             switch (mode)
             {
                 case CameraTriggerMode.offset:
-                    _cam.TweenOffset(offset, easingType, easeTime);
+                    _cam.EaseOffset(offset, obj);
                     return;
 
                 case CameraTriggerMode.rotation:
-                    _cam.TweenRotation(rotation, easingType, easeTime);
+                    _cam.EaseRotation(rotation, obj);
                     return;
 
                 case CameraTriggerMode.FOV:
-                    _cam.TweenFov(fov, easingType, easeTime);
+                    _cam.EaseFov(fov, obj);
                     return;
 
                 default:
+                    // Or not since something went wrong
+                    EasingManager.RemoveEaseObject(obj);
                     return;
             }
-            */
         }
 
         /// <summary>
@@ -102,8 +103,7 @@ namespace GD3D.Objects
                         break;
                 }
 
-                Serialize("easingType");
-                Serialize("easeTime");
+                Serialize("easeSettings");
 
                 // Apply modified properties
                 if (EditorGUI.EndChangeCheck())
@@ -129,7 +129,7 @@ namespace GD3D.Objects
         {
             base.OnDrawGizmos();
 
-            DrawDurationLine(easeTime);
+            DrawDurationLine(easeSettings.Time);
         }
 #endif
     }

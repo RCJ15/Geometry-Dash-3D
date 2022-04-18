@@ -2,6 +2,7 @@ using GD3D.Player;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GD3D.Easing;
 
 namespace GD3D.Camera
 {
@@ -61,9 +62,15 @@ namespace GD3D.Camera
         //-- Start values
         private Vector3 _startPos;
         private Quaternion _startRot;
+        private float _startFov;
 
         private Transform _transform;
         private PlayerMain _player;
+
+        //-- Easing IDs (Nullable)
+        private long? _currentOffsetEaseId = null;
+        private long? _currentRotationEaseId = null;
+        private long? _currentFovEaseId = null;
 
         private void Awake()
         {
@@ -87,14 +94,17 @@ namespace GD3D.Camera
             _position = _startPos;
             _targetPosition = _startPos;
 
-            // Also set start rotation
+            // Also set start rotation and fov
             _startRot = _transform.rotation;
+            _startFov = _cam.fieldOfView;
 
             // Get player
             _player = PlayerMain.Instance;
 
             // Subscribe to events
+            _player.OnRespawn += StopAllEasings;
             _player.OnRespawn += OnRespawn;
+            EasingManager.Instance.OnEaseObjectRemove += OnEaseObjectRemove;
         }
 
         private void OnRespawn()
@@ -107,6 +117,9 @@ namespace GD3D.Camera
             // Reset rotation
             _transform.rotation = _startRot;
             rotation = _startRot.eulerAngles;
+
+            // Reset fov
+            _cam.fieldOfView = _startFov;
         }
 
         private void Update()
@@ -114,11 +127,9 @@ namespace GD3D.Camera
             UpdateShake();
         }
 
-        public void ResetOffset()
-        {
-            offset = _startOffset;
-        }
-
+        /// <summary>
+        /// Called in <see cref="Update"/> every frame. This is just here for cleaner code (hopefully).
+        /// </summary>
         private void UpdateShake()
         {
             // Check if the timer is 0 or less
@@ -188,84 +199,114 @@ namespace GD3D.Camera
             _position.y = Mathf.Lerp(_position.y, _targetPosition.y, yLerpDelta);
         }
 
-        // IMPLEMENT EASING HERE
-
-        /*
-        #region Tweening
+        #region Easing
         /// <summary>
-        /// Tweens the current offset to the given <paramref name="target"/> offset using the given <paramref name="easingType"/> over the given <paramref name="time"/>.
+        /// Called when a <see cref="EaseObject"/> is removed.
         /// </summary>
-        public void TweenOffset(Vector3 target, EasingType easingType, float time)
+        private void OnEaseObjectRemove(long id)
         {
-            // Cancel the current tween (if there is one currently)
-            if (currentOffsetTween != null)
+            // Set the IDs to null if one of them was removed
+            // Sorry for using if else here but I don't see how you can improve this aside from making a whole list system or something like that
+            if (_currentOffsetEaseId.HasValue && id == _currentOffsetEaseId.Value)
             {
-                currentOffsetTween.cancel();
+                _currentOffsetEaseId = null;
             }
+            else if (_currentRotationEaseId.HasValue && id == _currentRotationEaseId.Value)
+            {
+                _currentRotationEaseId = null;
+            }
+            else if (_currentFovEaseId.HasValue && id == _currentFovEaseId.Value)
+            {
+                _currentFovEaseId = null;
+            }
+        }
 
+        /// <summary>
+        /// Stops all the current active camera easings
+        /// </summary>
+        private void StopAllEasings()
+        {
+            // Remove each ease using try remove
+            EasingManager.TryRemoveEaseObject(_currentOffsetEaseId);
+            EasingManager.TryRemoveEaseObject(_currentRotationEaseId);
+            EasingManager.TryRemoveEaseObject(_currentFovEaseId);
+        }
+
+        /// <summary>
+        /// Will set the given easing <paramref name="obj"/> to change the offset to the given <paramref name="target"/>. <para/>
+        /// Will remove and replace the old easing if one already exists.
+        /// </summary>
+        public void EaseOffset(Vector3 target, EaseObject obj)
+        {
+            // Remove the current ease using try remove
+            EasingManager.TryRemoveEaseObject(_currentOffsetEaseId);
+
+            // Get the current offset and use it as the start value
             Vector3 startValue = offset;
 
-            // Start the tween
-            currentOffsetTween = LeanTween.value(0, 1, time).
-                SetGDEase(easingType).
-                setOnUpdate((t) =>
-                {
-                    offset = Vector3.Lerp(startValue, target, t);
-                }
-            );
+            // Set the easing on update method to change offset over time
+            obj.OnUpdate = (obj) =>
+            {
+                Vector3 newOffset = obj.EaseVector(startValue, target);
+
+                offset = newOffset;
+            };
+
+            // Set the ID
+            _currentOffsetEaseId = obj.ID;
         }
 
         /// <summary>
-        /// Tweens the current rotation to the given <paramref name="target"/> rotation using the given <paramref name="easingType"/> over the given <paramref name="time"/>.
+        /// Will set the given easing <paramref name="obj"/> to change the rotation to the given <paramref name="target"/>. <para/>
+        /// Will remove and replace the old easing if one already exists.
         /// </summary>
-        public void TweenRotation(Vector3 target, EasingType easingType, float time)
+        public void EaseRotation(Vector3 target, EaseObject obj)
         {
-            // Cancel the current tween (if there is one currently)
-            if (currentRotationTween != null)
-            {
-                currentRotationTween.cancel();
-            }
+            // Remove the current ease using try remove
+            EasingManager.TryRemoveEaseObject(_currentRotationEaseId);
 
+            // Get the current rotation and use it as the start value
             Vector3 startValue = rotation;
 
-            // Start the tween
-            currentRotationTween = LeanTween.value(0, 1, time).
-                SetGDEase(easingType).
-                setOnUpdate((t) =>
-                {
-                    rotation = Vector3.Lerp(startValue, target, t);
+            // Set the easing on update method to change rotation over time
+            obj.OnUpdate = (obj) =>
+            {
+                Vector3 newRotation = obj.EaseVector(startValue, target);
 
-                    _transform.rotation = Quaternion.Euler(rotation);
-                }
-            );
+                rotation = newRotation;
+            };
+
+            // Set the ID
+            _currentRotationEaseId = obj.ID;
         }
 
+
         /// <summary>
-        /// Tweens the current FOV to the given <paramref name="target"/> FOV using the given <paramref name="easingType"/> over the given <paramref name="time"/>.
+        /// Will set the given easing <paramref name="obj"/> to change the FOV to the given <paramref name="target"/>. <para/>
+        /// Will remove and replace the old easing if one already exists. <para/>
+        /// <paramref name="target"/> is also limited between the <see cref="FOV_MIN"/> and <see cref="FOV_MAX"/>.
         /// </summary>
-        public void TweenFov(float target, EasingType easingType, float time)
+        public void EaseFov(float target, EaseObject obj)
         {
+            // Clamp the target between the min and max fov
             target = Mathf.Clamp(target, FOV_MIN, FOV_MAX);
 
-            // Cancel the current tween (if there is one currently)
-            if (currentFovTween != null)
+            // Remove the current ease using try remove
+            EasingManager.TryRemoveEaseObject(_currentFovEaseId);
+
+            // Get the current field of view and use it as the start value
+            float startValue = _cam.fieldOfView;
+
+            // Set the easing on update method to change the field of view over time
+            obj.OnUpdate = (obj) =>
             {
-                currentFovTween.cancel();
-            }
+                _cam.fieldOfView = obj.GetValue(startValue, target);
+            };
 
-            Vector3 startValue = rotation;
-
-            // Start the tween
-            currentFovTween = LeanTween.value(_cam.fieldOfView, target, time).
-                SetGDEase(easingType).
-                setOnUpdate((t) =>
-                {
-                    _cam.fieldOfView = t;
-                }
-            );
+            // Set the ID
+            _currentFovEaseId = obj.ID;
         }
         #endregion
-        */
 
         /// <summary>
         /// Shakes the camera

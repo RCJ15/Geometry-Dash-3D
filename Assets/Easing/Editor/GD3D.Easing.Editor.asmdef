@@ -1,0 +1,18 @@
+{
+    "name": "GD3D.Easing.Editor",
+    "rootNamespace": "GD3D.Easing.Editor",
+    "references": [
+        "GUID:02173421d4bd87545806f6a9aff405b8"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

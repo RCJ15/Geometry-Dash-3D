@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using PathCreation;
 using GD3D.CustomInput;
+using GD3D.Easing;
 
 namespace GD3D.Player
 {
@@ -80,6 +81,9 @@ namespace GD3D.Player
         private float _3DOffset;
         public float Current3DOffset => _3DOffset;
 
+        //-- Ease ID
+        private long? _current3DOffsetEaseId = null;
+
         private void Awake()
         {
             ChangeSpeed(currentSpeed);
@@ -98,8 +102,10 @@ namespace GD3D.Player
 
             _cam = Helpers.Camera.transform;
 
-            // Subscribe to the on respawn event
+            // Subscribe to events
+            player.OnRespawn += Cancel3DOffsetEase;
             player.OnRespawn += OnRespawn;
+            EasingManager.Instance.OnEaseObjectRemove += OnEaseObjectRemove;
 
             leftKey = PlayerInput.GetKey("3D Move Left");
             rightKey = PlayerInput.GetKey("3D Move Right");
@@ -134,12 +140,13 @@ namespace GD3D.Player
             transform.rotation = Quaternion.Euler(newRot);
         }
 
+        /// <summary>
+        /// Called in <see cref="FixedUpdate"/> every frame. This is just here for cleaner code (hopefully).
+        /// </summary>
         private void Extra3DModeMovement()
         {
-            // IMPLEMENT EASING HERE
-
             // Guard clause
-            if (!_in3DMode) //|| _current3DOffsetTween != null)
+            if (!_in3DMode || _current3DOffsetEaseId.HasValue)
             {
                 if (OffsetVelocity != 0)
                 {
@@ -182,8 +189,8 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Returns what the players speed is going to be at the given <paramref name="distance"/> <para/>
-        /// Note: This currently just returns the players speed as we have no speed portals in the game
+        /// Returns what the players speed is going to be at the given <paramref name="distance"/>. <para/>
+        /// Note: This currently just returns the players speed as we have no speed portals in the game.
         /// </summary>
         public float GetSpeedAtDistance(float distance)
         {
@@ -210,7 +217,7 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Changes the players speed to match the <paramref name="newSpeed"/>
+        /// Changes the players speed to match the <paramref name="newSpeed"/>.
         /// </summary>
         public void ChangeSpeed(GameSpeed newSpeed)
         {
@@ -246,49 +253,67 @@ namespace GD3D.Player
             }
         }
 
+        #region Easing
         /// <summary>
-        /// Cancels the current 3D offset tween if there is one currently active
+        /// Called when a <see cref="EaseObject"/> is removed.
         /// </summary>
-        public void Cancel3DOffsetTween()
+        private void OnEaseObjectRemove(long id)
         {
-            /*
-            // Cancel the current 3D offset tween if it exists
-            if (_current3DOffsetTween != null)
+            // Set the ID to null if it was removed
+            if (_current3DOffsetEaseId.HasValue && _current3DOffsetEaseId.Value == id)
             {
-                _current3DOffsetTween.cancel();
-                _current3DOffsetTween = null;
+                _current3DOffsetEaseId = null;
             }
-            */
         }
 
         /// <summary>
-        /// Will tween the 3D offset to the given <paramref name="target"/> value over the given <paramref name="time"/> with the given <paramref name="easeType"/>.
+        /// Cancels the current 3D offset easing if there is one currently active.
         /// </summary>
-        public void Tween3DOffset(float target, float time = 1, EasingType easeType = EasingType.sineInOut)
+        public void Cancel3DOffsetEase()
         {
-            /*
-            Cancel3DOffsetTween();
-            
-            // Tween to the target value
-            _current3DOffsetTween = LeanTween.value(_3DOffset, target, time)
-                .SetGDEase(easeType)
-                .setOnUpdate((value) =>
-                {
-                    _3DOffset = Mathf.Clamp(value, -4.5f, 4.5f);
-                }
-            ).setOnComplete(() => _current3DOffsetTween = null);
-            */
+            // Remove the current ease using try remove
+            bool removedEase = EasingManager.TryRemoveEaseObject(_current3DOffsetEaseId);
+
+            // If it was removed, set the ease ID to null
+            if (removedEase)
+            {
+                _current3DOffsetEaseId = null;
+            }
         }
-            
+
+        /// <summary>
+        /// Will set the given easing <paramref name="obj"/> to change the 3D offset to the given <paramref name="target"/>. <para/>
+        /// Will also call <see cref="Cancel3DOffsetEase"/> to remove any active easing.
+        /// </summary>
+        public void Ease3DOffset(float target, EaseObject obj)
+        {
+            Cancel3DOffsetEase();
+
+            // Cache the current offset
+            float startValue = _3DOffset;
+
+            // Set the easing on update method to change the field of view over time
+            obj.OnUpdate = (obj) =>
+            {
+                _3DOffset = obj.GetValue(startValue, target);
+            };
+
+            // Set the ID
+            _current3DOffsetEaseId = obj.ID;
+        }
+        #endregion
+
         /// <summary>
         /// Is called when the player respawns
         /// </summary>
         private void OnRespawn()
         {
-            // Reset the travel amount and position
+            // Reset values
             _travelAmount = _startTravelAmount;
 
             _transform.position = player.startPos;
+
+            _3DOffset = 0;
 
             // Reset rigidbody components aswell
             rb.velocity = Vector3.zero;

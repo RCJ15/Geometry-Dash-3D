@@ -122,7 +122,7 @@ namespace GD3D.Audio
         /// <returns>If the sound was played successfully or not.</returns>
         public static bool PlaySound(string name, Vector3 position, float pitch, bool is3D, Vector2 range, bool playInBothEars, bool isGroupedSound)
         {
-            // If the name is null or empty then just don't play anything
+            // If the name == null or empty then just don't play anything
             if (string.IsNullOrEmpty(name))
             {
                 return false;

@@ -2,33 +2,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GD3D.Level;
+using GD3D.Easing;
 
 namespace GD3D.Objects
 {
     /// <summary>
     /// Changes a color linearly over time when triggered
     /// </summary>
-    public class ColorTrigger : TimedTrigger
+    public class ColorTrigger : Trigger
     {
         [Header("Color Settings")]
         [SerializeField] private Color color = Color.white;
         [SerializeField] private LevelColors.ColorType colorType;
-        [SerializeField] private EaseData easeData;
+        [SerializeField] private EaseSettings easeSettings = EaseSettings.defaultValue;
 
         public override void OnTriggered()
         {
-            // IMPLEMENT EASING HERE
+            // Create a ease object
+            EaseObject obj = easeSettings.CreateEase();
 
+            // Add it to level colors
+            LevelColors.AddEase(colorType, color, obj);
         }
 
-        public override void OnUpdate(float time)
+#if UNITY_EDITOR
+        protected override void OnDrawGizmos()
         {
-            
-        }
+            base.OnDrawGizmos();
 
-        public override void OnFinish()
-        {
-
+            // Draw duration line
+            DrawDurationLine(easeSettings.Time);
         }
+#endif
     }
 }

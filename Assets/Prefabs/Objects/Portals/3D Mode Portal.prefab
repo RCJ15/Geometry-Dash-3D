@@ -60,8 +60,36 @@ MonoBehaviour:
   particles: {fileID: 2861531109430172892}
   materialIndex: 1
   enable3DMode: 1
-  reset3DOffsetTime: 0.5
-  reset3DOffsetEasing: 13
+  easeSettings:
+    Time: 0.5
+    EaseData:
+      Type: 13
+      EaseRate: 2
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    CompleteMode: 0
 --- !u!114 &4094594255735623317
 MonoBehaviour:
   m_ObjectHideFlags: 0
