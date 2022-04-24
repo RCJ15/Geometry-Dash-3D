@@ -34,7 +34,7 @@ namespace GD3D.Objects
             }
 
             // Get gamemode handler
-            gamemodeHandler = _player.gamemode;
+            gamemodeHandler = _player.GamemodeHandler;
         }
 
         public override void OnTouched()

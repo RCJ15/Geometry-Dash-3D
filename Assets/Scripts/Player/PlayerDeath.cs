@@ -79,7 +79,7 @@ namespace GD3D.Player
         public void Die()
         {
             // Don't die again if we have already died
-            if (player.dead)
+            if (player.IsDead)
             {
                 return;
             }

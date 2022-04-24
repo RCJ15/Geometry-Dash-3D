@@ -1,5 +1,5 @@
 # Geometry Dash 3D
-Basically, it's Geometry Dash but in 3D (obviously)
+Basically, it's Geometry Dash but in 3D.
 
 I *WILL* (probably) make a youtube video about how I made this game and this github repository is here cuz version control is good.
 

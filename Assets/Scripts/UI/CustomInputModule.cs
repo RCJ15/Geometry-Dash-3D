@@ -8,8 +8,13 @@ using GD3D.Player;
 
 namespace GD3D.UI
 {
+    /// <summary>
+    /// This is copied from unitys own source code on the default input manager, I just changed this one to use the new input system.
+    /// </summary>
     public class CustomInputModule : PointerInputModule
     {
+        public static CustomInputModule Instance;
+
         private float m_PrevActionTime;
         private Vector2 m_LastMoveVector;
         private int m_ConsecutiveMoveCount = 0;
@@ -38,7 +43,7 @@ namespace GD3D.UI
         [SerializeField]
         private string m_CancelKey = "Cancel";
 
-        private Key leftKey, rightKey, upKey, downKey, submitKey, cancelKey;
+        [HideInInspector] public Key leftKey, rightKey, upKey, downKey, submitKey, cancelKey;
 
         [SerializeField]
         private float m_InputActionsPerSecond = 10;
@@ -49,6 +54,14 @@ namespace GD3D.UI
         [SerializeField]
         [FormerlySerializedAs("m_AllowActivationOnMobileDevice")]
         private bool m_ForceModuleActive;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            // Set the instance
+            Instance = this;
+        }
 
         protected override void Start()
         {

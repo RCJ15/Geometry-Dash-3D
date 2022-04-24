@@ -5,19 +5,25 @@ using GD3D.Player;
 using GD3D.CustomInput;
 using GD3D.ObjectPooling;
 
-namespace GD3D
+namespace GD3D.Objects
 {
     /// <summary>
     /// Jump orb base class that all jump orbs inherit from
     /// </summary>
     public abstract class JumpOrb : MonoBehaviour
     {
+        //-- ID
+        protected ObjectIDHandler idHandler;
+        [HideInInspector] public long ID;
+
+        private bool _isActivated = false;
+
+        //-- Static variables
         public static bool CantHitOrbs = false;
         private static bool s_doneStaticUpdate = false;
 
         [Header("Jump Orb Settings")]
         [SerializeField] private bool multiTrigger;
-        private bool _cantBePressed = false;
 
         private bool ButtonPressed => _player.KeyHold || _player.InputBuffer > 0;
 
@@ -88,6 +94,11 @@ namespace GD3D
 
             // Destroy the newly created objects because we have no use out of them anymore
             Destroy(triggerObj);
+
+            // Get the ID handler and generate ID
+            idHandler = ObjectIDHandler.Instance;
+
+            ID = idHandler.GetID(this);
         }
 
         public virtual void Start()
@@ -105,7 +116,7 @@ namespace GD3D
             _playerLayer = _player.GetLayer;
 
             // Subscribe to events
-            _player.OnDeath += OnDeath;
+            _player.OnRespawn += OnRespawn;
         }
 
         public virtual void Update()
@@ -119,7 +130,7 @@ namespace GD3D
             // Buffering orbs in the air logic
             if (ButtonPressed && !CantHitOrbs && !_touchingPlayer)
             {
-                GamemodeScript script = _player.gamemode.CurrentGamemodeScript;
+                GamemodeScript script = _player.GamemodeHandler.CurrentGamemodeScript;
 
                 if (script.BufferOrbs)
                 {
@@ -165,15 +176,12 @@ namespace GD3D
         /// Override this to determine a custom jump orb condition that has to be met in order for the player to use the jump orb. <para/>
         /// So this must return true in order for the jump orb to be usable.
         /// </summary>
-        public virtual bool CustomJumpOrbCondition()
-        {
-            return true;
-        }
+        public virtual bool CustomJumpOrbCondition => true;
 
         /// <summary>
         /// Override this to decide what happens when the player dies
         /// </summary>
-        public virtual void OnDeath()
+        public virtual void OnRespawn(bool inPracticeMode, Checkpoint checkpoint)
         {
             // Set CantHitOrbs to false
             if (CantHitOrbs)
@@ -181,7 +189,7 @@ namespace GD3D
                 CantHitOrbs = false;
             }
 
-            _cantBePressed = false;
+            _isActivated = idHandler.IsActivated(this);
         }
 
         public virtual void OnTriggerEnter(Collider col)
@@ -217,7 +225,7 @@ namespace GD3D
             if (col.gameObject.layer == _playerLayer)
             {
                 // Return if the correct conditions haven't been met
-                if (!ButtonPressed || _player.dead || CantHitOrbs || _cantBePressed || !CustomJumpOrbCondition())
+                if (!ButtonPressed || _player.IsDead || CantHitOrbs || _isActivated || !CustomJumpOrbCondition)
                 {
                     return;
                 }
@@ -228,7 +236,8 @@ namespace GD3D
                 // Make it so this orb cant be pressed afterwards if it's not multiTrigger
                 if (!multiTrigger)
                 {
-                    _cantBePressed = true;
+                    idHandler.ActivateID(this);
+                    _isActivated = true;
                 }
 
                 // Spawn trigger effect

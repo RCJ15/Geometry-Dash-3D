@@ -75,8 +75,10 @@ namespace GD3D.Player
             _haveTrail = enable;
         }
 
-        private void Awake()
+        public override void Awake()
         {
+            base.Awake();
+
             // Set instance
             Instance = this;
         }
@@ -87,7 +89,8 @@ namespace GD3D.Player
 
             // Subscribe to events
             player.OnDeath += OnDeath;
-            player.gamemode.OnChangeGamemode += (gamemode) => OnChangeGamemode(gamemode, true);
+            player.OnRespawn += OnRespawn;
+            player.GamemodeHandler.OnChangeGamemode += (gamemode) => OnChangeGamemode(gamemode, true);
 
             print("Reminder to use icon customization for this");
             PlayerTrail trailToCopy = trailCopyables[0];
@@ -101,19 +104,28 @@ namespace GD3D.Player
             );
 
             // Update gamemode manually
-            OnChangeGamemode(player.gamemode.CurrentGamemode, false);
+            OnChangeGamemode(player.GamemodeHandler.CurrentGamemode, false);
         }
 
         private void OnDeath()
         {
-            // Disable the players trail when they die
+            // Disable the trail
             HaveTrail = false;
+        }
+
+        private void OnRespawn(bool inPracticeMode, Checkpoint checkpoint)
+        {
+            // Set if trail is enabled or not based on the checkpoint data
+            if (inPracticeMode)
+            {
+                HaveTrail = checkpoint.TrailEnabled;
+            }
         }
 
         private void OnChangeGamemode(Gamemode gamemode, bool resetTrail)
         {
             // Set the position
-            _trailPosition = player.mesh.CurrentTrailPosition;
+            _trailPosition = player.Mesh.CurrentTrailPosition;
 
             // Set it to this object if it's null
             if (_trailPosition == null)

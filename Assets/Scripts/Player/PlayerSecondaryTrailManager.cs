@@ -47,8 +47,10 @@ namespace GD3D.Player
 
         private MeshFilter _meshFilter;
 
-        private void Awake()
+        public override void Awake()
         {
+            base.Awake();
+
             // Set the instance
             Instance = this;
         }
@@ -77,18 +79,19 @@ namespace GD3D.Player
             Destroy(obj);
 
             // Subscribe to events
-            player.gamemode.OnChangeGamemode += OnChangeGamemode;
+            player.GamemodeHandler.OnChangeGamemode += OnChangeGamemode;
             player.OnDeath += OnDeath;
+            player.OnRespawn += OnRespawn;
 
             // Update gamemode manually
-            OnChangeGamemode(player.gamemode.CurrentGamemode);
+            OnChangeGamemode(player.GamemodeHandler.CurrentGamemode);
         }
 
         public override void Update()
         {
             base.Update();
 
-            if (_pool.IsEmpty() || !HaveTrail || player.dead)
+            if (_pool.IsEmpty() || !HaveTrail || player.IsDead)
             {
                 return;
             }
@@ -112,18 +115,28 @@ namespace GD3D.Player
 
         private void OnDeath()
         {
+            // Disable the trail
             HaveTrail = false;
+        }
+
+        private void OnRespawn(bool inPracticeMode, Checkpoint checkpoint)
+        {
+            // Set if trail is enabled or not based on the checkpoint data
+            if (inPracticeMode)
+            {
+                HaveTrail = checkpoint.SecondaryTrailEnabled;
+            }
         }
 
         private void OnChangeGamemode(Gamemode mode)
         {
             // Get mesh filter
-            _meshFilter = player.mesh.CurrentTrailMesh;
+            _meshFilter = player.Mesh.CurrentTrailMesh;
 
             foreach (PlayerSecondaryTrail trail in _pool.Queue)
             {
                 // Update mesh
-                trail.UpdateMesh(_meshFilter.sharedMesh, player.mesh.CurrentTrailMaterialIndex);
+                trail.UpdateMesh(_meshFilter.sharedMesh, player.Mesh.CurrentTrailMaterialIndex);
             }
         }
     }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GD3D.CustomInput;
+using GD3D.UI;
 using System;
 
 namespace GD3D.Player
@@ -41,20 +42,20 @@ namespace GD3D.Player
 
         //-- Properties (shortcuts)
         /// <summary>
-        /// Shortcut for getting <see cref="PlayerMovement.Current3DOffset"/>
+        /// Shortcut for getting <see cref="PlayerMovement.Current3DOffset"/>.
         /// </summary>
         protected float Current3DOffset => PlayerMovement.Current3DOffset;
         /// <summary>
-        /// Shortcut for getting <see cref="PlayerMovement.OffsetVelocity"/>
+        /// Shortcut for getting <see cref="PlayerMovement.OffsetVelocity"/>.
         /// </summary>
         protected float OffsetVelocity => PlayerMovement.OffsetVelocity;
         /// <summary>
-        /// Is basically just the OffsetVelocity but multiplied by -200
+        /// Is basically just the OffsetVelocity but multiplied by -200.
         /// </summary>
         protected float XRot => OffsetVelocity * -200;
 
         /// <summary>
-        /// Shortcut for getting and setting <see cref="PlayerMain.InputBuffer"/>
+        /// Shortcut for getting and setting <see cref="PlayerMain.InputBuffer"/>.
         /// </summary>
         protected float InputBuffer
         {
@@ -67,22 +68,22 @@ namespace GD3D.Player
         protected bool InputBufferAbove0 => Player.InputBuffer > 0;
 
         /// <summary>
-        /// Shortcut for getting <see cref="PlayerGamemodeHandler.UpsideDown"/>
+        /// Shortcut for getting <see cref="PlayerGamemodeHandler.UpsideDown"/>.
         /// </summary>
         protected bool UpsideDown => GamemodeHandler.UpsideDown;
         /// <summary>
         /// Will return -1 if the player is upside down, otherwise it'll be 1. <para/>
-        /// Multiply stuff with this for upside down behaviour
+        /// Multiply stuff with this for upside down behaviour.
         /// </summary>
         protected float UpsideDownMultiplier => UpsideDown ? -1 : 1;
 
         /// <summary>
-        /// Shortcut for getting <see cref="PlayerGamemodeHandler.IsSmall"/>
+        /// Shortcut for getting <see cref="PlayerGamemodeHandler.IsSmall"/>.
         /// </summary>
         protected bool IsSmall => GamemodeHandler.IsSmall;
 
         /// <summary>
-        /// Shortcut for getting and setting the <see cref="PlayerScript.rb"/> Y velocity
+        /// Shortcut for getting and setting the <see cref="PlayerScript.rb"/> Y velocity.
         /// </summary>
         protected float YVelocity
         {
@@ -91,12 +92,17 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Shortcut for getting <see cref="PlayerMain.dead"/>
+        /// Shortcut for getting <see cref="PlayerMain.IsDead"/>.
         /// </summary>
-        protected bool Dead => Player.dead;
+        protected bool Dead => Player.IsDead;
 
         /// <summary>
-        /// Shortcut for getting and setting <see cref="PlayerTrailManager.HaveTrail"/>
+        /// Shortcut for getting <see cref="PauseMenu.IsPaused"/>.
+        /// </summary>
+        protected bool Paused => PauseMenu.IsPaused;
+
+        /// <summary>
+        /// Shortcut for getting and setting <see cref="PlayerTrailManager.HaveTrail"/>.
         /// </summary>
         protected bool HaveTrail
         {
@@ -105,7 +111,7 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Start is called before the first frame update
+        /// Start is called before the first frame update.
         /// </summary>
         public virtual void Start()
         {
@@ -114,7 +120,7 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// OnEnable is called when the gamemode is switched to this gamemode
+        /// OnEnable is called when the gamemode is switched to this gamemode.
         /// </summary>
         public virtual void OnEnable()
         {
@@ -132,7 +138,7 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// OnDisable is called when the gamemode is switched from this gamemode
+        /// OnDisable is called when the gamemode is switched from this gamemode.
         /// </summary>
         public virtual void OnDisable()
         {
@@ -140,7 +146,7 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Update is called once per frame
+        /// Update is called once per frame.
         /// </summary>
         public virtual void Update()
         {
@@ -149,7 +155,16 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Handles the players trail. Is called in Update()
+        /// Increases the jump count for both this session and the global total jump count for the current level.
+        /// </summary>
+        protected void IncreaseJumpCount()
+        {
+            PlayerMain.TimesJumped++;
+            SaveData.CurrentLevelData.totalJumps++;
+        }
+
+        /// <summary>
+        /// Handles the players trail. Is called in Update().
         /// </summary>
         private void UpdateTrail()
         {
@@ -179,7 +194,7 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Handles all ground detection. Is called in Update()
+        /// Handles all ground detection. Is called in Update().
         /// </summary>
         private void GroundDetection()
         {
@@ -205,7 +220,7 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Called when the player lands on the ground
+        /// Called when the player lands on the ground.
         /// </summary>
         public virtual void OnLand()
         {
@@ -213,7 +228,7 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Called when the player leaves the ground
+        /// Called when the player leaves the ground.
         /// </summary>
         public virtual void OnLeaveGround()
         {
@@ -221,7 +236,7 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Fixed Update is called once per physics frame
+        /// Fixed Update is called once per physics frame.
         /// </summary>
         public virtual void FixedUpdate()
         {
@@ -251,7 +266,7 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Fixed Update is called once per physics frame
+        /// Fixed Update is called once per physics frame.
         /// </summary>
         public virtual void OnDeath()
         {
@@ -259,9 +274,9 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Fixed Update is called once per physics frame
+        /// Fixed Update is called once per physics frame.
         /// </summary>
-        public virtual void OnRespawn()
+        public virtual void OnRespawn(bool inPracticeMode, Checkpoint checkpoint)
         {
 
         }

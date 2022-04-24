@@ -45,7 +45,18 @@ namespace GD3D.Player
         {
             base.OnDisable();
 
-            // Make all particles stop
+            StopAllParticles();
+        }
+
+        public override void OnDeath()
+        {
+            base.OnDeath();
+
+            StopAllParticles();
+        }
+
+        private void StopAllParticles()
+        {
             flyParticles.Stop();
             slideParticles.Stop();
             constantParticles.Stop();
@@ -56,7 +67,7 @@ namespace GD3D.Player
             base.Update();
 
             // Go up/down based on if the click key is being held
-            YVelocity += (flySpeed * Time.deltaTime * (KeyHold ? 1 : -1)) * UpsideDownMultiplier;
+            YVelocity += flySpeed * Time.deltaTime * (KeyHold ? 1 : -1) * UpsideDownMultiplier;
             
             HandleParticles();
 

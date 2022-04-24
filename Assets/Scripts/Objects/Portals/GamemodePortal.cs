@@ -20,7 +20,7 @@ namespace GD3D.Objects
         public override void OnEnterPortal()
         {
             // Change the gamemode
-            _player.gamemode.ChangeGamemode(gamemode);
+            _player.GamemodeHandler.ChangeGamemode(gamemode);
 
             // Apply borders or remove them, depening on if haveBorders is true or not
             if (haveBorders)
@@ -34,11 +34,13 @@ namespace GD3D.Objects
             }
         }
 
+        /*
         public override bool CustomPortalCondition()
         {
             // This condition is true if the player is not in the same gamemode
-            return _player.gamemode.CurrentGamemode != gamemode;
+            return _player.GamemodeHandler.CurrentGamemode != gamemode;
         }
+        */
 
         /// <summary>
         /// Returns the border max Y position

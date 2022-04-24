@@ -56,12 +56,12 @@ namespace GD3D.Level
             player = PlayerMain.Instance;
 
             // Subcribe to events
-            player.OnRespawn += StopAllEasings;
-            player.OnRespawn += ResetColors;
+            player.OnRespawn += (a, b) => StopAllEasings();
+            player.OnRespawn += OnRespawn;
             EasingManager.Instance.OnEaseObjectRemove += OnEaseObjectRemove;
         }
 
-        #region Scene Unloaded Schenanigans
+        #region Scene Unloaded
         private void OnEnable()
         {
             SceneManager.sceneUnloaded += OnSceneUnloaded;
@@ -76,6 +76,46 @@ namespace GD3D.Level
         {
             // Reset colors when the scene unloads
             ResetColors();
+        }
+        #endregion
+
+        #region Saving & loading from checkpoint
+        /// <summary>
+        /// Creates a new dictionary that contains the current colors for every color type.
+        /// </summary>
+        /// <returns>The newly created dictionary.</returns>
+        public Dictionary<ColorType, Color> Save()
+        {
+            // Create a new dictionary
+            Dictionary<ColorType, Color> colorDictionary = new Dictionary<ColorType, Color>();
+
+            // Loop through all the current color data
+            foreach (var pair in _colorDataDictionary)
+            {
+                // Add to dictionary
+                colorDictionary.Add(pair.Key, pair.Value.Color);
+            }
+
+            // Return the dictionary
+            return colorDictionary;
+        }
+
+        private void OnRespawn(bool inPracticeMode, Checkpoint checkpoint)
+        {
+            // Reset colors if not in practice mode
+            if (!inPracticeMode)
+            {
+                ResetColors();
+            }
+            else
+            {
+                // Loop through the checkpoint color data
+                foreach (var pair in checkpoint.LevelColorData)
+                {
+                    // Set data accordingly
+                    ChangeColor(pair.Key, pair.Value);
+                }
+            }
         }
         #endregion
 
@@ -111,14 +151,22 @@ namespace GD3D.Level
         /// </summary>
         public static void StopAllEasings()
         {
+            Queue<long> easeObjectsToRemove = new Queue<long>();
+
             // Make all the easings stop
             foreach (var pair in Instance._colorDataEasings)
             {
                 // Get the ease object id
                 long id = pair.Value;
 
+                // Add to queue
+                easeObjectsToRemove.Enqueue(id);
+            }
+
+            for (; easeObjectsToRemove.Count > 0;)
+            {
                 // Cancel the current ease using try remove
-                EasingManager.TryRemoveEaseObject(id);
+                EasingManager.TryRemoveEaseObject(easeObjectsToRemove.Dequeue());
             }
         }
 
@@ -230,7 +278,7 @@ namespace GD3D.Level
             // Throw error if the given color type doesn't exist
             if (!Instance._colorDataDictionary.ContainsKey(type))
             {
-                throw new Exception($"The color type of \"{type}\" does not exist.");
+                throw new NullReferenceException($"The color type of \"{type}\" does not exist.");
             }
 
             // Return the color data

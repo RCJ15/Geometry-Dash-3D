@@ -78,7 +78,7 @@ namespace GD3D.ObjectPooling
         }
 
         /// <summary>
-        /// Coroutine for removing this object after time. Used in <see cref="RemoveAfterTime(float, System.Action)"/>
+        /// Coroutine for removing this object after time. Used in <see cref="RemoveAfterTime"/>
         /// </summary>
         private IEnumerator RemoveAfterTimeCoroutine(float time, Action onComplete)
         {

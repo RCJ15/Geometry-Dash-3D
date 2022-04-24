@@ -19,31 +19,22 @@ namespace GD3D.Easing.Editor
         private Dictionary<string, float> _extraHeight = new Dictionary<string, float>();
 
         // Graph Settings
-        public static bool ShowPreviewGraph = true;
-
         public static int GraphResolution = 50;
 
-        public static Color PreviewGraphColor = Color.red;
-        public static Color CustomCurveColor = Color.green;
+        public static Color GraphColor = Color.red;
 
         public static Vector2 GraphSize = new Vector2(200, 100);
 
-        private static SerializedProperty Property;
-
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            // Set the property
-            EaseDataPropertyDrawer.Property = property;
-
             EditorGUI.BeginProperty(position, label, property);
 
             // Get properties
             var type = GetProperty(property, "Type");
             var easeRate = GetProperty(property, "EaseRate");
-            var customCurve = GetProperty(property, "CustomCurve");
 
             // Create this object
-            _thisObj = new EaseData((EasingType)type.enumValueIndex, easeRate.floatValue, customCurve.animationCurveValue);
+            _thisObj = new EaseData((EasingType)type.enumValueIndex, easeRate.floatValue);
 
             // Create and draw foldout
             Rect foldoutRect = new Rect(position.x, position.y, position.width, 20);
@@ -69,7 +60,7 @@ namespace GD3D.Easing.Editor
                 return;
             }
 
-            // Draw a dark field thingy
+            // Draw a dark field thingy on the rect
             EditorGUI.DrawRect(new Rect(position.x, position.y + 18, position.width, position.height - 16), new Color(0, 0, 0, 0.2f));
 
             // Calculate rects
@@ -77,7 +68,7 @@ namespace GD3D.Easing.Editor
 
             EditorGUI.indentLevel++;
 
-            Serialize(typeRect, type);
+            Serialize(typeRect, type, property);
 
             // Serialize easeRate and customCurve based in what easing type this object has
             EasingType easingType = (EasingType)type.enumValueIndex;
@@ -91,7 +82,7 @@ namespace GD3D.Easing.Editor
                 case EasingType.elasticIn:
                 case EasingType.elasticOut:
                     Rect extraRect = new Rect(position.x, position.y + _extraHeight[property.propertyPath] + 20, position.width, 20);
-                    Serialize(extraRect, easeRate);
+                    Serialize(extraRect, easeRate, property);
                     break;
             }
 
@@ -102,19 +93,6 @@ namespace GD3D.Easing.Editor
 
         private void DrawGraph(Rect position, SerializedProperty property, EasingType easingType)
         {
-            // Draw a preview graph of the curve if we are not using a custom curve
-            // Otherwise we will draw the custom curve instead
-            bool havePreviewGraph = easingType != EasingType.custom;
-
-            // Do not draw any graphs at all if showPreviewGraph is false
-            if (havePreviewGraph && !ShowPreviewGraph)
-            {
-                return;
-            }
-
-            // Get the custom curve property
-            var customCurve = GetProperty(property, "CustomCurve");
-
             // Draw label
             Rect graphLabelRect = new Rect(position.x, position.y + _extraHeight[property.propertyPath] + 30, position.width, 20);
             _extraHeight[property.propertyPath] += 10 + graphLabelRect.height;
@@ -122,19 +100,7 @@ namespace GD3D.Easing.Editor
             GUIStyle boldStyle = new GUIStyle(GUI.skin.label);
             boldStyle.fontStyle = FontStyle.Bold;
 
-            // Change label depending on which graph we are drawing
-            string graphLabel;
-
-            if (havePreviewGraph)
-            {
-                graphLabel = "Preview Graph";
-            }
-            else
-            {
-                graphLabel = "Custom Curve";
-            }
-
-            EditorGUI.LabelField(graphLabelRect, graphLabel, boldStyle);
+            EditorGUI.LabelField(graphLabelRect, "Preview Graph", boldStyle);
 
             // Create graph rect
             Rect graphRect = new Rect(position.x, position.y + _extraHeight[property.propertyPath] + 20, GraphSize.x, GraphSize.y);
@@ -148,72 +114,40 @@ namespace GD3D.Easing.Editor
             float biggestValue = 1;
             float smallestValue = 0;
 
-            if (havePreviewGraph)
+            // Create list of keyframes
+            List<Keyframe> keyframes = new List<Keyframe>();
+
+            // Loop for the amount in graph resolution
+            for (int i = 0; i < GraphResolution + 1; i++)
             {
-                // Create list of keyframes
-                List<Keyframe> keyframes = new List<Keyframe>();
+                float t = (float)i / (float)GraphResolution;
 
-                // Loop for the amount in graph resolution
-                for (int i = 0; i < GraphResolution + 1; i++)
+                float val = _thisObj.Evaluate(t);
+
+                // Determine if val is bigger or smaller than the biggest or smallest values
+                if (val > biggestValue)
                 {
-                    float t = (float)i / (float)GraphResolution;
-
-                    float val = _thisObj.Evaluate(t);
-
-                    // Determine if val is bigger or smaller than the biggest or smallest values
-                    if (val > biggestValue)
-                    {
-                        biggestValue = val;
-                    }
-                    else if (val < smallestValue)
-                    {
-                        smallestValue = val;
-                    }
-
-                    // Add new keyframe
-                    Keyframe newKeyframe = new Keyframe(t, val);
-                    newKeyframe.weightedMode = WeightedMode.Both;
-
-                    keyframes.Add(newKeyframe);
+                    biggestValue = val;
+                }
+                else if (val < smallestValue)
+                {
+                    smallestValue = val;
                 }
 
-                drawCurve = new AnimationCurve(keyframes.ToArray());
+                // Add new keyframe
+                Keyframe newKeyframe = new Keyframe(t, val);
+                newKeyframe.weightedMode = WeightedMode.Both;
+
+                keyframes.Add(newKeyframe);
             }
-            else
-            {
-                drawCurve = customCurve.animationCurveValue;
 
-                for (int i = 0; i < GraphResolution; i++)
-                {
-                    float t = (float)i / (float)GraphResolution;
-
-                    float val = drawCurve.Evaluate(t);
-
-                    // Determine if val is bigger or smaller than the biggest or smallest values
-                    if (val > biggestValue)
-                    {
-                        biggestValue = val;
-                    }
-                    else if (val < smallestValue)
-                    {
-                        smallestValue = val;
-                    }
-                }
-            }
+            drawCurve = new AnimationCurve(keyframes.ToArray());
 
             // Make the ranges of the graph contain the biggest and smallest values
             Rect graphRanges = new Rect(0, smallestValue, 1, biggestValue - smallestValue);
 
-            if (havePreviewGraph)
-            {
-                // Draw preview curve
-                EditorGUI.CurveField(graphRect, drawCurve, PreviewGraphColor, graphRanges);
-            }
-            else
-            {
-                // Draw the animation curve
-                customCurve.animationCurveValue = EditorGUI.CurveField(graphRect, drawCurve, CustomCurveColor, graphRanges);
-            }
+            // Draw preview curve
+            EditorGUI.CurveField(graphRect, drawCurve, GraphColor, graphRanges);
         }
 
         private void DoLast()
@@ -224,10 +158,10 @@ namespace GD3D.Easing.Editor
             EditorGUI.EndProperty();
         }
 
-        private void Serialize(Rect rect, SerializedProperty property)
+        private void Serialize(Rect rect, SerializedProperty property, SerializedProperty thisProperty)
         {
             EditorGUI.PropertyField(rect, property);
-            _extraHeight[EaseDataPropertyDrawer.Property.propertyPath] += rect.height;
+            _extraHeight[thisProperty.propertyPath] += rect.height;
         }
 
         private static SerializedProperty GetProperty(SerializedProperty prop, string name)
@@ -248,18 +182,16 @@ namespace GD3D.Easing.Editor
             // Get properties
             var type = GetProperty(property, "Type");
             var easeRate = GetProperty(property, "EaseRate");
-            var customCurve = GetProperty(property, "CustomCurve");
 
             // Get the default value of EaseData
-            EaseData defaultValue = EaseData.defaultValue;
+            EaseData defaultValue = new EaseData();
 
             // Set properties to default value
             type.enumValueIndex = (int)defaultValue.Type;
             easeRate.floatValue = defaultValue.EaseRate;
-            customCurve.animationCurveValue = defaultValue.CustomCurve;
 
             // Update properties
-            Property.serializedObject.ApplyModifiedProperties();
+            property.serializedObject.ApplyModifiedProperties();
         }
 
         public static void OpenGraphSettings(bool windowOpen)
@@ -279,10 +211,8 @@ namespace GD3D.Easing.Editor
 
         public static void ResetGraphSettings(bool windowOpen = false)
         {
-            ShowPreviewGraph = true;
             GraphResolution = 50;
-            PreviewGraphColor = Color.red;
-            CustomCurveColor = Color.green;
+            GraphColor = Color.red;
             GraphSize = new Vector2(200, 100);
 
             // Update the windows if it's open

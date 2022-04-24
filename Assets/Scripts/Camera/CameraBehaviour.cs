@@ -38,8 +38,7 @@ namespace GD3D.Camera
         [SerializeField] private float limitYMin;
         [SerializeField] private float limitYMax;
 
-        [HideInInspector]
-        public float YLockPos;
+        [HideInInspector] public float YLockPos;
 
         [Header("Interpolation Values")]
         [SerializeField] private float yMaxDelta = .2f;
@@ -50,12 +49,12 @@ namespace GD3D.Camera
         private Camera _cam;
 
         //-- Shake
-        private float _strength;
-        private float _frequency;
-        private float _frequencyTimer;
+        private float _shakeStrength;
+        private float _shakeFrequency;
+        private float _shakeFrequencyTimer;
 
-        private float _length;
-        private float _lengthTimer;
+        private float _shakeLength;
+        private float _shakeLengthTimer;
 
         private Vector3 _shakeOffset;
 
@@ -88,7 +87,7 @@ namespace GD3D.Camera
             // Get references
             _cam = Helpers.Camera;
 
-            // Set the start pos and tp to that position immediately cuz otherwise the camera will be weird
+            // Set the start pos and tp to that position immediately because otherwise the camera will be weird
             _startPos = Target.position + offset + extraStartOffset;
             _transform.position = _startPos;
             _position = _startPos;
@@ -102,25 +101,115 @@ namespace GD3D.Camera
             _player = PlayerMain.Instance;
 
             // Subscribe to events
-            _player.OnRespawn += StopAllEasings;
+            _player.OnRespawn += (a, b) => StopAllEasings();
             _player.OnRespawn += OnRespawn;
             EasingManager.Instance.OnEaseObjectRemove += OnEaseObjectRemove;
         }
 
-        private void OnRespawn()
+        private void OnRespawn(bool inPracticeMode, Checkpoint checkpoint)
         {
-            // Reset position
-            _transform.position = _startPos;
-            _targetPosition = _startPos;
-            _position = _startPos;
+            // Check if we are not in practice mode
+            if (!inPracticeMode)
+            {
+                // Reset position
+                _transform.position = _startPos;
+                _targetPosition = _startPos;
+                _position = _startPos;
 
-            // Reset rotation
-            _transform.rotation = _startRot;
-            rotation = _startRot.eulerAngles;
+                // Reset offset
+                offset = _startOffset;
 
-            // Reset fov
-            _cam.fieldOfView = _startFov;
+                // Reset rotation
+                _transform.rotation = _startRot;
+                rotation = _startRot.eulerAngles;
+
+                // Reset fov
+                _cam.fieldOfView = _startFov;
+            }
+            else
+            {
+                // Set values based on the checkpoint cam state
+                CamState state = checkpoint.CamState;
+
+                // Set position
+                Vector3 pos = state.Position;
+
+                _transform.position = pos;
+                _targetPosition = pos;
+                _position = pos;
+
+                // Set offset
+                offset = state.Offset;
+
+                // Set rotation
+                Quaternion rot = state.Rotation;
+                _transform.rotation = rot;
+                rotation = rot.eulerAngles;
+
+                // Set shake values
+                _shakeStrength = state.ShakeStrength;
+                _shakeFrequency = state.ShakeFrequency;
+                _shakeFrequencyTimer = state.ShakeFrequencyTimer;
+                _shakeLength = state.ShakeLength;
+                _shakeLengthTimer = state.ShakeLengthTimer;
+
+                // Set other stuff
+                _cam.fieldOfView = state.FOV;
+                YLockPos = state.YLockPos;
+            }
         }
+
+        #region Saving CamState (For checkpoints)
+        /// <summary>
+        /// Creates a new <see cref="CamState"/> and inputs this cameras data into it.
+        /// </summary>
+        /// <returns>The newly created <see cref="CamState"/>.</returns>
+        public CamState Save()
+        {
+            CamState state = new CamState();
+
+            // Transform
+            state.Position = _position;
+            state.Offset = offset;
+            state.Rotation = _transform.rotation;
+
+            // Shake
+            state.ShakeStrength = _shakeStrength;
+            state.ShakeFrequency = _shakeFrequency;
+            state.ShakeFrequencyTimer = _shakeFrequencyTimer;
+            state.ShakeLength = _shakeLength;
+            state.ShakeLengthTimer = _shakeLengthTimer;
+
+            // Other
+            state.FOV = _cam.fieldOfView;
+            state.YLockPos = YLockPos;
+
+            return state;
+        }
+
+        /// <summary>
+        /// A struct that contains data for the camera during a certain state. <para/>
+        /// Can be saved and loaded. Mainly used for <see cref="Checkpoint"/>.
+        /// </summary>
+        public struct CamState
+        {
+            //-- Transform
+            public Vector3 Position;
+            public Vector3 Offset;
+            public Quaternion Rotation;
+
+            //-- Shake
+            public float ShakeStrength;
+            public float ShakeFrequency;
+            public float ShakeFrequencyTimer;
+            public float ShakeLength;
+            public float ShakeLengthTimer;
+
+            //-- Other
+            public float FOV;
+            public float YLockPos;
+        }
+        #endregion
 
         private void Update()
         {
@@ -133,29 +222,29 @@ namespace GD3D.Camera
         private void UpdateShake()
         {
             // Check if the timer is 0 or less
-            if (_lengthTimer <= 0)
+            if (_shakeLengthTimer <= 0)
             {
                 _shakeOffset = Vector3.zero;
                 return;
             }
 
             // Decrease timer
-            _lengthTimer -= Time.deltaTime;
+            _shakeLengthTimer -= Time.deltaTime;
 
             // Check if the frequency timer is 0 or less
-            if (_frequencyTimer <= 0)
+            if (_shakeFrequencyTimer <= 0)
             {
                 // Shake the camera
-                float shakePower = Helpers.Map(0, _length, 0, 1, _lengthTimer);
-                _shakeOffset = Random.insideUnitSphere * _strength * shakePower;
+                float shakePower = Helpers.Map(0, _shakeLength, 0, 1, _shakeLengthTimer);
+                _shakeOffset = Random.insideUnitSphere * _shakeStrength * shakePower;
 
                 // Reset timer
-                _frequencyTimer = 1f / _frequency;
+                _shakeFrequencyTimer = 1f / _shakeFrequency;
             }
             // If not, decrease the timer
             else
             {
-                _frequencyTimer -= Time.deltaTime;
+                _shakeFrequencyTimer -= Time.deltaTime;
             }
         }
 
@@ -316,12 +405,12 @@ namespace GD3D.Camera
         /// <param name="length">How long the shake will last</param>
         public void Shake(float strength, float frequency, float length)
         {
-            _strength = strength;
-            _frequency = frequency;
-            _frequencyTimer = 0;
+            _shakeStrength = strength;
+            _shakeFrequency = frequency;
+            _shakeFrequencyTimer = 0;
 
-            _length = length;
-            _lengthTimer = length;
+            _shakeLength = length;
+            _shakeLengthTimer = length;
         }
 
 #if UNITY_EDITOR

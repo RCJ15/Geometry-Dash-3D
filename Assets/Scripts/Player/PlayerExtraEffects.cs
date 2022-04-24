@@ -14,8 +14,10 @@ namespace GD3D.Player
         [SerializeField] private Color reverseGravityColor = Color.white;
         private ParticleSystem _upsideDownGravityLines;
 
-        private void Awake()
+        public override void Awake()
         {
+            base.Awake();
+
             // Create a copy of the upsideDownGravityLines and invert it to create the other lines
             Transform tran = regularGravityLines.transform;
 

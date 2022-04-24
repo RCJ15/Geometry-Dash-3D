@@ -16,8 +16,10 @@ namespace GD3D.Player
         
         private CameraBehaviour _cam;
 
-        private void Awake()
+        public override void Awake()
         {
+            base.Awake();
+
             // Set instance
             s_instance = this;
         }
@@ -69,7 +71,7 @@ namespace GD3D.Player
             SetCamTarget(null);
         }
 
-        private void OnRespawn()
+        private void OnRespawn(bool inPracticeMode, Checkpoint checkpoint)
         {
             // Make the camera follow the player
             SetCamTarget(transform);

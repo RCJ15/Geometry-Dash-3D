@@ -1,10 +1,8 @@
 using GD3D.Player;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using PathCreation;
+using GD3D.UI;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.Audio;
@@ -23,6 +21,7 @@ namespace GD3D.Audio
 
         [Header("Important Stuff")]
         [SerializeField] private AudioClip song;
+        [SerializeField] private AudioSource practiceMusicSource;
 
         [Header("BPM")]
         [SerializeField] private float bpm = 160;
@@ -67,6 +66,11 @@ namespace GD3D.Audio
 
         [HideInInspector] public float EndDistance;
 
+        /// <summary>
+        /// Shortcut for <see cref="PlayerPracticeMode.InPracticeMode"/>.
+        /// </summary>
+        private bool InPracticeMode => PlayerPracticeMode.InPracticeMode;
+
         private void Awake()
         {
             // Set instance
@@ -79,9 +83,9 @@ namespace GD3D.Audio
             _source = GetComponent<AudioSource>();
             _player = PlayerMain.Instance;
 
-            if (_player != null && _player.movement != null)
+            if (_player != null && _player.Movement != null)
             {
-                _playerMovement = _player.movement;
+                _playerMovement = _player.Movement;
             }
 
             _pathCreator = FindObjectOfType<PathCreator>();
@@ -103,6 +107,45 @@ namespace GD3D.Audio
             _player.OnDeath += OnDeath;
             _player.OnRespawn += OnRespawn;
             _source.Play();
+
+            // Cache the instance just for this moment
+            PauseMenu pauseMenu = PauseMenu.Instance;
+
+            pauseMenu.OnPause += OnPauseMenuOpen;
+            pauseMenu.OnResume += OnPauseMenuClose;
+        }
+
+        #region Pause Menu
+        private void OnPauseMenuOpen()
+        {
+            // Change source depending on if we are in practice mode or not
+            AudioSource source = InPracticeMode ? practiceMusicSource : _source;
+            source.Pause();
+        }
+
+        private void OnPauseMenuClose()
+        {
+            // Change source depending on if we are in practice mode or not
+            AudioSource source = InPracticeMode ? practiceMusicSource : _source;
+            source.Play();
+        }
+        #endregion
+
+        /// <summary>
+        /// Toggles the practice song on/off based on <paramref name="enable"/>.
+        /// </summary>
+        public static void TogglePracticeSong(bool enable)
+        {
+            if (enable)
+            {
+                Instance.practiceMusicSource.Play();
+                Instance.Stop();
+            }
+            else
+            {
+                Instance.practiceMusicSource.Stop();
+                Instance._source.Play();
+            }
         }
 
         public void PlayAtDistance(float distance)
@@ -163,12 +206,20 @@ namespace GD3D.Audio
 
         private void OnDeath()
         {
-            _source.Stop();
+            // Only stop the music if we are not in practice mode
+            if (!InPracticeMode)
+            {
+                _source.Stop();
+            }
         }
 
-        private void OnRespawn()
+        private void OnRespawn(bool inPracticeMode, Checkpoint checkpoint)
         {
-            _source.Play();
+            // Only play the music if we are not in practice mode
+            if (!InPracticeMode)
+            {
+                _source.Play();
+            }
         }
 
         /// <summary>

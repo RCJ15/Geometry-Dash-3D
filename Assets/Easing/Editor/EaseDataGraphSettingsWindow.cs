@@ -16,18 +16,14 @@ namespace GD3D.Easing.Editor
 
             EditorGUILayout.LabelField("Graph Settings", labelStyle);
 
-            // Add show preview graph field
-            EaseDataPropertyDrawer.ShowPreviewGraph = EditorGUILayout.Toggle("Show Preview Graph", EaseDataPropertyDrawer.ShowPreviewGraph);
-
             // Add graph resolution field
             EaseDataPropertyDrawer.GraphResolution = Mathf.Clamp(EditorGUILayout.IntField("Graph Resolution", EaseDataPropertyDrawer.GraphResolution), 2, 999);
 
             // Add a space
             EditorGUILayout.Space();
 
-            // Add color fields
-            EaseDataPropertyDrawer.PreviewGraphColor = EditorGUILayout.ColorField("Preview Graph Color", EaseDataPropertyDrawer.PreviewGraphColor);
-            EaseDataPropertyDrawer.CustomCurveColor = EditorGUILayout.ColorField("Custom Curve Color", EaseDataPropertyDrawer.CustomCurveColor);
+            // Add color field
+            EaseDataPropertyDrawer.GraphColor = EditorGUILayout.ColorField("Graph Color", EaseDataPropertyDrawer.GraphColor);
 
             // Add a space
             EditorGUILayout.Space();

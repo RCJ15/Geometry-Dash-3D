@@ -10,14 +10,12 @@ namespace GD3D.Easing
     [Serializable]
     public struct EaseData
     {
-        public static readonly EaseData defaultValue = new EaseData(EasingType.none, 2, AnimationCurve.Linear(0, 0, 1, 1));
+        public static readonly EaseData defaultValue = new EaseData(EasingType.none, 2);
 
         public EasingType Type;
 
         [Range(0.1f, 4f)]
         public float EaseRate;
-
-        public AnimationCurve CustomCurve;
 
         /// <summary>
         /// Evaluates the Y value on the curve <paramref name="x"/> position using this objects Easing Type, Ease Rate and Custom Curve.
@@ -86,21 +84,16 @@ namespace GD3D.Easing
 
                 case EasingType.backOut:
                     return EaseMethods.BackOut(x);
-
-                // Custom curve
-                case EasingType.custom:
-                    return CustomCurve.Evaluate(x);
             }
 
             // Return X by default (linear curve)
             return x;
         }
 
-        public EaseData(EasingType type, float easeRate, AnimationCurve customCurve)
+        public EaseData(EasingType type, float easeRate = 2)
         {
             Type = type;
             EaseRate = easeRate;
-            CustomCurve = customCurve;
         }
     }
 }

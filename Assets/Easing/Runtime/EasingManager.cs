@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -35,6 +34,7 @@ namespace GD3D.Easing
 
         private Dictionary<long, EaseObject> _easeObjects = new Dictionary<long, EaseObject>();
         private Queue<long> _easeObjectsToRemove = new Queue<long>();
+        private Queue<EaseObject> _easeObjectsToAdd = new Queue<EaseObject>();
 
         public Action<long> OnEaseObjectAdd;
         public Action<long> OnEaseObjectRemove;
@@ -50,6 +50,20 @@ namespace GD3D.Easing
 
         private void Update()
         {
+            // Remove all ease objects in the easeObjectsToRemove queue
+            for (; _easeObjectsToRemove.Count > 0; )
+            {
+                _easeObjects.Remove(_easeObjectsToRemove.Dequeue());
+            }
+
+            // Add all ease objects in the _easeObjectsToAdd queue
+            for (; _easeObjectsToAdd.Count > 0;)
+            {
+                EaseObject obj = _easeObjectsToAdd.Dequeue();
+
+                _easeObjects.Add(obj.ID, obj);
+            }
+
             // Update each active easeObject
             foreach (var pair in _easeObjects)
             {
@@ -62,18 +76,14 @@ namespace GD3D.Easing
                 }
 
                 // Increase time and update
-                ease.Time += Time.deltaTime * (ease.Reverse ? -1 : 1);
+                float addedTime = ease.Unscaled ? Time.unscaledDeltaTime : Time.deltaTime;
+                addedTime *= ease.Reverse ? -1 : 1;
+
+                ease.Time += addedTime;
                 ease.Update();
             }
-
-            // Remove all ease objects in the easeObjectsToRemove queue
-            int length = _easeObjectsToRemove.Count;
-            for (int i = 0; i < length; i++)
-            {
-                _easeObjects.Remove(_easeObjectsToRemove.Dequeue());
-            }
         }
-
+        
         /// <summary>
         /// Adds an <see cref="EaseObject"/> to the active list of easings. <para/>
         /// Also calls <see cref="OnEaseObjectAdd"/>.
@@ -84,7 +94,7 @@ namespace GD3D.Easing
 
             Instance.OnEaseObjectAdd?.Invoke(id);
 
-            Instance._easeObjects.Add(id, obj);
+            Instance._easeObjectsToAdd.Enqueue(obj);
         }
 
         /// <summary>
@@ -168,5 +178,52 @@ namespace GD3D.Easing
             // If it's null, return false since the try failed
             return false;
         }
+
+        #region Saving & Loading
+        /// <summary>
+        /// Saves all the currently active easings and converts all of them into a list of <see cref="EaseState"/>.
+        /// </summary>
+        /// <returns>The list of all saved <see cref="EaseObject"/> in the form of <see cref="EaseState"/>.</returns>
+        public static List<EaseState> Save()
+        {
+            List<EaseState> easeStates = new List<EaseState>();
+
+            // Loop
+            foreach (var pair in Instance._easeObjects)
+            {
+                // Continue to the next if this ease object is contained in the remove queue
+                // This is just to make sure no garbage easings are saved
+                if (Instance._easeObjectsToRemove.Contains(pair.Key))
+                {
+                    continue;
+                }
+
+                // Save the ease object to a ease state
+                EaseObject ease = pair.Value;
+                EaseState state = ease.SaveToState();
+
+                easeStates.Add(state);
+            }
+
+            // Return the array
+            return easeStates;
+        }
+
+        /// <summary>
+        /// Loads new ease objects from the given <paramref name="easeStates"/> list.
+        /// </summary>
+        public static void Load(List<EaseState> easeStates)
+        {
+            // Clear the dictionary of ease objects
+            Instance._easeObjects.Clear();
+
+            // Loop through all ease states and create new ease objects
+            foreach (EaseState state in easeStates)
+            {
+                // The ease objects are automatically added to the ease manager
+                new EaseObject(state);
+            }
+        }
+        #endregion
     }
 }

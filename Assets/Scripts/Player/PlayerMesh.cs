@@ -43,8 +43,10 @@ namespace GD3D.Player
         public Transform CurrentTrailPosition => _currentTrailPosition;
         #endregion
 
-        private void Awake()
+        public override void Awake()
         {
+            base.Awake();
+
             foreach (GamemodeMeshObject meshData in gamemodeMeshData)
             {
                 // Create the new mesh dictionaries
@@ -67,10 +69,10 @@ namespace GD3D.Player
             base.Start();
 
             // Subscribe to events
-            player.gamemode.OnChangeGamemode += OnChangeGamemode;
+            player.GamemodeHandler.OnChangeGamemode += OnChangeGamemode;
 
             // Enable the correct mesh
-            OnChangeGamemode(player.gamemode.CurrentGamemode);
+            OnChangeGamemode(player.GamemodeHandler.CurrentGamemode);
         }
 
         private void OnChangeGamemode(Gamemode newGamemode)

@@ -445,73 +445,76 @@ namespace GD3D.Audio
             }
 
             EditorGUILayout.Space();
-            //EditorGUILayout.LabelField("Audio Clip Queue", EditorStyles.boldLabel);
 
             EditorGUILayout.PropertyField(audioClipQueue);
 
-            if (GUILayout.Button("Add all as seperate single sounds"))
+            // Only draw audio clip queue buttons if the field is open
+            if (audioClipQueue.isExpanded)
             {
-                Undo.RecordObject(soundManager, "Added audio clip queue as seperate single sounds");
-
-                List<Sound> newSoundList = soundManager.sounds.ToList();
-
-                foreach (AudioClip clip in soundManager.AudioClipQueue)
+                if (GUILayout.Button("Add all as seperate single sounds"))
                 {
-                    if (clip == null)
-                        continue;
+                    Undo.RecordObject(soundManager, "Added audio clip queue as seperate single sounds");
 
-                    Sound newSound = new Sound()
+                    List<Sound> newSoundList = soundManager.sounds.ToList();
+
+                    foreach (AudioClip clip in soundManager.AudioClipQueue)
                     {
-                        clip = clip,
-                        name = FancyAutoNaming(clip.name),
+                        if (clip == null)
+                            continue;
+
+                        Sound newSound = new Sound()
+                        {
+                            clip = clip,
+                            name = FancyAutoNaming(clip.name),
+                            pitchSlider = 1,
+                            soundVolume = 1,
+                        };
+
+                        newSoundList.Add(newSound);
+                    }
+
+                    soundManager.sounds = newSoundList.ToArray();
+
+                    soundManager.AudioClipQueue.Clear();
+                }
+
+                if (GUILayout.Button("Add all as one single sound group"))
+                {
+                    Undo.RecordObject(soundManager, "Added audio clip queue as one single sound group");
+
+                    List<SoundGroup> newSoundGroupList = soundManager.soundGroups.ToList();
+
+                    List<AudioClip> newClips = new List<AudioClip>();
+
+                    foreach (AudioClip clip in soundManager.AudioClipQueue)
+                    {
+                        if (clip == null)
+                            continue;
+
+                        newClips.Add(clip);
+                    }
+
+                    SoundGroup newSoundGroup = new SoundGroup()
+                    {
+                        clips = newClips.ToArray(),
+                        groupName = FancyAutoNaming(newClips[0].name),
                         pitchSlider = 1,
                         soundVolume = 1,
                     };
 
-                    newSoundList.Add(newSound);
+                    newSoundGroupList.Add(newSoundGroup);
+
+                    soundManager.soundGroups = newSoundGroupList.ToArray();
+
+                    soundManager.AudioClipQueue.Clear();
                 }
 
-                soundManager.sounds = newSoundList.ToArray();
-
-                soundManager.AudioClipQueue.Clear();
-            }
-
-            if (GUILayout.Button("Add all as one single sound group"))
-            {
-                Undo.RecordObject(soundManager, "Added audio clip queue as one single sound group");
-
-                List<SoundGroup> newSoundGroupList = soundManager.soundGroups.ToList();
-
-                List<AudioClip> newClips = new List<AudioClip>();
-
-                foreach (AudioClip clip in soundManager.AudioClipQueue)
+                if (GUILayout.Button("Clear audio clip queue"))
                 {
-                    if (clip == null)
-                        continue;
+                    Undo.RecordObject(soundManager, "Clear audio clip queue");
 
-                    newClips.Add(clip);
+                    soundManager.AudioClipQueue.Clear();
                 }
-
-                SoundGroup newSoundGroup = new SoundGroup()
-                {
-                    clips = newClips.ToArray(),
-                    groupName = FancyAutoNaming(newClips[0].name),
-                    pitchSlider = 1,
-                    soundVolume = 1,
-                };
-
-                newSoundGroupList.Add(newSoundGroup);
-
-                soundManager.soundGroups = newSoundGroupList.ToArray();
-
-                soundManager.AudioClipQueue.Clear();
-            }
-
-            if (GUILayout.Button("Clear audio clip queue"))
-            {
-                Undo.RecordObject(soundManager, "Clear audio clip queue");
-
-                soundManager.AudioClipQueue.Clear();
             }
 
             // Apply modified properties

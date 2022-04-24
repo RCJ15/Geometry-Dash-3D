@@ -7,19 +7,23 @@ using PathCreation;
 namespace GD3D.Objects
 {
     /// <summary>
-    /// A trigger is an invisble object that will make something happen at a specific point during the level, like changing the background color gradually. <para/>
-    /// IMPORTANT NOTE: If you're going to create a new trigger that changes a value overtime, inherit from <see cref="TimedTrigger"/> instead as it will be able to be saved in checkpoints.
+    /// A trigger is an invisble object that will make something happen at a specific point during the level, like changing the background color gradually.
     /// </summary>
     [RequireComponent(typeof(AttachToPath))]
     public abstract class Trigger : MonoBehaviour
     {
+        //-- ID
+        protected ObjectIDHandler idHandler;
+        [HideInInspector] public long ID;
+
+        private bool _isActivated = false;
+
         [Header("General Trigger Options")]
         [SerializeField] private bool isTouchTriggered;
 
-        private bool _hasBeenTriggered;
         private bool _playerHasPassed;
 
-        public bool HasBeenTriggered => _hasBeenTriggered;
+        public bool IsActivated => _isActivated;
 
         //-- References
         protected AttachToPath _attachToPath;
@@ -27,7 +31,7 @@ namespace GD3D.Objects
 
         //-- Properties
         public float Distance => _attachToPath.Distance;
-        protected bool CanTrigger => !_hasBeenTriggered && !_player.dead && CustomTriggerCondition();
+        protected bool CanTrigger => !_isActivated && !_player.IsDead && CustomTriggerCondition;
 
         public virtual void Start()
         {
@@ -37,20 +41,27 @@ namespace GD3D.Objects
 
             // Subsribe to events
             _player.OnRespawn += OnRespawn;
+
+            // Get the ID handler and generate ID
+            idHandler = ObjectIDHandler.Instance;
+
+            ID = idHandler.GetID(this);
         }
 
         /// <summary>
         /// Override this to do stuff when the player dies
         /// </summary>
-        public virtual void OnRespawn()
+        public virtual void OnRespawn(bool inPracticeMode, Checkpoint checkpoint)
         {
+            /*
             // Execute this one frame later using this epic timer thingy I wrote :D
             Helpers.TimerEndOfFrame(this, () =>
             {
-                _hasBeenTriggered = false;
-                _playerHasPassed = false;
             }
             );
+            */
+            _isActivated = idHandler.IsActivated(this);
+            _playerHasPassed = false;
         }
 
         public virtual void Update()
@@ -62,16 +73,16 @@ namespace GD3D.Objects
             }
 
             // Check if the player has gone past the trigger
-            if (_player.movement.TravelAmount > Distance)
+            if (_player.Movement.TravelAmount > Distance)
             {
                 // Make sure this is set to true so the trigger won't trigger again
                 _playerHasPassed = true;
 
-                // Trigger the trigger (if we can trigger)
+                // Trigger the trigger (if we can trigger the trigger)
                 if (CanTrigger)
                 {
                     OnTriggered();
-                    _hasBeenTriggered = true;
+                    ActivateID();
                 }
             }
         }
@@ -85,12 +96,18 @@ namespace GD3D.Objects
                 return;
             }
 
-            // Player touched trigger
+            // Player touched trigger so trigger the trigger
             if (col.gameObject.layer == LayerMask.NameToLayer("Player"))
             {
                 OnTriggered();
-                _hasBeenTriggered = true;
+                ActivateID();
             }
+        }
+
+        private void ActivateID()
+        {
+            idHandler.ActivateID(this);
+            _isActivated = true;
         }
 
         /// <summary>
@@ -102,10 +119,7 @@ namespace GD3D.Objects
         /// Override this to determine a custom trigger condition that has to be met in order for the player to trigger this trigger. <para/>
         /// So this must return true in order for the trigger to be triggered.
         /// </summary>
-        public virtual bool CustomTriggerCondition()
-        {
-            return true;
-        }
+        public virtual bool CustomTriggerCondition => true;
 
 #if UNITY_EDITOR
         // Draw a trigger line in the editor

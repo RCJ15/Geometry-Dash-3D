@@ -23,8 +23,8 @@ namespace GD3D.Objects
 
         private bool In3DMode
         {
-            get => _player.movement.In3DMode;
-            set => _player.movement.In3DMode = value;
+            get => _player.Movement.In3DMode;
+            set => _player.Movement.In3DMode = value;
         }
 
         public override void Start()
@@ -33,7 +33,7 @@ namespace GD3D.Objects
 
             // Get components
             _attachToPath = GetComponent<AttachToPath>();
-            _playerMovement = _player.movement;
+            _playerMovement = _player.Movement;
         }
 
         public override void OnEnterPortal()
@@ -55,10 +55,7 @@ namespace GD3D.Objects
             }
         }
 
-        public override bool CustomPortalCondition()
-        {
-            // This condition is true if the player is not in 3D Mode if this portal is supposed to enable it
-            return In3DMode != enable3DMode;
-        }
+        // This condition is true if the player is not in 3D Mode if this portal is supposed to enable it
+        public override bool CustomPortalCondition => In3DMode != enable3DMode;
     }
 }

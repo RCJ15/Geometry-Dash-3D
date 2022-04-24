@@ -313,10 +313,5 @@ namespace GD3D.Easing
         backInOut,
         backIn,
         backOut,
-
-        /// <summary>
-        /// Use a custom animation curve instead of a default ease type.
-        /// </summary>
-        custom,
     }
 }

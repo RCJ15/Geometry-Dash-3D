@@ -109,9 +109,8 @@ MonoBehaviour:
     soundVolume: 1
     pitchSlider: 1
   soundGroups: []
-  poolKey: Sounds
   maxSounds: 10
-  soundEffectMixer: {fileID: 3151925576109640895, guid: fef739d45b4773644aa3d080ea60b5d4, type: 2}
+  soundEffectMixer: {fileID: 1175698529159625397, guid: fef739d45b4773644aa3d080ea60b5d4, type: 2}
   HaveAutoNaming: 1
   FancyAutoNaming: 1
   AudioClipQueue: []

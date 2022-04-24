@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using GD3D.Player;
-using GD3D.ObjectPooling;
+using System.Runtime.Serialization;
 
 namespace GD3D.Objects
 {
@@ -12,9 +12,14 @@ namespace GD3D.Objects
     /// </summary>
     public abstract class Portal : MonoBehaviour
     {
+        //-- ID
+        protected ObjectIDHandler idHandler;
+        [HideInInspector] public long ID;
+
+        private bool _isActivated = false;
+
         [Header("Base Portal Settings")]
         [SerializeField] private bool multiTrigger;
-        private bool _cantBeEntered;
 
         [Space]
         [SerializeField] private Animator spawnEffect;
@@ -51,14 +56,19 @@ namespace GD3D.Objects
 
             // Subsribe to events
             _player.OnRespawn += OnRespawn;
+
+            // Get the ID handler and generate ID
+            idHandler = ObjectIDHandler.Instance;
+
+            ID = idHandler.GetID(this);
         }
 
         /// <summary>
         /// Override this to do stuff when the player dies
         /// </summary>
-        public virtual void OnRespawn()
+        public virtual void OnRespawn(bool inPracticeMode, Checkpoint checkpoint)
         {
-            _cantBeEntered = false;
+            _isActivated = idHandler.IsActivated(this);
         }
 
         /// <summary>
@@ -70,15 +80,12 @@ namespace GD3D.Objects
         /// Override this to determine a custom portal condition that has to be met in order for the player to enter the portal. <para/>
         /// So this must return true in order for the portal to be entered.
         /// </summary>
-        public virtual bool CustomPortalCondition()
-        {
-            return true;
-        }
+        public virtual bool CustomPortalCondition => true;
 
         public virtual void OnTriggerEnter(Collider col)
         {
-            // Return if the portal can't be entered or the custom condition is false
-            if (_cantBeEntered || !CustomPortalCondition())
+            // Return if the player is dead, if the portal is already activated or if the custom condition is false
+            if (_player.IsDead || _isActivated || !CustomPortalCondition)
             {
                 return;
             }
@@ -100,10 +107,11 @@ namespace GD3D.Objects
                     spawnEffect.SetTrigger("Reset");
                 }
 
-                // Disable if not multi trigger
+                // Activate if not multi trigger
                 if (!multiTrigger)
                 {
-                    _cantBeEntered = true;
+                    idHandler.ActivateID(this);
+                    _isActivated = true;
                 }
 
                 // invoke player event

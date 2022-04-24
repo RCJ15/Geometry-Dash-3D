@@ -26,6 +26,7 @@ namespace GD3D.Player
 
         [Header("Stats")]
         [SerializeField] private GameSpeed currentSpeed = GameSpeed.normalSpeed;
+        private GameSpeed _startSpeed;
 
         public static GameSpeed CurrentSpeed;
         public static float Speed;
@@ -34,6 +35,7 @@ namespace GD3D.Player
         private float _startTravelAmount;
 
         public float TravelAmount => _travelAmount;
+        public float StartTravelAmount => _startTravelAmount;
 
         [Header("3D Mode (Moving on second axis)")]
         [SerializeField] private float speed3D = 1;
@@ -60,8 +62,6 @@ namespace GD3D.Player
                 if (value && !_in3DMode)
                 {
                     enter3DModeParticles.Play();
-
-                    arrowFlashAnim.SetTrigger("Flash");
                 }
                 // Trigger effects if we are exiting 3D mode
                 else if (!value && _in3DMode)
@@ -76,7 +76,6 @@ namespace GD3D.Player
         [Header("Effects")]
         [SerializeField] private ParticleSystem enter3DModeParticles;
         [SerializeField] private ParticleSystem exit3DModeParticles;
-        [SerializeField] private Animator arrowFlashAnim;
 
         private float _3DOffset;
         public float Current3DOffset => _3DOffset;
@@ -84,8 +83,10 @@ namespace GD3D.Player
         //-- Ease ID
         private long? _current3DOffsetEaseId = null;
 
-        private void Awake()
+        public override void Awake()
         {
+            base.Awake();
+
             ChangeSpeed(currentSpeed);
         }
 
@@ -96,14 +97,16 @@ namespace GD3D.Player
             // Set the transform
             _transform = transform;
 
-            // Set the start travel amount
+            // Set the starting values
             _travelAmount = path.GetClosestDistanceAlongPath(transform.position);
             _startTravelAmount = _travelAmount;
+
+            _startSpeed = currentSpeed;
 
             _cam = Helpers.Camera.transform;
 
             // Subscribe to events
-            player.OnRespawn += Cancel3DOffsetEase;
+            player.OnRespawn += (a, b) => Cancel3DOffsetEase();
             player.OnRespawn += OnRespawn;
             EasingManager.Instance.OnEaseObjectRemove += OnEaseObjectRemove;
 
@@ -114,6 +117,12 @@ namespace GD3D.Player
         public override void FixedUpdate()
         {
             base.FixedUpdate();
+
+            // Do nothing if the player is dead
+            if (player.IsDead)
+            {
+                return;
+            }
 
             Extra3DModeMovement();
 
@@ -306,18 +315,37 @@ namespace GD3D.Player
         /// <summary>
         /// Is called when the player respawns
         /// </summary>
-        private void OnRespawn()
+        private void OnRespawn(bool inPracticeMode, Checkpoint checkpoint)
         {
-            // Reset values
-            _travelAmount = _startTravelAmount;
+            // Check if we are not in practice mode
+            if (!inPracticeMode)
+            {
+                // Reset values
+                _travelAmount = _startTravelAmount;
+                _3DOffset = 0;
+                OffsetVelocity = 0;
+                ChangeSpeed(_startSpeed);
 
-            _transform.position = player.startPos;
+                _in3DMode = false;
 
-            _3DOffset = 0;
+                // Reset rigidbody
+                rb.velocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+            else
+            {
+                // Set values to the checkpoint values
+                _travelAmount = checkpoint.PlayerDistance;
+                _3DOffset = checkpoint.PlayerOffset;
+                OffsetVelocity = checkpoint.PlayerOffsetVelocity;
+                ChangeSpeed(checkpoint.PlayerSpeed);
 
-            // Reset rigidbody components aswell
-            rb.velocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
+                _in3DMode = checkpoint.PlayerIn3DMode;
+
+                // Set rigidbody to the checkpoint values
+                rb.velocity = checkpoint.PlayerVelocity;
+                rb.angularVelocity = checkpoint.PlayerAngularVelocity;
+            }
         }
     }
 

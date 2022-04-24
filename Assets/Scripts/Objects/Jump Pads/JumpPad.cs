@@ -11,9 +11,14 @@ namespace GD3D.Objects
     /// </summary>
     public abstract class JumpPad : MonoBehaviour
     {
+        //-- ID
+        protected ObjectIDHandler idHandler;
+        [HideInInspector] public long ID;
+
+        private bool _isActivated = false;
+
         [Header("Jump Pad Settings")]
         [SerializeField] private bool multiTrigger;
-        private bool _cantBeTouched = false;
 
         [Space]
         [SerializeField] private ParticleSystemRenderer particles;
@@ -77,6 +82,11 @@ namespace GD3D.Objects
 
             // Destroy the newly created objects because we have no use out of them anymore
             Destroy(triggerObj);
+
+            // Get the ID handler and generate ID
+            idHandler = ObjectIDHandler.Instance;
+
+            ID = idHandler.GetID(this);
         }
 
         public virtual void Start()
@@ -88,7 +98,7 @@ namespace GD3D.Objects
             playerLayer = _player.GetLayer;
 
             // Subscribe to events
-            _player.OnDeath += OnDeath;
+            _player.OnRespawn += OnRespawn;
         }
 
         /// <summary>
@@ -100,10 +110,7 @@ namespace GD3D.Objects
         /// Override this to determine a custom jump pad condition that has to be met in order for the player to use the jump pad. <para/>
         /// So this must return true in order for the jump pad to be usable.
         /// </summary>
-        public virtual bool CustomJumpPadCondition()
-        {
-            return true;
-        }
+        public virtual bool CustomJumpPadCondition => true;
 
         public virtual void OnTriggerEnter(Collider col)
         {
@@ -111,7 +118,7 @@ namespace GD3D.Objects
             if (col.gameObject.layer == playerLayer)
             {
                 // Return if the correct conditions haven't been met
-                if (_player.dead || _cantBeTouched || !CustomJumpPadCondition())
+                if (_player.IsDead || _isActivated || !CustomJumpPadCondition)
                 {
                     return;
                 }
@@ -119,7 +126,8 @@ namespace GD3D.Objects
                 // Make it so this pad cant be touched afterwards if it's not multiTrigger
                 if (!multiTrigger)
                 {
-                    _cantBeTouched = true;
+                    idHandler.ActivateID(this);
+                    _isActivated = true;
                 }
 
                 // Spawn trigger effect
@@ -140,9 +148,9 @@ namespace GD3D.Objects
         /// <summary>
         /// Override this to decide what happens when the player dies
         /// </summary>
-        public virtual void OnDeath()
+        public virtual void OnRespawn(bool inPracticeMode, Checkpoint checkpoint)
         {
-            _cantBeTouched = false;
+            _isActivated = idHandler.IsActivated(this);
         }
     }
 }

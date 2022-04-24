@@ -62,7 +62,9 @@ namespace GD3D.Player
         {
             // Don't do anything if the player is dead
             if (Dead)
+            {
                 return;
+            }
 
             base.Update();
 
@@ -162,6 +164,8 @@ namespace GD3D.Player
             _jumpCooldownTimer = jumpCooldown;
 
             jumpParticles.Play();
+
+            IncreaseJumpCount();
         }
 
         public override void OnDeath()

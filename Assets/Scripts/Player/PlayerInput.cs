@@ -9,7 +9,7 @@ namespace GD3D.Player
     //=========================================================================
     /// <summary>
     /// Handles all of the player input. Does not extend <see cref="PlayerScript"/>. <para/>
-    /// Btw this is a script I copy from game to game, so that's why some stuff is pretty unnecessary.
+    /// This is a script I copy from game to game, so that's why some stuff is pretty unnecessary.
     /// </summary>
     //=========================================================================
     public class PlayerInput : MonoBehaviour
@@ -117,7 +117,7 @@ namespace GD3D.Player
         public static Vector2 RightStickInput => s_exactRightStickInput;
         public static Vector2 DpadInput => s_exactDpadInput;
 
-        void Start()
+        private void Start()
         {
             // Reset all of the Special Gamepad Inputs because they are static
             s_badTriggerInput = 0;
@@ -136,7 +136,7 @@ namespace GD3D.Player
             s_oldDpadInput = Vector2.zero;
         }
 
-        void Update()
+        private void Update()
         {
             DoAxisInput();
         }

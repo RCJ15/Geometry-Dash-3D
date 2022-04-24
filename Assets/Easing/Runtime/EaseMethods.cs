@@ -82,11 +82,6 @@ namespace GD3D.Easing
 
                 float sinIntensity = 4 * invT * Mathf.PI / 4.5f; // The lower "t" is, the more intense the sine wave will be
 
-                if (x > 0.5f)
-                {
-                    sinIntensity *= -1;
-                }
-
                 float sin = Mathf.Sin((20 * x - 11.125f) * sinIntensity) * Mathf.Clamp01(invT);
 
                 // Correct the exponential to always end on 1 if "t" is above 1
@@ -178,7 +173,7 @@ namespace GD3D.Easing
 
                 float sinIntensity = 4 * invT * Mathf.PI / 3; // The lower "t" is, the more intense the sine wave will be
 
-                float sin = Mathf.Sin((x * 10 - 0.75f) * -sinIntensity) * Mathf.Clamp01(invT);
+                float sin = Mathf.Sin((x * 10 - 0.75f) * sinIntensity) * Mathf.Clamp01(invT);
 
                 // Correct the exponential to always end on 1 if "t" is above 1
                 float expoCorrection = t <= 1 ? 0 : (t - 1) / 10;

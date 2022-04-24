@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using GD3D.Objects;
 using GD3D.CustomInput;
+using GD3D.UI;
 
 namespace GD3D.Player
 {
@@ -15,19 +16,24 @@ namespace GD3D.Player
         //-- Instance
         public static PlayerMain Instance;
 
+        //-- Jump & time stat
+        public static int TimesJumped;
+        public static float TimeSpentPlaying;
+
         //-- Player scripts
-        internal PlayerMovement movement;
-        internal PlayerInput input;
-        internal PlayerColors colors;
-        internal PlayerMesh mesh;
-        internal PlayerWin win;
-        internal PlayerDeath death;
-        internal PlayerSpawn spawn;
-        internal PlayerCamera cam;
-        internal PlayerGamemodeHandler gamemode;
+        [HideInInspector] public PlayerMovement Movement;
+        [HideInInspector] public PlayerInput Input;
+        [HideInInspector] public PlayerColors Colors;
+        [HideInInspector] public PlayerMesh Mesh;
+        [HideInInspector] public PlayerWin Win;
+        [HideInInspector] public PlayerDeath Death;
+        [HideInInspector] public PlayerSpawn Spawn;
+        [HideInInspector] public PlayerCamera Camera;
+        [HideInInspector] public PlayerGamemodeHandler GamemodeHandler;
+        [HideInInspector] public PlayerPracticeMode PracticeMode;
 
         //-- Other Stuff
-        internal bool dead;
+        [HideInInspector] public bool IsDead;
 
         private int? _layerInt = null;
         public int GetLayer
@@ -46,14 +52,14 @@ namespace GD3D.Player
 
         //-- Events
         public Action OnDeath;
-        public Action OnRespawn;
+        public Action<bool, Checkpoint> OnRespawn;
         public Action<PressMode> OnClick;
         public Action<Portal> OnEnterPortal;
 
         //-- Start values
-        internal Vector3 startPos;
-        internal Vector3 startScale;
-        internal Quaternion startRotation;
+        [HideInInspector] public Vector3 StartPos;
+        [HideInInspector] public Vector3 StartScale;
+        [HideInInspector] public Quaternion StartRotation;
 
         //-- Input
         private Key _clickKey;
@@ -78,18 +84,26 @@ namespace GD3D.Player
 
         private readonly static Array s_pressModeValues = Enum.GetValues(typeof(PressMode));
 
-        private void Awake()
+        public Rigidbody Rigidbody => rb;
+
+        public override void Awake()
         {
+            base.Awake();
+
             // Set instance
             Instance = this;
 
             // Set start values
-            startPos = transform.position;
-            startScale = transform.localScale;
-            startRotation = transform.rotation;
+            StartPos = transform.position;
+            StartScale = transform.localScale;
+            StartRotation = transform.rotation;
 
             // Get input key
             _clickKey = PlayerInput.GetKey("Click");
+
+            // Reset jumps and time because they are static
+            TimesJumped = 0;
+            TimeSpentPlaying = 0;
 
             GetPlayerScripts();
         }
@@ -99,20 +113,35 @@ namespace GD3D.Player
         /// </summary>
         private void GetPlayerScripts()
         {
-            movement = GetChildComponent<PlayerMovement>();
-            input = GetChildComponent<PlayerInput>();
-            colors = GetChildComponent<PlayerColors>();
-            mesh = GetChildComponent<PlayerMesh>();
-            win = GetChildComponent<PlayerWin>();
-            death = GetChildComponent<PlayerDeath>();
-            spawn = GetChildComponent<PlayerSpawn>();
-            cam = GetChildComponent<PlayerCamera>();
-            gamemode = GetChildComponent<PlayerGamemodeHandler>();
+            Movement = GetChildComponent<PlayerMovement>();
+            Input = GetChildComponent<PlayerInput>();
+            Colors = GetChildComponent<PlayerColors>();
+            Mesh = GetChildComponent<PlayerMesh>();
+            Win = GetChildComponent<PlayerWin>();
+            Death = GetChildComponent<PlayerDeath>();
+            Spawn = GetChildComponent<PlayerSpawn>();
+            Camera = GetChildComponent<PlayerCamera>();
+            GamemodeHandler = GetChildComponent<PlayerGamemodeHandler>();
+            PracticeMode = GetChildComponent<PlayerPracticeMode>();
         }
 
         public override void Update()
         {
             base.Update();
+
+            // If the game is paused, then all input will automatically be ignored
+            if (PauseMenu.IsPaused)
+            {
+                IgnoreInput();
+
+                return;
+            }
+
+            // Increase time if the player is not dead
+            if (!IsDead)
+            {
+                TimeSpentPlaying += Time.deltaTime;
+            }
 
             // Loop through all press modes (there are only 3)
             foreach (PressMode mode in s_pressModeValues)
@@ -155,28 +184,52 @@ namespace GD3D.Player
         }
 
         /// <summary>
+        /// Sets <see cref="KeyDown"/>, <see cref="KeyHold"/> and <see cref="KeyUp"/> to false. <para/>
+        /// Also sets <see cref="InputBuffer"/> to 0.
+        /// </summary>
+        public void IgnoreInput()
+        {
+            _keyDown = false;
+            _keyHold = false;
+            _keyUp = false;
+
+            _currentInputBufferTime = 0;
+        }
+
+        /// <summary>
         /// Invokes the OnDeath event cuz p.OnDeath?.Invoke() won't work outside of this script
         /// </summary>
         public void InvokeDeathEvent()
         {
-            player.dead = true;
+            player.IsDead = true;
 
             OnDeath?.Invoke();
         }
 
         /// <summary>
-        /// Invokes the OnRespawn event cuz p.OnRespawn?.Invoke() won't work outside of this script
+        /// Invokes the OnRespawn event cuz p.OnRespawn?.Invoke() won't work outside of this script :(
         /// </summary>
-        public void InvokeRespawnEvent()
+        public void InvokeRespawnEvent(bool inPracticeMode, Checkpoint checkpoint)
         {
-            player.dead = false;
+            player.IsDead = false;
 
-            // Reset transform
-            transform.position = startPos;
-            transform.localScale = startScale;
-            transform.rotation = startRotation;
+            // Check if we are not in practice mode
+            if (!inPracticeMode)
+            {
+                // Reset transform
+                transform.position = StartPos;
+                transform.localScale = StartScale;
+                transform.rotation = StartRotation;
+            }
+            else
+            {
+                // Set to practice 
+                transform.position = checkpoint.PlayerPosition;
+                transform.localScale = checkpoint.PlayerScale;
+                transform.rotation = checkpoint.PlayerRotation;
+            }
 
-            OnRespawn?.Invoke();
+            OnRespawn?.Invoke(inPracticeMode, checkpoint);
         }
     }
 }

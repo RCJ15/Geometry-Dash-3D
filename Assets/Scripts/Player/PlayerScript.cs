@@ -28,12 +28,20 @@ namespace GD3D.Player
         /// <summary>
         /// The primary player color
         /// </summary>
-        public Color PlayerColor1 => player.colors.Color1;
+        public Color PlayerColor1 => player.Colors.Color1;
 
         /// <summary>
         /// The secondary player color
         /// </summary>
-        public Color PlayerColor2 => player.colors.Color2;
+        public Color PlayerColor2 => player.Colors.Color2;
+
+        /// <summary>
+        /// Awake is called when the script instance is being loaded
+        /// </summary>
+        public virtual void Awake()
+        {
+            GetComponents();
+        }
 
         /// <summary>
         /// Start is called before the first frame update
@@ -41,8 +49,6 @@ namespace GD3D.Player
         public virtual void Start()
         {
             _transform = transform;
-
-            GetComponents();
 
             // Subscribe to events
             player.OnClick += OnClickKey;
@@ -58,9 +64,9 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Same as GetComponent<>(), but if the method return null, GetComponentInChildren() is used instead. If that also fails then GetComponentInParent() is used instead.
+        /// Same as GetComponent<>(), but if the component is null, GetComponentInChildren() is used instead. If that also fails then GetComponentInParent() is used instead.
         /// </summary>
-        public T GetChildComponent<T>()
+        public T GetChildComponent<T>() where T : Component
         {
             // Get component regularly
             T component = GetComponent<T>();

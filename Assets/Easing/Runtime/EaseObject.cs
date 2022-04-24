@@ -18,6 +18,7 @@ namespace GD3D.Easing
         public long ID => _id ?? throw new NullReferenceException($"{nameof(_id)} has not been generated yet. Please make sure that the id generator actually generates an ID for this ease object.");
 
         public bool Active = true;
+        public bool Unscaled = false;
         public bool Reverse = false;
         public EaseCompleteMode CompleteMode;
 
@@ -44,7 +45,6 @@ namespace GD3D.Easing
 
         // Actions
         public Action<EaseObject> OnUpdate;
-        public Action<EaseObject> OnReset;
         public Action<EaseObject> OnComplete;
 
         public EaseSettings EaseSettings => new EaseSettings(this);
@@ -96,7 +96,7 @@ namespace GD3D.Easing
         /// <summary>
         /// Scales the value from the <paramref name="startValue"/> to the <paramref name="targetValue"/> relative to this <see cref="EaseObject"/>s start and target values.
         /// </summary>
-        /// <returns>The sccaled value</returns>
+        /// <returns>The scaled value</returns>
         public float GetValue(float startValue, float targetValue)
         {
             float oldRange = TargetValue - StartValue;
@@ -123,6 +123,7 @@ namespace GD3D.Easing
         public EaseObject LoadFromState(EaseState state)
         {
             Active = state.Active;
+            Unscaled = state.Unscaled;
             Reverse = state.Reverse;
 
             // Set ease data
@@ -135,6 +136,10 @@ namespace GD3D.Easing
             Value = state.Value;
             StartValue = state.StartValue;
             TargetValue = state.TargetValue;
+
+            // Set actions
+            OnUpdate = state.OnUpdate;
+            OnComplete = state.OnComplete;
 
             return this;
         }
@@ -263,8 +268,6 @@ namespace GD3D.Easing
 
             Value = StartValue;
 
-            OnReset?.Invoke(this);
-
             return this;
         }
 
@@ -287,6 +290,16 @@ namespace GD3D.Easing
         public EaseObject SetActive(bool active)
         {
             Active = active;
+
+            return this;
+        }
+        /// <summary>
+        /// Sets <see cref="Unscaled"/> to <paramref name="unscaled"/>.
+        /// </summary>
+        /// <returns>This <see cref="EaseObject"/> so you can chain more stuff, like in LeanTween.</returns>
+        public EaseObject SetUnscaled(bool unscaled)
+        {
+            Unscaled = unscaled;
 
             return this;
         }
@@ -356,17 +369,6 @@ namespace GD3D.Easing
         public EaseObject SetEaseRate(float easeRate)
         {
             EaseData.EaseRate = easeRate;
-
-            return this;
-        }
-
-        /// <summary>
-        /// Sets <see cref="EaseObject"/>.<see cref="EaseData.CustomCurve"/> to <paramref name="customCurve"/>.
-        /// </summary>
-        /// <returns>This <see cref="EaseObject"/> so you can chain more stuff, like in LeanTween.</returns>
-        public EaseObject SetCustomCurve(AnimationCurve customCurve)
-        {
-            EaseData.CustomCurve = customCurve;
 
             return this;
         }
@@ -460,17 +462,6 @@ namespace GD3D.Easing
         }
 
         /// <summary>
-        /// Subscribes the given <paramref name="event"/> to <see cref="OnReset"/>.
-        /// </summary>
-        /// <returns>This <see cref="EaseObject"/> so you can chain more stuff, like in LeanTween.</returns>
-        public EaseObject SetOnReset(Action<EaseObject> @event)
-        {
-            OnReset += @event;
-
-            return this;
-        }
-
-        /// <summary>
         /// Subscribes the given <paramref name="event"/> to <see cref="OnComplete"/>.
         /// </summary>
         /// <returns>This <see cref="EaseObject"/> so you can chain more stuff, like in LeanTween.</returns>
@@ -538,6 +529,7 @@ namespace GD3D.Easing
 
         [Header("Main Settings")]
         public bool Active;
+        public bool Unscaled;
         public bool Reverse;
 
         [Space]
@@ -557,12 +549,17 @@ namespace GD3D.Easing
         public float StartValue;
         public float TargetValue;
 
+        // Actions
+        public Action<EaseObject> OnUpdate;
+        public Action<EaseObject> OnComplete;
+
         /// <summary>
         /// Crates a ease state from a ease object
         /// </summary>
         public EaseState(EaseObject obj)
         {
             Active = obj.Active;
+            Unscaled = obj.Unscaled;
             Reverse = obj.Reverse;
 
             // Set ease data
@@ -575,6 +572,10 @@ namespace GD3D.Easing
             Value = obj.Value;
             StartValue = obj.StartValue;
             TargetValue = obj.TargetValue;
+
+            // Set actions
+            OnUpdate = obj.OnUpdate;
+            OnComplete = obj.OnComplete;
         }
     }
 

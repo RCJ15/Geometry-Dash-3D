@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using GD3D.Camera;
 using GD3D.Level;
+using GD3D.Player;
+using GD3D.Easing;
 
 namespace GD3D
 {
@@ -29,20 +31,38 @@ namespace GD3D
         private Collider _roofHitbox;
         private Collider _floorHitbox;
 
-        [Header("Animation")]
-        [SerializeField] private AnimationCurve borderAppearCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
-        [SerializeField] private AnimationCurve borderDisappearCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
-
-        [SerializeField] private float borderAppearTime;
-        [SerializeField] private float borderDisappearTime;
+        [Header("Easing")]
+        [SerializeField] private EaseSettings appearEaseSettings = EaseSettings.defaultValue;
+        [SerializeField] private EaseSettings disappearEaseSettings = EaseSettings.defaultValue;
 
         [SerializeField] private float borderMoveDistance;
         [SerializeField] private float borderSize;
 
-        private Coroutine _roofMoveCoroutine;
-        private Coroutine _floorMoveCoroutine;
+        private long? _roofEaseID = null;
+        private long? _floorEaseID = null;
 
         private CameraBehaviour _cam;
+
+        public float RoofYPos
+        {
+            get => _roof.position.y;
+            set
+            {
+                Vector3 newPos = _roof.position;
+                newPos.y = value;
+                _roof.position = newPos;
+            }
+        }
+        public float FloorYPos
+        {
+            get => _floor.position.y;
+            set
+            {
+                Vector3 newPos = _floor.position;
+                newPos.y = value;
+                _floor.position = newPos;
+            }
+        }
 
         private void Awake()
         {
@@ -81,7 +101,7 @@ namespace GD3D
             GameObject newObj = Instantiate(template, template.transform.position, template.transform.rotation, null);
             Transform transform = newObj.transform;
 
-            // Invert the Y scale (cuz it's the roof and we are using the floor as template)
+            // Invert the Y scale (cuz it's the roof and we are using the floor as a template)
             transform.localScale = new Vector3(1, -1, 1);
 
             return transform;
@@ -95,10 +115,63 @@ namespace GD3D
             // Add the roofs renderer to the LevelColors object so it's colored properly
             Renderer renderer = _roof.GetComponent<Renderer>();
 
-            LevelColors.GetColorData(
-                LevelColors.ColorType.ground).RenderMaterialData.Add(
+            LevelColors.GetColorData(LevelColors.ColorType.ground)
+                .RenderMaterialData.Add(
                 new LevelColors.RendererMaterialData(renderer, 0, true)
             );
+
+            // Subscribe to events
+            PlayerMain.Instance.OnRespawn += OnRespawn;
+            EasingManager.Instance.OnEaseObjectRemove += OnEaseObjectRemove;
+        }
+
+        private void OnRespawn(bool inPracticeMode, Checkpoint checkpoint)
+        {
+            // Stop the easings
+            EasingManager.TryRemoveEaseObject(_floorEaseID);
+            EasingManager.TryRemoveEaseObject(_roofEaseID);
+
+            _floorEaseID = null;
+            _roofEaseID = null;
+
+            // Local variables for setting borders
+            bool bordersActive = false;
+            float roofYPos = borderMoveDistance;
+            float floorYPos = _floorStartY;
+
+            // Check if we are in practice mode
+            if (inPracticeMode)
+            {
+                // Set local variables
+                bordersActive = checkpoint.BordersActive;
+                roofYPos = checkpoint.BorderRoofYPos;
+                floorYPos = checkpoint.BorderFloorYPos;
+            }
+
+            // Instantly disable the roof
+            _roof.gameObject.SetActive(bordersActive);
+
+            _roofHitbox.enabled = bordersActive;
+
+            // Teleport roof and floor to their correct positions
+            RoofYPos = roofYPos;
+            FloorYPos = floorYPos;
+
+            BordersActive = bordersActive;
+        }
+
+        private void OnEaseObjectRemove(long id)
+        {
+            // Set the ease IDs to null if that ease just got removed
+            if (_roofEaseID.HasValue && id == _roofEaseID)
+            {
+                _roofEaseID = null;
+            }
+
+            if (_floorEaseID.HasValue && id == _floorEaseID)
+            {
+                _floorEaseID = null;
+            }
         }
 
         /// <summary>
@@ -106,15 +179,25 @@ namespace GD3D
         /// </summary>
         public static void ApplyBorders(float min, float max)
         {
+            BorderManager I = Instance;
+
             // Set the cam YLockPos
-            Instance._cam.YLockPos = (min + max) / 2;
+            I._cam.YLockPos = (min + max) / 2;
 
             // Make roof appear
-            Instance.RoofAppear(max);
-            Instance._roofHitbox.enabled = true;
+            I._roof.gameObject.SetActive(true);
+            I.RoofYPos += I.borderMoveDistance;
+            EaseObject roofMove = I.MoveRoof(max + (I.borderSize / 2));
 
-            // Only make floor appear if the min is not underneath the ground level
-            Instance.MoveFloorToYPos(min);
+            // Enable roof hitbox
+            I._roofHitbox.enabled = true;
+
+            // Make floor appear
+            EaseObject floorMove = I.MoveFloor(min);
+
+            // Set ease settings
+            roofMove.SetSettings(I.appearEaseSettings);
+            floorMove.SetSettings(I.appearEaseSettings);
 
             BordersActive = true;
         }
@@ -127,115 +210,84 @@ namespace GD3D
                 return;
             }
 
-            // Make both roof disappear
-            Instance.RoofDisappear();
+            BorderManager I = Instance;
+
+            // Make roof disappear
+            EaseObject roofMove = I.MoveRoof(I.RoofYPos + I.borderMoveDistance);
+
+            // Disable gameobject and hitbox when the easing is finished
+            roofMove.SetOnComplete((obj) =>
+            {
+                I._roof.gameObject.SetActive(false);
+                I._roofHitbox.enabled = false;
+            });
 
             // Make floor move to start position
-            Instance.MoveFloorToYPos(Instance._floorStartY);
+            EaseObject floorMove = I.MoveFloor(I._floorStartY);
 
-            Instance._roofHitbox.enabled = false;
+            // Set ease settings
+            roofMove.SetSettings(I.disappearEaseSettings);
+            floorMove.SetSettings(I.disappearEaseSettings);
 
             BordersActive = false;
         }
 
         /// <summary>
-        /// Makes the roof transition to the given <paramref name="yPosition"/> and enables the roof
+        /// Eases the floor to the given <paramref name="yPosition"/>.
         /// </summary>
-        public void RoofAppear(float yPosition)
+        /// <returns>The newly created <see cref="EaseObject"/>. <para/>
+        /// Use it to set stuff like <see cref="EaseObject.EaseData"/> with <see cref="EaseObject.SetEaseData"/>.</returns>
+        private EaseObject MoveFloor(float yPosition)
         {
-            // Enable
-            _roof.gameObject.SetActive(true);
+            // Try remove the current easing
+            EasingManager.TryRemoveEaseObject(_floorEaseID);
 
-            // Move
-            MoveRoof(yPosition + (borderSize / 2), borderAppearTime, borderAppearCurve);
-        }
+            // Create new position easing
+            EaseObject ease = new EaseObject(0, 1);
 
-        /// <summary>
-        /// Makes the roof transition away from it's current position (and eventually disable itself)
-        /// </summary>
-        public void RoofDisappear()
-        {
-            // Disable but stored in a action
-            Action onFinish = () => _roof.gameObject.SetActive(false);
+            // Set update method
+            float startPos = FloorYPos;
 
-            // Move
-            MoveRoof(_roof.position.y + borderMoveDistance, borderDisappearTime, borderDisappearCurve, onFinish);
-        }
-
-        /// <summary>
-        /// Makes the floor transition to the given <paramref name="yPosition"/>
-        /// </summary>
-        public void MoveFloorToYPos(float yPosition)
-        {
-            // Move
-            MoveFloor(yPosition - (borderSize / 2), borderAppearTime, borderAppearCurve);
-        }
-
-        /// <summary>
-        /// Moves the roof from it's current Y position to the given <paramref name="yPosition"/>
-        /// </summary>
-        public void MoveRoof(float yPosition, float time, AnimationCurve curve, Action onFinish = null)
-        {
-            // Stop old move coroutine
-            if(_roofMoveCoroutine != null)
+            ease.OnUpdate = (obj) =>
             {
-                StopCoroutine(_roofMoveCoroutine);
-            }
+                float newYPos = obj.GetValue(startPos, yPosition);
 
-            // Start new move coroutine
-            _roofMoveCoroutine = StartCoroutine(TransitionBorder(_roof, yPosition, time, curve, onFinish));
+                FloorYPos = newYPos;
+            };
+
+            // Set ID
+            _floorEaseID = ease.ID;
+
+            return ease;
         }
 
         /// <summary>
-        /// Moves the floor from it's current Y position to the given <paramref name="yPosition"/>
+        /// Eases the roof to the given <paramref name="yPosition"/>.
         /// </summary>
-        public void MoveFloor(float yPosition, float time, AnimationCurve curve, Action onFinish = null)
+        /// <returns>The newly created <see cref="EaseObject"/>. <para/>
+        /// Use it to set stuff like <see cref="EaseObject.EaseData"/> with <see cref="EaseObject.SetEaseData"/>.</returns>
+        private EaseObject MoveRoof(float yPosition)
         {
-            // Stop old move coroutine
-            if (_floorMoveCoroutine != null)
+            // Try remove the current easing
+            EasingManager.TryRemoveEaseObject(_roofEaseID);
+
+            // Create new easing
+            EaseObject ease = new EaseObject(0, 1);
+
+            // Set update method
+            float startPos = RoofYPos;
+
+            ease.OnUpdate = (obj) =>
             {
-                StopCoroutine(_floorMoveCoroutine);
-            }
+                float newYPos = obj.GetValue(startPos, yPosition);
 
-            // Start new move coroutine
-            _floorMoveCoroutine = StartCoroutine(TransitionBorder(_floor, yPosition, time, curve, onFinish));
-        }
+                RoofYPos = newYPos;
+            };
 
-        /// <summary>
-        /// Coroutine for transitioning the given <paramref name="border"/> to the given <paramref name="yPosition"/> over the given <paramref name="time"/>
-        /// </summary>
-        /// <param name="border">What to move</param>
-        /// <param name="yPosition">The end position</param>
-        /// <param name="time">How long the move will take (in seconds)</param>
-        /// <param name="onFinish">What happens when the object is done moving</param>
-        private IEnumerator TransitionBorder(Transform border, float yPosition, float time, AnimationCurve curve, Action onFinish = null)
-        {
-            float currentTimer = time;
-            float originalYPos = border.transform.position.y;
+            // Set ID
+            _roofEaseID = ease.ID;
 
-            // Pseudo Update() method
-            while (currentTimer > 0)
-            {
-                float t = currentTimer / time;
-
-                // Calculate the new Y position using lerp and the transition animation curve
-                Vector3 newPos = border.transform.position;
-                newPos.y = Mathf.Lerp(yPosition, originalYPos, curve.Evaluate(t));
-                border.transform.position = newPos;
-
-                // Wait for the next frame
-                currentTimer -= Time.deltaTime;
-
-                yield return new WaitForEndOfFrame();
-            }
-
-            // Set the border to move to the final Y position
-            Vector3 finalPos = border.transform.position;
-            finalPos.y = yPosition;
-            border.transform.position = finalPos;
-
-            // Invoke event
-            onFinish?.Invoke();
+            return ease;
         }
     }
 }

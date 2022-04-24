@@ -69,7 +69,9 @@ namespace GD3D.Player
             _startSmall = IsSmall;
 
             // Subscribe to events
+            player.OnDeath += ResetValues;
             player.OnDeath += OnDeath;
+
             player.OnRespawn += OnRespawn;
         }
 
@@ -78,20 +80,38 @@ namespace GD3D.Player
         /// </summary>
         private void OnDeath()
         {
-            UpsideDown = _startUpsideDown;
-            IsSmall = _startSmall;
-            
             _activeGamemodeScript.OnDeath();
         }
 
         /// <summary>
         /// Called when the player respawns
         /// </summary>
-        private void OnRespawn()
+        private void OnRespawn(bool inPracticeMode, Checkpoint checkpoint)
         {
-            _activeGamemodeScript.OnRespawn();
+            _activeGamemodeScript.OnRespawn(inPracticeMode, checkpoint);
 
-            ChangeGamemode(_startGamemode);
+            // Check if we are not in practice mode
+            if (!inPracticeMode)
+            {
+                ResetValues();
+                ChangeGamemode(_startGamemode);
+            }
+            else
+            {
+                UpsideDown = checkpoint.PlayerUpsideDown;
+                IsSmall = checkpoint.PlayerIsSmall;
+
+                ChangeGamemode(checkpoint.PlayerGamemode);
+            }
+        }
+
+        /// <summary>
+        /// Resets some values to their start value.
+        /// </summary>
+        private void ResetValues()
+        {
+            UpsideDown = _startUpsideDown;
+            IsSmall = _startSmall;
         }
 
         /// <summary>
@@ -102,7 +122,7 @@ namespace GD3D.Player
         {
             script.GamemodeHandler = this;
             script.Player = player;
-            script.PlayerMovement = player.movement;
+            script.PlayerMovement = player.Movement;
             script.Rigidbody = rb;
 
             script.Start();
@@ -111,6 +131,12 @@ namespace GD3D.Player
         public override void Update()
         {
             base.Update();
+
+            // Return if the player is dead
+            if (player.IsDead)
+            {
+                return;
+            }
 
             // Check if the players gravity has changed
             if (_oldUpsideDown != UpsideDown)
@@ -140,6 +166,12 @@ namespace GD3D.Player
         {
             base.FixedUpdate();
 
+            // Return if the player is dead
+            if (player.IsDead)
+            {
+                return;
+            }
+
             // Call FixedUpdate() in activeGamemodeScript
             _activeGamemodeScript?.FixedUpdate();
         }
@@ -147,6 +179,12 @@ namespace GD3D.Player
         public override void OnClickKey(PressMode mode)
         {
             base.OnClickKey(mode);
+
+            // Return if the player is dead
+            if (player.IsDead)
+            {
+                return;
+            }
 
             // Call OnClick() in activeGamemodeScript
             _activeGamemodeScript?.OnClick(mode);

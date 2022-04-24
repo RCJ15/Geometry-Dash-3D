@@ -49,7 +49,7 @@ namespace GD3D.Objects
             // Get components
             _line = GetComponent<LineRenderer>();
             _attachToPath = GetComponent<AttachToPath>();
-            _playerMovement = _player.movement;
+            _playerMovement = _player.Movement;
 
             _path = _attachToPath.PathCreator.path;
 
