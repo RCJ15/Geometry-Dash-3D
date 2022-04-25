@@ -88,7 +88,7 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 121bd4ecd882a4245a23a4bf582600c8, type: 3}
     soundVolume: 1
     pitchSlider: 1
-  - name: Quit Level
+  - name: Quit To Menu
     clip: {fileID: 8300000, guid: f1edde76311423943a833df827b4f456, type: 3}
     soundVolume: 1
     pitchSlider: 1

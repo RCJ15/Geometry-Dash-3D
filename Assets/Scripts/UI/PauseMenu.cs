@@ -17,9 +17,10 @@ namespace GD3D.UI
     {
         //-- Instance
         public static PauseMenu Instance;
+
+        //-- Static variables
         public static bool IsPaused;
-        public Action OnPause;
-        public Action OnResume;
+        public static bool CanPause = true;
 
         //-- Instance references
         private LevelData _levelData;
@@ -62,6 +63,10 @@ namespace GD3D.UI
 
         private UIClickable[] _UIClickables;
 
+        //-- Events
+        public Action OnPause;
+        public Action OnResume;
+
         //-- Other stuff
         private Key _pauseKey;
         private SaveFile _saveFile;
@@ -82,8 +87,9 @@ namespace GD3D.UI
             // Get pause key
             _pauseKey = PlayerInput.GetKey("Pause");
 
-            // Set this to false because it's static
+            // Set static variables
             IsPaused = false;
+            CanPause = true;
 
             // Get all UI Clickables in the children of this object
             _UIClickables = GetComponentsInChildren<UIClickable>();
@@ -104,14 +110,14 @@ namespace GD3D.UI
         {
             bool pressedPause = _pauseKey.Pressed(PressMode.down);
 
-            // Return if the pause button is not pressed
-            if (!pressedPause)
+            // Return if the pause button is not pressed or if the transition is transitioning
+            if (!pressedPause || Transition.IsTransitioning)
             {
                 return;
             }
 
             // Pause
-            if (!IsPaused)
+            if (!IsPaused && CanPause)
             {
                 Pause();
             }
@@ -242,6 +248,14 @@ namespace GD3D.UI
             }
 
             practiceButtonImage.sprite = inPracticeMode ? exitPracticeSprite : enterPracticeSprite;
+        }
+
+        /// <summary>
+        /// Transitions to the main menu.
+        /// </summary>
+        public void QuitToMenu()
+        {
+            Transition.TransitionToMainMenu();
         }
 
         #region Toggles

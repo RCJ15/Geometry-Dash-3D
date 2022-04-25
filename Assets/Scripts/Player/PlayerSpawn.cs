@@ -144,6 +144,9 @@ namespace GD3D.Player
         /// </summary>
         private void ShowRespawnMenu()
         {
+            // Disable the pause menu so you can't pause
+            PauseMenu.CanPause = false;
+
             // Set objects on the respawn menu
             respawnMenuAttemptText.text = attemptText.text;
 
@@ -176,15 +179,15 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Transitions and quits to the main menu.
+        /// Transitions to the main menu.
         /// </summary>
         public void QuitToMenu()
         {
-
+            Transition.TransitionToMainMenu();
         }
         #endregion
 
-        #region NewBestPopup
+        #region New Best Popup
         /// <summary>
         /// Makes the new best popup appear with a scale easing. <para/>
         /// Is called in <see cref="LevelData"/>.
@@ -229,7 +232,7 @@ namespace GD3D.Player
         #endregion
 
         /// <summary>
-        /// Is called when the player dies
+        /// Is called when the player dies.
         /// </summary>
         private void OnDeath()
         {
@@ -287,6 +290,9 @@ namespace GD3D.Player
         /// </summary>
         public void Respawn()
         {
+            // Enable the pause menu so you can pause again
+            PauseMenu.CanPause = true;
+
             // Disable the respawn menu and new best popups
             respawnMenu.SetActive(false);
             newBestPopup.SetActive(false);
