@@ -540,6 +540,38 @@ public struct Helpers
     #endregion
 
     #region Timers
+    private static Dictionary<float, WaitForSeconds> cachedSeconds = new Dictionary<float, WaitForSeconds>();
+    /// <summary>
+    /// Returns a cached <see cref="WaitForSeconds"/>. <para/>
+    /// This means less garbage is allocated which equals better performance :D
+    /// </summary>
+    public static WaitForSeconds GetWaitForSeconds(float time)
+    {
+        if (cachedSeconds.TryGetValue(time, out WaitForSeconds waitFor))
+        {
+            return waitFor;
+        }
+
+        cachedSeconds[time] = new WaitForSeconds(time);
+        return cachedSeconds[time];
+    }
+
+    private static Dictionary<float, WaitForSecondsRealtime> cachedSecondsRealtime = new Dictionary<float, WaitForSecondsRealtime>();
+    /// <summary>
+    /// Returns a cached <see cref="WaitForSecondsRealtime"/>. <para/>
+    /// This means less garbage is allocated which equals better performance :D
+    /// </summary>
+    public static WaitForSecondsRealtime GetWaitForSecondsRealtime(float time)
+    {
+        if (cachedSecondsRealtime.TryGetValue(time, out WaitForSecondsRealtime waitFor))
+        {
+            return waitFor;
+        }
+
+        cachedSecondsRealtime[time] = new WaitForSecondsRealtime(time);
+        return cachedSecondsRealtime[time];
+    }
+
     /// <summary>
     /// Starts a timer coroutine on the given MonoBehaviour that is delayed by the specified time (Shortcut)
     /// </summary>
@@ -552,12 +584,15 @@ public struct Helpers
     {
         if (!unscaledTime)
         {
-            return Timer(executeOn, new WaitForSeconds(time), onComplete);
+            return Timer(executeOn, GetWaitForSeconds(time), onComplete);
         } else
         {
-            return Timer(executeOn, new WaitForSecondsRealtime(time), onComplete);
+            return Timer(executeOn, GetWaitForSecondsRealtime(time), onComplete);
         }
     }
+
+    public static readonly WaitForEndOfFrame CachedWaitForEndOfFrame = new WaitForEndOfFrame();
+    public static readonly WaitForFixedUpdate CachedWaitForEndOfFixedFrame = new WaitForFixedUpdate();
 
     /// <summary>
     /// Starts a timer coroutine on the given MonoBehaviour that waits for the end of frame (Shortcut)
@@ -570,11 +605,11 @@ public struct Helpers
     {
         if (!fixedFrame)
         {
-            return Timer(executeOn, new WaitForEndOfFrame(), onComplete);
+            return Timer(executeOn, CachedWaitForEndOfFrame, onComplete);
         }
         else
         {
-            return Timer(executeOn, new WaitForFixedUpdate(), onComplete);
+            return Timer(executeOn, CachedWaitForEndOfFixedFrame, onComplete);
         }
     }
 

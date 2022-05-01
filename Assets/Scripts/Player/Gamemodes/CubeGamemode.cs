@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GD3D.CustomInput;
 
 namespace GD3D.Player
 {
@@ -28,6 +27,10 @@ namespace GD3D.Player
         [SerializeField] private ParticleSystem jumpParticles;
         [SerializeField] private ParticleSystem landParticles;
 
+        [SerializeField] private float mainMenuJumpTimerMin;
+        [SerializeField] private float mainMenuJumpTimerMax;
+        private float _mainMenuCurrentJumpTimer;
+
         // The time spent in the air per jump is about 0.44 seconds
 
         public override void Start()
@@ -44,9 +47,15 @@ namespace GD3D.Player
             _jumpCooldownTimer = 0;
 
             // Play Slide particles if on the ground
-            if (onGround)
+            if (OnGround)
             {
                 slideParticles.Play();
+            }
+
+            if (InMainMenu)
+            {
+                // Randomize the timer
+                _mainMenuCurrentJumpTimer = Random.Range(mainMenuJumpTimerMin, mainMenuJumpTimerMax);
             }
         }
 
@@ -76,13 +85,34 @@ namespace GD3D.Player
 
             AngularVelocity();
 
-            // Jump when the input buffer is above 0, the player is on the ground and the jump cooldown has ran out
-            if ((Player.KeyHold || InputBufferAbove0) && onGround && _jumpCooldownTimer <= 0)
+            // Allow the player to control when to jump if we are in the main menu
+            if (!InMainMenu)
             {
-                Jump();
+                // Jump when the input buffer is above 0, the player is on the ground and the jump cooldown has ran out
+                if ((Player.KeyHold || InputBufferAbove0) && OnGround && _jumpCooldownTimer <= 0)
+                {
+                    Jump();
 
-                // Reset buffer time
-                InputBuffer = 0;
+                    // Reset buffer time
+                    InputBuffer = 0;
+                }
+            }
+            // If we are in the main menu, then a timer will control when the cube will jump
+            else
+            {
+                // Timer ran out, so jump
+                if (_mainMenuCurrentJumpTimer <= 0)
+                {
+                    Jump();
+
+                    // Randomize the timer to reset it
+                    _mainMenuCurrentJumpTimer = Random.Range(mainMenuJumpTimerMin, mainMenuJumpTimerMax);
+                }
+                // Slowly decrease the timer
+                else
+                {
+                    _mainMenuCurrentJumpTimer -= Time.deltaTime;
+                }
             }
         }
 
@@ -92,7 +122,7 @@ namespace GD3D.Player
         private void AngularVelocity()
         {
             // Check if we are in the air
-            if (!onGround)
+            if (!OnGround)
             {
                 _angularVelocity = Vector3.zero;
 

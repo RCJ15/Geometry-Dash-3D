@@ -88,7 +88,7 @@ namespace GD3D.Camera
             _cam = Helpers.Camera;
 
             // Set the start pos and tp to that position immediately because otherwise the camera will be weird
-            _startPos = Target.position + offset + extraStartOffset;
+            _startPos = (Target == null ? transform.position : Target.position) + offset + extraStartOffset;
             _transform.position = _startPos;
             _position = _startPos;
             _targetPosition = _startPos;
@@ -101,8 +101,12 @@ namespace GD3D.Camera
             _player = PlayerMain.Instance;
 
             // Subscribe to events
-            _player.OnRespawn += (a, b) => StopAllEasings();
-            _player.OnRespawn += OnRespawn;
+            if (_player != null)
+            {
+                _player.OnRespawn += (a, b) => StopAllEasings();
+                _player.OnRespawn += OnRespawn;
+            }
+
             EasingManager.Instance.OnEaseObjectRemove += OnEaseObjectRemove;
         }
 

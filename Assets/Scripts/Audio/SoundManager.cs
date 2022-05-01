@@ -43,17 +43,36 @@ namespace GD3D.Audio
         /// </summary>
         private void Awake()
         {
-            // Set the instance
-            Instance = this;
+            // Check if there already exists an instance of this object
+            if (Instance == null)
+            {
+                // If not, then set this object to be the instance
+                Instance = this;
 
-            // Create a new GameObject and use it as the sound template when we create the pool
-            GameObject soundGameObject = new GameObject("Sound");
+                // Also set this object to dont destroy on load
+                transform.SetParent(null); // We set parent to null so unity won't scream at me with a warning
+                DontDestroyOnLoad(gameObject);
 
-            soundGameObject.AddComponent<AudioSource>();
-            SoundObject sound = soundGameObject.AddComponent<SoundObject>();
+                // Create a new GameObject and use it as the sound template when we create the pool
+                GameObject soundGameObject = new GameObject("Sound", typeof(AudioSource), typeof(SoundObject));
 
-            // Create sound pool
-            pool = new ObjectPool<SoundObject>(sound, maxSounds);
+                SoundObject sound = soundGameObject.GetComponent<SoundObject>();
+
+                // Create sound pool
+                pool = new ObjectPool<SoundObject>(sound, maxSounds, 
+                (obj) =>
+                {
+                    DontDestroyOnLoad(obj.gameObject);
+                });
+
+                // Destroy the original sound game object seing as we no longer need it
+                Destroy(soundGameObject);
+            }
+            else
+            {
+                // Destroy this object because a sound manager already exists
+                Destroy(gameObject);
+            }
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace GD3D.Player
         //-- Instance
         public static PlayerMain Instance;
 
-        //-- Jump & time stat
+        //-- Jump & time stats
         public static int TimesJumped;
         public static float TimeSpentPlaying;
 
@@ -86,6 +86,12 @@ namespace GD3D.Player
 
         public Rigidbody Rigidbody => rb;
 
+
+        [Header("Main Menu")]
+        public bool InMainMenu;
+
+        private UnityEngine.Camera _cam;
+
         public override void Awake()
         {
             base.Awake();
@@ -104,6 +110,10 @@ namespace GD3D.Player
             // Reset jumps and time because they are static
             TimesJumped = 0;
             TimeSpentPlaying = 0;
+
+            // Get the camera and collider for the main menu
+            _cam = Helpers.Camera;
+            //mouseOverCol = GetChildComponent<Collider>();
 
             GetPlayerScripts();
         }
@@ -128,6 +138,15 @@ namespace GD3D.Player
         public override void Update()
         {
             base.Update();
+
+            // Check if we are in the main menu
+            if (InMainMenu)
+            {
+                MainMenuDeathDetection();
+
+                // Don't do any further work and just return since no input is needed for the main menu
+                return;
+            }
 
             // If the game is paused, then all input will automatically be ignored
             if (PauseMenu.IsPaused)
@@ -197,7 +216,54 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Invokes the OnDeath event cuz p.OnDeath?.Invoke() won't work outside of this script
+        /// If we are in the main menu, then we will detect if the player pressed the icon. If so, then we die.
+        /// </summary>
+        private void MainMenuDeathDetection()
+        {
+            // If the mouse is not pressed, then return
+            if (!UnityEngine.Input.GetMouseButtonDown(0))
+            {
+                return;
+            }
+
+            // Return if the mouse is over a ui object
+            if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+
+            // Get ray from mouse position
+            Ray mouseRay = _cam.ScreenPointToRay(UnityEngine.Input.mousePosition);
+
+            // Return if we the ray hit nothing
+            if (!Physics.Raycast(mouseRay, out RaycastHit hit))
+            {
+                return;
+            }
+
+            // Return if we were not hit
+            if (hit.collider != Mesh.CurrentMeshHitbox)
+            {
+                return;
+            }
+
+            // We got hit, so we die :(
+            Death.Die();
+
+            // Remove mesh
+            Mesh.ToggleCurrentMesh(false);
+
+            // Wait 1 second, then we respawn
+            Helpers.TimerSeconds(this, 1, () =>
+            {
+                IsDead = false;
+
+                Mesh.ToggleCurrentMesh(true);
+            });
+        }
+
+        /// <summary>
+        /// Invokes the OnDeath event cuz player.OnDeath?.Invoke() won't work outside of this script.
         /// </summary>
         public void InvokeDeathEvent()
         {
@@ -207,7 +273,7 @@ namespace GD3D.Player
         }
 
         /// <summary>
-        /// Invokes the OnRespawn event cuz p.OnRespawn?.Invoke() won't work outside of this script :(
+        /// Invokes the OnRespawn event cuz player.OnRespawn?.Invoke() won't work outside of this script.
         /// </summary>
         public void InvokeRespawnEvent(bool inPracticeMode, Checkpoint checkpoint)
         {

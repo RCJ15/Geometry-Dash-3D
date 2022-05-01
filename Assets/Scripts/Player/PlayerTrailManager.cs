@@ -92,6 +92,26 @@ namespace GD3D.Player
             player.OnRespawn += OnRespawn;
             player.GamemodeHandler.OnChangeGamemode += (gamemode) => OnChangeGamemode(gamemode, true);
 
+            // Subscribe to teleport event if we are in the main menu
+            if (player.InMainMenu)
+            {
+                player.Movement.OnMainMenuTeleport += () =>
+                {
+                    // Disable the trail
+                    HaveTrail = false;
+
+                    // Wait for 1 frame
+                    Helpers.TimerEndOfFrame(this, () =>
+                    {
+                        // Change all trails to have the correct color
+                        foreach (PlayerTrail trail in _pool)
+                        {
+                            trail.UpdateColor(PlayerColor2);
+                        }
+                    });
+                };
+            }
+
             print("Reminder to use icon customization for this");
             PlayerTrail trailToCopy = trailCopyables[0];
 
@@ -119,6 +139,11 @@ namespace GD3D.Player
             if (inPracticeMode)
             {
                 HaveTrail = checkpoint.TrailEnabled;
+            }
+            else
+            {
+                // Disabled if we are not in practice mode
+                HaveTrail = false;
             }
         }
 

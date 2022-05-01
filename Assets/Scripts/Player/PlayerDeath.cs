@@ -22,6 +22,11 @@ namespace GD3D.Player
         [Space]
         [SerializeField] private PoolObject deathEffect;
 
+        //-- HashSets
+        // This is mainly here so we can later update the death effect colors when the player dies in the main menu
+        private HashSet<ParticleSystemRenderer> _particleRenderers = new HashSet<ParticleSystemRenderer>();
+        private HashSet<MaterialColorer> _materialColorers = new HashSet<MaterialColorer>();
+
         public override void Start()
         {
             base.Start();
@@ -39,16 +44,49 @@ namespace GD3D.Player
             MaterialColorer colorer = obj.GetComponentInChildren<MaterialColorer>();
 
             // Make sure to have the same alpha value
-            Color playerColor = PlayerColor1;
-            playerColor.a = colorer.GetColor.a;
+            Color playerColor = GetPlayerColor(colorer.GetColor.a);
 
             colorer.GetColor = playerColor;
 
             // Create deathEffect pool
-            _pool = new ObjectPool<PoolObject>(obj, poolSize);
+            _pool = new ObjectPool<PoolObject>(obj, poolSize, (obj) =>
+            {
+                // Add components to HashSets
+                _particleRenderers.Add(obj.GetComponentInChildren<ParticleSystemRenderer>());
+                _materialColorers.Add(obj.GetComponentInChildren<MaterialColorer>());
+            });
 
             // Destroy the newly created object because we have no use out of it anymore
             Destroy(obj);
+
+            // Subscribe to main menu teleport event if we are in the main menu
+            if (player.InMainMenu)
+            {
+                player.Movement.OnMainMenuTeleport += () =>
+                {
+                    // Update all the colors for the particles renderers
+                    foreach (var renderer in _particleRenderers)
+                    {
+                        MaterialColorer.UpdateRendererMaterials(renderer, PlayerColor1, true, true);
+                    }
+
+                    // Update all the colors for the material colorers
+                    foreach (var colorer in _materialColorers)
+                    {
+                        Color playerColor = GetPlayerColor(colorer.GetColor.a);
+
+                        colorer.GetColor = playerColor;
+                    }
+                };
+            }
+        }
+
+        private Color GetPlayerColor(float a)
+        {
+            Color newCol = PlayerColor1;
+            newCol.a = a;
+
+            return newCol;
         }
 
         public override void Update()
@@ -68,6 +106,7 @@ namespace GD3D.Player
             // DEBUG!!! Die when R is pressed
             if (Input.GetKeyDown(KeyCode.R))
             {
+                Debug.Log("Debug reset button moment");
                 Die();
             }
 #endif

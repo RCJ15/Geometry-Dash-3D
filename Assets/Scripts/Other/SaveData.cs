@@ -21,17 +21,40 @@ namespace GD3D
         //-- Instance
         public static SaveData Instance;
 
+        //-- Static variables
+        private static bool s_subscribedToEvents;
+
+        //-- File
         public static SaveFile SaveFile = new SaveFile();
         public static SaveFile.LevelSaveData CurrentLevelData = null;
 
         private void Awake()
         {
-            // Set the instance
-            Instance = this;
+            if (Instance == null)
+            {
+                // Set the instance
+                Instance = this;
 
-            // Subscribe to Scene manager events
-            SceneManager.sceneLoaded += OnSceneLoaded;
-            SceneManager.sceneUnloaded += OnSceneUnloaded;
+                transform.SetParent(null);
+
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            // Check if we have not subscribed to events
+            if (!s_subscribedToEvents)
+            {
+                // Subscribe to Scene manager events
+                SceneManager.sceneLoaded += OnSceneLoaded;
+                SceneManager.sceneUnloaded += OnSceneUnloaded;
+
+                // This bool makes sure we only subscribe once
+                s_subscribedToEvents = true;
+            }
         }
 
         private void Start()
@@ -118,7 +141,8 @@ namespace GD3D
     }
 
     /// <summary>
-    /// Class that contains data for a players save file.
+    /// Class that contains data for a players save file. <para/>
+    /// Use <see cref="SaveData.SaveFile"/> to access the global save file.
     /// </summary>
     [Serializable]
     public class SaveFile

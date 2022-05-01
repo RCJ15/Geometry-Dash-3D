@@ -28,7 +28,7 @@ namespace GD3D.Player
         [Tooltip("Allows the player to hold in the air to buffer a orb whilst in this gamemode. \nSet this to false for airborne gamemodes, like the Ship.")]
         public bool BufferOrbs = false;
 
-        internal bool onGround;
+        public bool OnGround;
         private bool _landedOnGround;
 
         //-- Component references
@@ -111,6 +111,14 @@ namespace GD3D.Player
         }
 
         /// <summary>
+        /// Shortcut for getting <see cref="PlayerMain.InMainMenu"/>.
+        /// </summary>
+        protected bool InMainMenu
+        {
+            get => Player.InMainMenu;
+        }
+
+        /// <summary>
         /// Start is called before the first frame update.
         /// </summary>
         public virtual void Start()
@@ -175,7 +183,7 @@ namespace GD3D.Player
                     HaveTrail = false;
                     return;
 
-                // Trail is permanent, used for ship
+                // Trail is permanent, used for airborne gamemodes
                 case TrailMode.always:
                     HaveTrail = true;
                     return;
@@ -185,7 +193,7 @@ namespace GD3D.Player
                 // Portals will enable the trails themselves in their own script (like gravity portals for example)
                 case TrailMode.specialObjects:
                     // Disable trail if on ground
-                    if (onGround && HaveTrail)
+                    if (OnGround && HaveTrail)
                     {
                         HaveTrail = false;
                     }
@@ -203,16 +211,16 @@ namespace GD3D.Player
             newGroundOffset.y *= UpsideDownMultiplier;
 
             // Detect if the player is on the ground
-            onGround = Physics.OverlapBox(_transform.position + newGroundOffset, groundDetectSize, Quaternion.identity, GamemodeHandler.GroundLayer).Length >= 1;
+            OnGround = Physics.OverlapBox(_transform.position + newGroundOffset, groundDetectSize, Quaternion.identity, GamemodeHandler.GroundLayer).Length >= 1;
 
             // Detects if the player has landed back on the ground
-            if (!_landedOnGround && onGround)
+            if (!_landedOnGround && OnGround)
             {
                 _landedOnGround = true;
                 OnLand();
             }
             // Detects when the player leaves the ground
-            else if (_landedOnGround && !onGround)
+            else if (_landedOnGround && !OnGround)
             {
                 _landedOnGround = false;
                 OnLeaveGround();

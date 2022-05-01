@@ -16,6 +16,9 @@ namespace GD3D.Player
         public Color Color1 = DefaultColor1;
         public Color Color2 = DefaultColor2;
 
+        private Color StartColor1;
+        private Color StartColor2;
+
         [SerializeField] private MaterialColorData[] materials;
 
         public Color[] GetColors { get => new Color[] { Color1, Color2 };
@@ -36,7 +39,21 @@ namespace GD3D.Player
         {
             base.Start();
 
+            StartColor1 = Color1;
+            StartColor2 = Color2;
+
             UpdateMaterialColors(Color1, Color2);
+
+            // Subscribe to main menu teleport event if we are in the main menu
+            if (player.InMainMenu)
+            {
+                player.Movement.OnMainMenuTeleport += () =>
+                {
+                    Color1 = Random.ColorHSV();
+                    Color2 = Random.ColorHSV();
+                    UpdateMaterialColors(Color1, Color2);
+                };
+            }
         }
 
         /// <summary>
@@ -72,6 +89,15 @@ namespace GD3D.Player
         }
 
 #if UNITY_EDITOR
+        private void OnApplicationQuit()
+        {
+            // Reset the colors to the start colors
+            Color1 = StartColor1;
+            Color2 = StartColor2;
+
+            UpdateMaterialColors(Color1, Color2);
+        }
+
         [CustomEditor(typeof(PlayerColors))]
         public class PlayerColorsEditor : Editor
         {

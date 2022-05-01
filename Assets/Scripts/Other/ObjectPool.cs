@@ -9,13 +9,15 @@ namespace GD3D.ObjectPooling
     /// <summary>
     /// Class that contains data for a pool of objects
     /// </summary>
-    public class ObjectPool<T> where T : PoolObject
+    public class ObjectPool<T> : ICollection where T : PoolObject
     {
         public T OriginalObject;
         public int Size = 100;
 
         private Queue<T> _queue;
         public Queue<T> Queue => _queue;
+
+        private List<T> _collection = new List<T>();
 
         #region SpawnFromPool Methods
         /// <summary>
@@ -190,7 +192,7 @@ namespace GD3D.ObjectPooling
         }
         #endregion
 
-        #region Create New Pool Methods
+        #region Constructors
         /// <summary>
         /// Creates a new pool and automatically adds it to the object pooler. <para/>
         /// Set <paramref name="callOnObjSpawned"/> to create custom code when a new object is created for the pool
@@ -239,11 +241,38 @@ namespace GD3D.ObjectPooling
                 // Add object to the queue
                 _queue.Enqueue(poolObject);
 
+                // Also add the object into the total collection
+                _collection.Add(poolObject);
+
                 // Invoke OnCreated() method and the callOnObjSpawned event
                 poolObject.OnCreated();
 
                 callOnObjSpawned?.Invoke(poolObject);
             }
+        }
+        #endregion
+
+        #region ICollection Interface or related methods
+        public T this[int i]
+        {
+            get => _collection[i];
+            set => _collection[i] = value;
+        }
+
+        public int Count => ((ICollection)_collection).Count;
+
+        public bool IsSynchronized => ((ICollection)_collection).IsSynchronized;
+
+        public object SyncRoot => ((ICollection)_collection).SyncRoot;
+
+        public void CopyTo(Array array, int index)
+        {
+            ((ICollection)_collection).CopyTo(array, index);
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            return ((IEnumerable)_collection).GetEnumerator();
         }
         #endregion
     }

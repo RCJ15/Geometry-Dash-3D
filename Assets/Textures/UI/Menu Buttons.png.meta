@@ -20,6 +20,12 @@ TextureImporter:
   - first:
       213: 927549391475432833
     second: Creator Button
+  - first:
+      213: -5652939182684387322
+    second: Menu Buttons_0
+  - first:
+      213: -3047018070302559869
+    second: Menu Buttons_1
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -64,7 +70,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 330
+  spritePixelsToUnits: 191.25
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -124,10 +130,10 @@ TextureImporter:
       name: Play Button
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 330
-        height: 330
+        x: 13
+        y: 11
+        width: 306
+        height: 311
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,10 +151,10 @@ TextureImporter:
       name: Enter Practice Button
       rect:
         serializedVersion: 2
-        x: 330
-        y: 0
-        width: 330
-        height: 330
+        x: 377
+        y: 50
+        width: 237
+        height: 244
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -166,10 +172,10 @@ TextureImporter:
       name: Exit Practice Button
       rect:
         serializedVersion: 2
-        x: 660
-        y: 0
-        width: 330
-        height: 330
+        x: 708
+        y: 51
+        width: 237
+        height: 244
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -187,10 +193,10 @@ TextureImporter:
       name: Respawn Button
       rect:
         serializedVersion: 2
-        x: 990
-        y: 0
-        width: 330
-        height: 330
+        x: 1036
+        y: 51
+        width: 237
+        height: 244
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -208,10 +214,10 @@ TextureImporter:
       name: Exit Button
       rect:
         serializedVersion: 2
-        x: 1320
-        y: 0
-        width: 330
-        height: 330
+        x: 1370
+        y: 51
+        width: 237
+        height: 244
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -229,10 +235,10 @@ TextureImporter:
       name: Creator Button
       rect:
         serializedVersion: 2
-        x: 1650
-        y: 0
-        width: 330
-        height: 330
+        x: 1664
+        y: 18
+        width: 305
+        height: 311
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

@@ -27,11 +27,11 @@ namespace GD3D
             // Wait
             if (UnscaledTime)
             {
-                yield return new WaitForSecondsRealtime(Lifetime);
+                yield return Helpers.GetWaitForSecondsRealtime(Lifetime);
             }
             else
             {
-                yield return new WaitForSeconds(Lifetime);
+                yield return Helpers.GetWaitForSeconds(Lifetime);
             }
 
             // Kill objects in the array (if it has any of course)

@@ -126,6 +126,11 @@ namespace GD3D.Player
             {
                 HaveTrail = checkpoint.SecondaryTrailEnabled;
             }
+            else
+            {
+                // Disabled if we are not in practice mode
+                HaveTrail = false;
+            }
         }
 
         private void OnChangeGamemode(Gamemode mode)

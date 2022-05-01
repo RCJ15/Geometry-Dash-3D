@@ -145,15 +145,32 @@ namespace GD3D.Objects
             
             float totalDistance = time * PlayerMovement.NORMAL_SPEED;
 
-            // Get path and AttachToPath component
+            // Get then path creator
             PathCreator pathCreator = FindObjectOfType<PathCreator>();
+
+            if (pathCreator == null)
+            {
+                return;
+            }
+
+            // Get the path from the path creator
             VertexPath path = pathCreator.path;
 
-            _attachToPath = GetComponent<AttachToPath>();
+            // Get the attach to path component if it's null
+            if (_attachToPath == null)
+            {
+                _attachToPath = GetComponent<AttachToPath>();
+            }
 
-            float startDistance = _attachToPath.Distance;
+            // Return if the component is still null
+            if (_attachToPath == null)
+            {
+                return;
+            }
 
             // Draw the lines
+            float startDistance = _attachToPath.Distance;
+
             float addedDistance = 0;
 
             Vector3 oldPos = transform.position;

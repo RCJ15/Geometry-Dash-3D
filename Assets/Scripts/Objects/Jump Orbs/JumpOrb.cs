@@ -135,7 +135,7 @@ namespace GD3D.Objects
                 if (script.BufferOrbs)
                 {
                     // If the player lands then they are not allowed to buffer anymore
-                    if (script.onGround)
+                    if (script.OnGround)
                     {
                         CantHitOrbs = true;
                     }

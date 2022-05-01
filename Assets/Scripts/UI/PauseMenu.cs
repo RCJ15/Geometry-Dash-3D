@@ -187,10 +187,10 @@ namespace GD3D.UI
             }
 
             // Set the toggles to reflect the save file data
-            autoRetryToggle.isOn = _saveFile.AutoRetryEnabled;
-            autoCheckpointsToggle.isOn = _saveFile.AutoCheckpointsEnabled;
-            progressBarToggle.isOn = _saveFile.ProgressBarEnabled;
-            showPercentToggle.isOn = _saveFile.ShowPercentEnabled;
+            autoRetryToggle.SetIsOnWithoutNotify(_saveFile.AutoRetryEnabled);
+            autoCheckpointsToggle.SetIsOnWithoutNotify(_saveFile.AutoCheckpointsEnabled);
+            progressBarToggle.SetIsOnWithoutNotify(_saveFile.ProgressBarEnabled);
+            showPercentToggle.SetIsOnWithoutNotify(_saveFile.ShowPercentEnabled);
         }
 
         /// <summary>
@@ -244,6 +244,12 @@ namespace GD3D.UI
             // Respawn the player if we are exiting practice mode
             if (!inPracticeMode)
             {
+                // Disable the trail beforehand
+                // We do this so the trail doesn't do a big stretch from the current position to the spawn location
+                PlayerTrailManager.HaveTrail = false;
+
+
+
                 _player.Spawn.Respawn();
             }
 

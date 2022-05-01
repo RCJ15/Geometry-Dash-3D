@@ -66,6 +66,13 @@ namespace GD3D
 
         protected override void PathUpdated()
         {
+#if UNITY_EDITOR
+            if (Application.isPlaying)
+            {
+                return;
+            } 
+#endif
+
             if (pathCreator != null)
             {
                 AssignMeshComponents("Ground Mesh Holder", ref meshHolder, ref meshRenderer, ref meshFilter, ref mesh);

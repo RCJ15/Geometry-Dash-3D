@@ -52,6 +52,13 @@ namespace GD3D
 
         protected override void PathUpdated()
         {
+#if UNITY_EDITOR
+            if (Application.isPlaying)
+            {
+                return;
+            }
+#endif
+
             if (pathCreator != null)
             {
                 AssignMeshComponents();
@@ -84,6 +91,8 @@ namespace GD3D
                 2, 1, 3,
             };
 
+            bool only2Points = path.NumPoints == 2;
+
             // Loop through the paths
             int pathIndex = 0;
             foreach (VertexPath newPath in paths)
@@ -95,9 +104,16 @@ namespace GD3D
                 for (int i = 0; i < numPoints; i++)
                 {
                     Vector3 localUp = Vector3.up; // Force it to be the world up regardless
-                    Vector3 localRight = Vector3.Cross(localUp, newPath.GetTangent(i));
 
                     Vector3 position = newPath.GetPoint(i);
+
+                    // If there are only 2 points, then we will add some directional offset cuz otherwise this stuff doesn't work idk
+                    if (only2Points)
+                    {
+                        Vector3 localRight = Vector3.Cross(localUp, newPath.GetTangent(i));
+
+                        position += Mathf.Abs(width) * (isLeft ? -1 : 1) * localRight;
+                    }
 
                     // Add vertices
                     Vector3 offset = new Vector3(0, yOffset, 0);
@@ -114,7 +130,7 @@ namespace GD3D
                     normals[vertIndex + 0] = normal;
                     normals[vertIndex + 1] = normal;
 
-                    if (i + 1 < newPath.NumPoints - 1)
+                    if (i < newPath.NumPoints - 1)
                     {
                         int[] triangleMap = isLeft ? triangleMapLeft : triangleMapRight;
 
@@ -123,10 +139,11 @@ namespace GD3D
                         {
                             int index = vertIndex + triangleMap[j];
 
+                            /*
                             if (index > verts.Length - 1)
                             {
                                 continue;
-                            }
+                            }*/
 
                             triangles[triIndex + j] = index;
                         }
@@ -211,8 +228,8 @@ namespace GD3D
                 Vector3 localRight = Vector3.Cross(localUp, path.GetTangent(i));
 
                 Vector3 position = path.GetPoint(i);
-                Vector3 positionRight = position + localRight * Mathf.Abs(width);
-                Vector3 positionLeft = position - localRight * Mathf.Abs(width);
+                Vector3 positionRight = position + (localRight * Mathf.Abs(width));
+                Vector3 positionLeft = position - (localRight * Mathf.Abs(width));
 
                 if (Vector3.Distance(path.GetClosestPointOnPath(positionRight), positionRight) >= distance)
                 {
@@ -247,6 +264,16 @@ namespace GD3D
         {
             // Get backgroundMeshCreator
             backgroundMeshCreator = (BackgroundMeshCreator)target;
+        }
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            if (GUILayout.Button("Manual Update"))
+            {
+                backgroundMeshCreator.TriggerUpdate();
+            }
         }
 
         private void OnDisable()

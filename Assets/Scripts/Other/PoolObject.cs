@@ -82,7 +82,7 @@ namespace GD3D.ObjectPooling
         /// </summary>
         private IEnumerator RemoveAfterTimeCoroutine(float time, Action onComplete)
         {
-            yield return new WaitForSeconds(time);
+            yield return Helpers.GetWaitForSeconds(time);
 
             // Invoke onComplete event
             onComplete?.Invoke();

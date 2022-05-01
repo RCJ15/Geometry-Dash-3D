@@ -14,6 +14,16 @@ namespace GD3D.Player
         [Header("Flying")]
         [SerializeField] private float flySpeed;
 
+        [Space]
+        [SerializeField] private float mainMenuFlyTimerMin;
+        [SerializeField] private float mainMenuFlyTimerMax;
+        private float _currentMainMenuFlyTimer;
+
+        [Space]
+        [SerializeField] private float mainMenuHoldTimerMin;
+        [SerializeField] private float mainMenuHoldTimerMax;
+        private float _currentMainMenuHoldTimer;
+
         [Header("Rotation")]
         [SerializeField] private Transform objToRotate;
         [SerializeField] private float rotateSlerpSpeed = 0.15f;
@@ -39,6 +49,13 @@ namespace GD3D.Player
 
             // Make constant particles constantly play whilst in ship gamemode
             constantParticles.Play();
+
+            // Randomize random timers if we are in the main menu
+            if (InMainMenu)
+            {
+                _currentMainMenuFlyTimer = Random.Range(mainMenuFlyTimerMin, mainMenuFlyTimerMax);
+                _currentMainMenuHoldTimer = Random.Range(mainMenuHoldTimerMin, mainMenuHoldTimerMax);
+            }
         }
 
         public override void OnDisable()
@@ -66,12 +83,52 @@ namespace GD3D.Player
         {
             base.Update();
 
-            // Go up/down based on if the click key is being held
-            YVelocity += flySpeed * Time.deltaTime * (KeyHold ? 1 : -1) * UpsideDownMultiplier;
+            // Check if we are not in the main menu
+            if (!InMainMenu)
+            {
+                // Fly based on if the click key is being held
+                Fly(KeyHold);
+            }
+            else
+            {
+                // Do not allow the ship to fly further if above a certain Y position
+                if (_transform.position.y > 7.5f)
+                {
+                    _currentMainMenuHoldTimer = 0;
+                }
+
+                // Let 2 random timers decide our flight
+                Fly(_currentMainMenuHoldTimer > 0);
+
+                // The hold timer decides when the ship actually flies
+                // The fly timer decides when the hold timer (and itself) are reset randomly
+                if (_currentMainMenuHoldTimer > 0)
+                {
+                    _currentMainMenuHoldTimer -= Time.deltaTime;
+                }
+
+                if (_currentMainMenuFlyTimer > 0)
+                {
+                    _currentMainMenuFlyTimer -= Time.deltaTime;
+                }
+                else
+                {
+                    _currentMainMenuFlyTimer = Random.Range(mainMenuFlyTimerMin, mainMenuFlyTimerMax);
+                    _currentMainMenuHoldTimer = Random.Range(mainMenuHoldTimerMin, mainMenuHoldTimerMax);
+                }
+            }
             
             HandleParticles();
 
             AngularVelocity();
+        }
+
+        /// <summary>
+        /// Adds to the YVelocity if <paramref name="input"/> is true, otherwise we subtract.
+        /// </summary>
+        private void Fly(bool input)
+        {
+            YVelocity += flySpeed * Time.deltaTime * (input ? 1 : -1) * UpsideDownMultiplier;
         }
 
         /// <summary>
@@ -90,11 +147,11 @@ namespace GD3D.Player
             }
 
             // Slide particles
-            if (onGround && !KeyHold && !slideParticles.isPlaying)
+            if (OnGround && !KeyHold && !slideParticles.isPlaying)
             {
                 slideParticles.Play();
             }
-            else if ((!onGround || KeyHold) && slideParticles.isPlaying)
+            else if ((!OnGround || KeyHold) && slideParticles.isPlaying)
             {
                 slideParticles.Stop();
             }
@@ -106,7 +163,7 @@ namespace GD3D.Player
         private void AngularVelocity()
         {
             // Rotate towards the Y velocity while in the air
-            if (!onGround)
+            if (!OnGround)
             {
                 _targetRot.z = Rigidbody.velocity.y * xRotationModifier;
 

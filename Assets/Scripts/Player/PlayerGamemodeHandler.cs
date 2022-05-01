@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace GD3D.Player
 {
@@ -13,6 +14,16 @@ namespace GD3D.Player
     {
         private Gamemode _startGamemode;
         public Gamemode CurrentGamemode;
+
+        /// <summary>
+        /// HashSet of airborne gamemodes.
+        /// </summary>
+        public static readonly HashSet<Gamemode> AirborneGamemodes = new HashSet<Gamemode>()
+        {
+            Gamemode.ship,
+            Gamemode.ufo,
+            Gamemode.wave,
+        };
 
         //-- Upside down
         public bool UpsideDown;
@@ -27,8 +38,7 @@ namespace GD3D.Player
         private bool _oldIsSmall;
 
         [Space]
-        [SerializeField] private LayerMask groundLayer;
-        public LayerMask GroundLayer => groundLayer;
+        public LayerMask GroundLayer;
 
         [Header("Gamemodes")]
         public CubeGamemode Cube;
@@ -73,6 +83,21 @@ namespace GD3D.Player
             player.OnDeath += OnDeath;
 
             player.OnRespawn += OnRespawn;
+
+            if (player.InMainMenu)
+            {
+                // Randomize gamemode when the player teleports in the main menu
+                player.Movement.OnMainMenuTeleport += () =>
+                {
+                    // Wait 1 frame before doing this so no weird trail stretch stuff happens
+                    Helpers.TimerEndOfFrame(this, () =>
+                    {
+                        int randomGamemode = Random.Range(0, 2);
+
+                        ChangeGamemode((Gamemode)randomGamemode);
+                    });
+                };
+            }
         }
 
         /// <summary>
@@ -219,25 +244,25 @@ namespace GD3D.Player
             // Self explanatory how this works
             switch (g)
             {
-                case CubeGamemode cube:
+                case CubeGamemode _:
                     return Gamemode.cube;
 
-                case ShipGamemode ship:
+                case ShipGamemode _:
                     return Gamemode.ship;
 
-                case BallGamemode ball:
+                case BallGamemode _:
                     return Gamemode.ball;
 
-                case UfoGamemode ufo:
+                case UfoGamemode _:
                     return Gamemode.ufo;
 
-                case WaveGamemode wave:
+                case WaveGamemode _:
                     return Gamemode.wave;
 
-                case RobotGamemode robot:
+                case RobotGamemode _:
                     return Gamemode.robot;
 
-                case SpiderGamemode spider:
+                case SpiderGamemode _:
                     return Gamemode.spider;
 
                 default:

@@ -3,21 +3,21 @@
     "SFXVolume": 1.0,
     "AutoRetryEnabled": true,
     "AutoCheckpointsEnabled": true,
-    "ProgressBarEnabled": true,
-    "ShowPercentEnabled": true,
+    "ProgressBarEnabled": false,
+    "ShowPercentEnabled": false,
     "LevelData": [
         {
             "name": "This is a very cool level",
             "completedLevel": false,
-            "normalPercent": 0.24047400057315827,
-            "practicePercent": 0.747219979763031,
+            "normalPercent": 0.0,
+            "practicePercent": 0.0,
             "gottenCoins": [
                 false,
                 false,
                 false
             ],
-            "totalAttempts": 80,
-            "totalJumps": 113
+            "totalAttempts": 0,
+            "totalJumps": 27
         }
     ]
 }

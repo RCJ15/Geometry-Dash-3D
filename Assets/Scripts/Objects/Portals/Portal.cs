@@ -138,7 +138,7 @@ namespace GD3D.Objects
                 // Wait for next frame
                 currentTimer -= Time.deltaTime;
 
-                yield return new WaitForEndOfFrame();
+                yield return Helpers.CachedWaitForEndOfFrame;
             }
 
             // Reset the color

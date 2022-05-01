@@ -24,6 +24,11 @@ namespace GD3D.Player
         [SerializeField] private PathCreator pathCreator;
         private VertexPath path => pathCreator.path;
 
+        [Header("Main Menu")]
+        [SerializeField] private float mainMenuMaxTravelAmount;
+
+        public System.Action OnMainMenuTeleport;
+
         [Header("Stats")]
         [SerializeField] private GameSpeed currentSpeed = GameSpeed.normalSpeed;
         private GameSpeed _startSpeed;
@@ -59,12 +64,12 @@ namespace GD3D.Player
             set
             {
                 // Trigger effects if we are entering 3D mode
-                if (value && !_in3DMode)
+                if (value && !_in3DMode && enter3DModeParticles != null)
                 {
                     enter3DModeParticles.Play();
                 }
                 // Trigger effects if we are exiting 3D mode
-                else if (!value && _in3DMode)
+                else if (!value && _in3DMode && exit3DModeParticles != null)
                 {
                     exit3DModeParticles.Play();
                 }
@@ -112,6 +117,36 @@ namespace GD3D.Player
 
             leftKey = PlayerInput.GetKey("3D Move Left");
             rightKey = PlayerInput.GetKey("3D Move Right");
+
+            // Check if we are in the main menu
+            if (player.InMainMenu)
+            {
+                // Subscribe to own teleport event
+                OnMainMenuTeleport += () =>
+                {
+                    // Randomize movement speed
+                    int speed = Random.Range(-1, 4);
+
+                    ChangeSpeed((GameSpeed)speed);
+                };
+
+                // We will also add an extra event to when we die that'll teleport to us to the start
+                player.OnDeath += () =>
+                {
+                    _travelAmount = _startTravelAmount;
+                    PlayerTrailManager.HaveTrail = false;
+                    UpdatePosition();
+
+                    OnMainMenuTeleport?.Invoke();
+                };
+
+                // Invoke teleport event 1 frame later
+                // We do it 1 frame later so that other subscribers that subscribe at start will get properly called
+                Helpers.TimerEndOfFrame(this, () =>
+                {
+                    OnMainMenuTeleport?.Invoke();
+                });
+            }
         }
 
         public override void FixedUpdate()
@@ -129,6 +164,34 @@ namespace GD3D.Player
             // Move the player
             _travelAmount += Time.fixedDeltaTime * Speed;
 
+            // If we are in the main menu, then we will teleport back to the start travel amount after travelling over a certain amount
+            if (player.InMainMenu && _travelAmount >= mainMenuMaxTravelAmount)
+            {
+                _travelAmount = _startTravelAmount;
+
+                // Disable the trail and teleport so that the trail doesn't do a big stretchy stretch across the entire map
+                PlayerTrailManager.HaveTrail = false;
+
+                // Invoke main menu teleport event
+                OnMainMenuTeleport?.Invoke();
+            }
+
+            UpdatePosition();
+
+            // Rotate the correct way
+            Vector3 newRot = path.GetRotationAtDistance(_travelAmount, EndOfPathInstruction.Stop).eulerAngles;
+
+            newRot.x = transform.rotation.eulerAngles.x;
+            newRot.z = transform.rotation.eulerAngles.z;
+
+            transform.rotation = Quaternion.Euler(newRot);
+        }
+
+        /// <summary>
+        /// Sets the transform position to match the correct <see cref="_travelAmount"/> and <see cref="_3DOffset"/>.
+        /// </summary>
+        private void UpdatePosition()
+        {
             // Calculate target position
             Vector3 targetPos = path.GetPointAtDistance(_travelAmount, EndOfPathInstruction.Stop);
             Vector3 direction = path.GetNormalAtDistance(_travelAmount, EndOfPathInstruction.Stop);
@@ -139,14 +202,6 @@ namespace GD3D.Player
             targetPos.y = _transform.position.y;
 
             _transform.position = targetPos;
-
-            // Rotate the correct way
-            Vector3 newRot = path.GetRotationAtDistance(_travelAmount, EndOfPathInstruction.Stop).eulerAngles;
-
-            newRot.x = transform.rotation.eulerAngles.x;
-            newRot.z = transform.rotation.eulerAngles.z;
-
-            transform.rotation = Quaternion.Euler(newRot);
         }
 
         /// <summary>
@@ -169,10 +224,10 @@ namespace GD3D.Player
             float input = Key.GetAxis(leftKey, rightKey);
 
             // Transform the input to be relative to the camera
-            Vector3 test1 = _transform.TransformDirection(new Vector3(0, 0, input));
-            Vector3 test2 = _cam.TransformDirection(new Vector3(0, 0, input));
+            //Vector3 test1 = _transform.TransformDirection(new Vector3(0, 0, input));
+            //Vector3 test2 = _cam.TransformDirection(new Vector3(0, 0, input));
 
-            print(test1 + " | " + test2);
+            //print(test1 + " | " + test2);
 
             // By default, damping is moving
             float damping = damp3DMoving;
@@ -356,6 +411,6 @@ namespace GD3D.Player
         normalSpeed = 0,
         doubleSpeed = 1,
         tripleSpeed = 2,
-        quadrupleSpeed = 4,
+        quadrupleSpeed = 3,
     }
 }

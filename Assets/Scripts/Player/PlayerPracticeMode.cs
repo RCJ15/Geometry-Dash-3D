@@ -47,8 +47,22 @@ namespace GD3D.Player
                     Instance.Checkpoints.Clear();
                     Instance.CheckpointCrystals.Clear();
                 }
+                // If we enter practice mode, then reset the auto checkpoints timer
+                else
+                {
+                    Instance._autoCheckpointTimer = Instance.timeBtwAutoCheckpoint;
+                }
             }
         }
+
+        //-- Auto Checkpoints
+        private SaveFile _saveFile;
+
+        [SerializeField] private float timeBtwAutoCheckpoint = 1;
+
+        private float _autoCheckpointTimer;
+
+        private PlayerGamemodeHandler _gamemodeHandler;
 
         //-- Checkpoint
         [SerializeField] private GameObject checkpointCrystal;
@@ -94,6 +108,18 @@ namespace GD3D.Player
             // Get keys
             placeKey = PlayerInput.GetKey("Place Checkpoint Crystal");
             removeKey = PlayerInput.GetKey("Remove Checkpoint Crystal");
+
+            // Set auto checkpoint variables
+            _saveFile = SaveData.SaveFile;
+            _gamemodeHandler = player.GamemodeHandler;
+
+            _autoCheckpointTimer = timeBtwAutoCheckpoint;
+
+            // Reset the auto checkpoint timer on death
+            player.OnDeath += () =>
+            {
+                _autoCheckpointTimer = timeBtwAutoCheckpoint;
+            };
         }
 
         public override void Update()
@@ -110,6 +136,12 @@ namespace GD3D.Player
             if (!player.IsDead && placeKey.Pressed(PressMode.down))
             {
                 PlaceCheckpointCrystal();
+            }
+
+            // Check if we have auto checkpoints and are not dead
+            if (!player.IsDead && _saveFile.AutoCheckpointsEnabled)
+            {
+                AutoCheckpointUpdate();
             }
 
             // Get the length of the checkpoint
@@ -148,6 +180,40 @@ namespace GD3D.Player
             newCrystal.name = $"{checkpointCrystal.name} ({CheckpointCrystals.Count + 1})";
             
             CheckpointCrystals.Add(newCrystal);
+        }
+
+        /// <summary>
+        /// Called in <see cref="Update"/>.
+        /// </summary>
+        private void AutoCheckpointUpdate()
+        {
+            // Decrease the timer and return if it's above 0
+            if (_autoCheckpointTimer > 0)
+            {
+                _autoCheckpointTimer -= Time.deltaTime;
+
+                return;
+            }
+
+            // The timer is below or equal to 0, meaning it's time to place a auto checkpoint!
+
+            Gamemode currentGamemode = _gamemodeHandler.CurrentGamemode;
+
+            // Check if the gamemode is not airborne
+            if (!PlayerGamemodeHandler.AirborneGamemodes.Contains(currentGamemode))
+            {
+                // If the gamemode is not airborne, then we will also add an extra check for if the gamemode is on the ground
+                if (!_gamemodeHandler.CurrentGamemodeScript.OnGround)
+                {
+                    // If it's not on ground, then we will return
+                    return;
+                }
+            }
+
+            // Reset the timer and place auto checkpoint if all checks were passed successfully
+            _autoCheckpointTimer = timeBtwAutoCheckpoint;
+
+            PlaceCheckpointCrystal();
         }
     }
 }

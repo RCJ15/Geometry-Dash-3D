@@ -79,6 +79,15 @@ namespace GD3D
             }
         }
 
+        [MenuItem("Developer/Editor Reset All Attach To Path")]
+        private static void ResetAll()
+        {
+            foreach (AttachToPath attachToPath in FindObjectsOfType<AttachToPath>())
+            {
+                attachToPath.Reset();
+            }
+        }
+
         [SerializeField, HideInInspector]
         private bool justCreated = true;
         [SerializeField, HideInInspector]

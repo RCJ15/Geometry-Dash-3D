@@ -6,9 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Main Menu.unity
+    path: Assets/Scenes/Menus/Main Menu.unity
     guid: 38f4cdbc8ba02dd44b7d7111e7325134
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
+    path: Assets/Scenes/Menus/Level Select.unity
+    guid: 8eb7fc1b5dd559c4ebb1190983d0b9a7
+  - enabled: 1
+    path: Assets/Scenes/Menus/Icon Kit.unity
+    guid: cfc65eab01d89de4a995cf9f0814fad4
+  - enabled: 1
+    path: Assets/Scenes/Levels/Stereo Madness.unity
+    guid: c39bf003c04d9c14e9bf1c2bccf85932
   m_configObjects: {}

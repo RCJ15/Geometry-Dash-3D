@@ -250,12 +250,12 @@ namespace GD3D.Player
             if (PlayerPracticeMode.InPracticeMode || _saveFile.AutoRetryEnabled)
             {
                 // Respawn after 1 second if auto retry is enabled or if we are in practice mode
-                coroutine = StartCoroutine(DelayedCouroutine(Respawn));
+                coroutine = Helpers.TimerSeconds(this, 1, Respawn);
             }
             else
             {
                 // Bring up the respawn menu after 1 second if auto retry is disabled
-                coroutine = StartCoroutine(DelayedCouroutine(ShowRespawnMenu));
+                coroutine = Helpers.TimerSeconds(this, 1, ShowRespawnMenu);
             }
 
             StartRespawnCouroutine(coroutine);
@@ -271,18 +271,6 @@ namespace GD3D.Player
 
             // Set the new respawn coroutine to the given coroutine
             _currentRespawnCoroutine = coroutine;
-        }
-
-        /// <summary>
-        /// Waits 1 second, then does the given <paramref name="event"/>.
-        /// </summary>
-        private IEnumerator DelayedCouroutine(Action @event)
-        {
-            // Wait 1 second
-            yield return new WaitForSeconds(1f);
-
-            // Invoke event
-            @event?.Invoke();
         }
 
         /// <summary>
@@ -341,11 +329,11 @@ namespace GD3D.Player
 
             for (int i = 0; i < 3; i++)
             {
-                yield return new WaitForSeconds(0.05f);
+                yield return Helpers.GetWaitForSeconds(0.05f);
 
                 mesh.ToggleCurrentMesh(false);
 
-                yield return new WaitForSeconds(0.05f);
+                yield return Helpers.GetWaitForSeconds(0.05f);
 
                 SpawnRespawnRing();
                 mesh.ToggleCurrentMesh(true);

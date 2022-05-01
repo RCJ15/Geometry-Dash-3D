@@ -18,6 +18,12 @@ namespace GD3D.Player
         {
             base.Awake();
 
+            if (regularGravityLines == null)
+            {
+                Destroy(this);
+                return;
+            }
+
             // Create a copy of the upsideDownGravityLines and invert it to create the other lines
             Transform tran = regularGravityLines.transform;
 

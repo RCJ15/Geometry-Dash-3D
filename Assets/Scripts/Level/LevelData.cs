@@ -35,13 +35,20 @@ namespace GD3D.Level
             // Get instances
             _player = PlayerMain.Instance;
 
-            // Set to save data
-            NormalPercent = levelData.normalPercent;
-            PracticePercent = levelData.practicePercent;
+            // Set percent from save data 1 frame later
+            // We do thsi one frame later so that the save data won't be null since it's set in start
+            Helpers.TimerEndOfFrame(this, () =>
+            {
+                NormalPercent = levelData.normalPercent;
+                PracticePercent = levelData.practicePercent;
+            });
 
             // Subscribe to events
-            _player.OnDeath += OnDeath;
-            _player.OnDeath += SaveLevelData;
+            if (_player != null)
+            {
+                _player.OnDeath += OnDeath;
+                _player.OnDeath += SaveLevelData;
+            }
         }
 
         private void Update()

@@ -26,6 +26,7 @@ namespace GD3D.Easing
                     GameObject newObj = new GameObject("Easing Manager", typeof(EasingManager));
 
                     s_instance = newObj.GetComponent<EasingManager>();
+                    DontDestroyOnLoad(newObj);
                 }
 
                 return s_instance;
@@ -41,10 +42,17 @@ namespace GD3D.Easing
 
         private void Awake()
         {
-            // Set instance if this is not already the instance
-            if (s_instance != this)
+            if (s_instance == null)
             {
                 s_instance = this;
+
+                transform.SetParent(null);
+
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
             }
         }
 

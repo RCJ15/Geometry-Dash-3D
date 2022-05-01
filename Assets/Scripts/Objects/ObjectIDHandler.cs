@@ -49,7 +49,15 @@ namespace GD3D.Objects
 
         private void OnDeath()
         {
-            // Clear all the activated HashSets since all the triggers and stuff get re enabled
+            // Clear all the IDs on death
+            ClearIDs();
+        }
+
+        /// <summary>
+        /// Clears all the activated ID HashSets, allowing them to be renabled
+        /// </summary>
+        public void ClearIDs()
+        {
             ActivatedJumpOrbs.Clear();
             ActivatedJumpPads.Clear();
             ActivatedPortals.Clear();
@@ -66,6 +74,11 @@ namespace GD3D.Objects
                 ActivatedJumpPads = new HashSet<long>(checkpoint.ActivatedJumpPads);
                 ActivatedPortals = new HashSet<long>(checkpoint.ActivatedPortals);
                 ActivatedTriggers = new HashSet<long>(checkpoint.ActivatedTriggers);
+            }
+            else
+            {
+                // Clear all the IDs if we are not in practice mode
+                ClearIDs();
             }
         }
 

@@ -28,6 +28,13 @@ namespace GD3D.Level
         //-- Color Data
         [SerializeField] private MaterialColorTypeData[] colorData;
 
+        [Header("Main Menu")]
+        [SerializeField] private Gradient mainMenuColorGradient;
+        [SerializeField] private float mainMenuColorSpeed;
+        private float _mainMenuCurrentColorPos;
+
+        private static readonly Array _colorTypeEnumArray = Enum.GetValues(typeof(ColorType));
+
         private PlayerMain player;
 
         private void Awake()
@@ -56,9 +63,36 @@ namespace GD3D.Level
             player = PlayerMain.Instance;
 
             // Subcribe to events
-            player.OnRespawn += (a, b) => StopAllEasings();
-            player.OnRespawn += OnRespawn;
+            if (player != null)
+            {
+                player.OnRespawn += (a, b) => StopAllEasings();
+                player.OnRespawn += OnRespawn;
+            }
+
             EasingManager.Instance.OnEaseObjectRemove += OnEaseObjectRemove;
+        }
+
+        private void Update()
+        {
+            // Change the color in the main menu
+            if (player != null && player.InMainMenu)
+            {
+                _mainMenuCurrentColorPos += Time.deltaTime * mainMenuColorSpeed;
+
+                if (_mainMenuCurrentColorPos > 1)
+                {
+                    _mainMenuCurrentColorPos -= 1;
+                }
+
+                // Evaluate color on the gradient
+                Color newCol = mainMenuColorGradient.Evaluate(_mainMenuCurrentColorPos);
+
+                // Change all the colors to match the correct color
+                foreach (ColorType type in _colorTypeEnumArray)
+                {
+                    ChangeColor(type, newCol);
+                }
+            }
         }
 
         #region Scene Unloaded
@@ -275,11 +309,13 @@ namespace GD3D.Level
         /// </summary>
         public static MaterialColorData GetColorData(ColorType type)
         {
+            #if UNITY_EDITOR
             // Throw error if the given color type doesn't exist
             if (!Instance._colorDataDictionary.ContainsKey(type))
             {
                 throw new NullReferenceException($"The color type of \"{type}\" does not exist.");
             }
+            #endif
 
             // Return the color data
             return Instance._colorDataDictionary[type];
