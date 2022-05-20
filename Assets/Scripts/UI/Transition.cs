@@ -41,7 +41,7 @@ namespace GD3D.UI
 
             // Get components
             _img = GetComponent<Image>();
-
+            
             // Set alpha to 1
             Color color = _img.color;
             color.a = 1;
@@ -56,7 +56,11 @@ namespace GD3D.UI
             // Subscribe to events
             EasingManager.Instance.OnEaseObjectRemove += OnEaseObjectRemove;
 
-            TransitionOut();
+            // Wait a frame before doing the out animation
+            Helpers.TimerEndOfFrame(this, () =>
+            {
+                TransitionOut();
+            });
 
             // Subscribe to events (static edition)
             if (!s_subscribedToEvents)
@@ -88,13 +92,12 @@ namespace GD3D.UI
 
         /// <summary>
         /// Transitions to the main menu, which is scene index 0. <para/>
-        /// 
+        /// Also plays the quit to menu sound.
         /// </summary>
-        /// <returns></returns>
         /// <returns>The newly created <see cref="EaseObject"/>.</returns>
         public static EaseObject TransitionToMainMenu()
         {
-            EaseObject ease = TransitionToScene(0);
+            EaseObject ease = TransitionToScene((int)SceneIndex.mainMenu);
 
             // Reset timeScale on complete
             ease.SetOnComplete((obj) =>
@@ -116,9 +119,12 @@ namespace GD3D.UI
         {
             EaseObject ease = TransitionIn();
 
+            AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
+            operation.allowSceneActivation = false;
+
             ease.SetOnComplete((obj) =>
             {
-                SceneManager.LoadScene(sceneIndex);
+                operation.allowSceneActivation = true;
             });
 
             return ease;
@@ -163,6 +169,7 @@ namespace GD3D.UI
 
             // Create fade ease
             EaseObject ease = FadeToColor(color, Instance.fadeTime);
+            ease.SetUnscaled(false);
 
             // Set on complete to disable raycast target on complete
             ease.SetOnComplete((obj) => SetRaycastTarget(false));
@@ -206,6 +213,18 @@ namespace GD3D.UI
 
             // Return the easeObject
             return ease;
+        }
+
+        /// <summary>
+        /// Enum that represents the build index for each scene. <para/>
+        /// This is used so that changing a scene is as easy as changing a value in this enum.
+        /// </summary>
+        [System.Serializable]
+        public enum SceneIndex
+        {
+            mainMenu = 0,
+            levelSelect = 1,
+            iconKit = 2,
         }
     }
 }

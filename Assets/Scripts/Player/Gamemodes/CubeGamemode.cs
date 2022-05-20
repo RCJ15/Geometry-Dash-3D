@@ -27,6 +27,10 @@ namespace GD3D.Player
         [SerializeField] private ParticleSystem jumpParticles;
         [SerializeField] private ParticleSystem landParticles;
 
+        private ParticleSystemRenderer _slideParticlesRenderer;
+        private ParticleSystemRenderer _jumpParticlesRenderer;
+        private ParticleSystemRenderer _landParticlesRenderer;
+
         [SerializeField] private float mainMenuJumpTimerMin;
         [SerializeField] private float mainMenuJumpTimerMax;
         private float _mainMenuCurrentJumpTimer;
@@ -36,6 +40,11 @@ namespace GD3D.Player
         public override void Start()
         {
             base.Start();
+
+            // Get particle renderers
+            _slideParticlesRenderer = slideParticles.GetComponent<ParticleSystemRenderer>();
+            _jumpParticlesRenderer = jumpParticles.GetComponent<ParticleSystemRenderer>();
+            _landParticlesRenderer = landParticles.GetComponent<ParticleSystemRenderer>();
         }
 
         public override void OnEnable()
@@ -56,6 +65,13 @@ namespace GD3D.Player
             {
                 // Randomize the timer
                 _mainMenuCurrentJumpTimer = Random.Range(mainMenuJumpTimerMin, mainMenuJumpTimerMax);
+
+                // Correct the colors of the particle systems
+                Color col = Player.PlayerColor1;
+
+                MaterialColorer.UpdateRendererMaterials(_slideParticlesRenderer, col, true, true);
+                MaterialColorer.UpdateRendererMaterials(_jumpParticlesRenderer, col, true, true);
+                MaterialColorer.UpdateRendererMaterials(_landParticlesRenderer, col, true, true);
             }
         }
 

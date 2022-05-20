@@ -168,7 +168,11 @@ namespace GD3D.Player
         protected void IncreaseJumpCount()
         {
             PlayerMain.TimesJumped++;
-            SaveData.CurrentLevelData.totalJumps++;
+
+            if (SaveData.CurrentLevelData != null)
+            {
+                SaveData.CurrentLevelData.totalJumps++;
+            }
         }
 
         /// <summary>

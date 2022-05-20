@@ -20,5 +20,33 @@ namespace GD3D.UI
         {
 
         }
+
+        /// <summary>
+        /// Transitions to the given menu scene <paramref name="index"/>.
+        /// </summary>
+        public void GotoMenu(Transition.SceneIndex index)
+        {
+            // Don't transition if we are already transitioning
+            if (Transition.IsTransitioning)
+            {
+                return;
+            }
+
+            Transition.TransitionToScene((int)index);
+        }
+
+        /// <summary>
+        /// Transitions to the given scene <paramref name="index"/>.
+        /// </summary>
+        public void GotoScene(int index)
+        {
+            // Don't transition if we are already transitioning
+            if (Transition.IsTransitioning)
+            {
+                return;
+            }
+
+            Transition.TransitionToScene(index);
+        }
     }
 }

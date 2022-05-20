@@ -3647,12 +3647,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 616932281}
         m_TargetAssemblyTypeName: GD3D.UI.MainMenu, Assembly-CSharp
-        m_MethodName: GotoLevelSelect
-        m_Mode: 1
+        m_MethodName: GotoScene
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -3896,12 +3896,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 616932281}
         m_TargetAssemblyTypeName: GD3D.UI.MainMenu, Assembly-CSharp
-        m_MethodName: GotoIconKit
-        m_Mode: 1
+        m_MethodName: GotoScene
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 2
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -4543,68 +4543,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1559894757447640029}
   m_Mesh: {fileID: 2073000241}
---- !u!1001 &2368629855062384502
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 3191982578116417712}
-    m_Modifications:
-    - target: {fileID: 3853617047808597552, guid: 5ad2d1a7704110441929611164431c7e, type: 3}
-      propertyPath: m_Name
-      value: Level Data
-      objectReference: {fileID: 0}
-    - target: {fileID: 3853617047808597558, guid: 5ad2d1a7704110441929611164431c7e, type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3853617047808597558, guid: 5ad2d1a7704110441929611164431c7e, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3853617047808597558, guid: 5ad2d1a7704110441929611164431c7e, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3853617047808597558, guid: 5ad2d1a7704110441929611164431c7e, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3853617047808597558, guid: 5ad2d1a7704110441929611164431c7e, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3853617047808597558, guid: 5ad2d1a7704110441929611164431c7e, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3853617047808597558, guid: 5ad2d1a7704110441929611164431c7e, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3853617047808597558, guid: 5ad2d1a7704110441929611164431c7e, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3853617047808597558, guid: 5ad2d1a7704110441929611164431c7e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3853617047808597558, guid: 5ad2d1a7704110441929611164431c7e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3853617047808597558, guid: 5ad2d1a7704110441929611164431c7e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 5ad2d1a7704110441929611164431c7e, type: 3}
---- !u!4 &2368629855062384503 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3853617047808597558, guid: 5ad2d1a7704110441929611164431c7e, type: 3}
-  m_PrefabInstance: {fileID: 2368629855062384502}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3191982578116417712
 Transform:
   m_ObjectHideFlags: 0
@@ -4617,7 +4555,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3650762368419683576}
-  - {fileID: 2368629855062384503}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

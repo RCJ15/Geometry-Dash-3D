@@ -198,6 +198,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Menu 1 Small Bottom Piece
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 115
+        width: 1226
+        height: 142
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2280dcc377f7c29c0800000000000000
+      internalID: -3950642623012861918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []

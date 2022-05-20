@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4451044097416544735}
-  - component: {fileID: 4451044097416544733}
-  - component: {fileID: 4451044097416544734}
-  - component: {fileID: 4451044097416544732}
+  - component: {fileID: 3032022038747271768}
+  - component: {fileID: 8376046544496018746}
+  - component: {fileID: 7779329680471117103}
   m_Layer: 5
   m_Name: Transition
   m_TagString: Untagged
@@ -38,7 +38,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &4451044097416544733
+--- !u!222 &3032022038747271768
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -46,7 +46,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4451044097416544728}
   m_CullTransparentMesh: 1
---- !u!114 &4451044097416544734
+--- !u!114 &8376046544496018746
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -76,7 +76,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4451044097416544732
+--- !u!114 &7779329680471117103
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

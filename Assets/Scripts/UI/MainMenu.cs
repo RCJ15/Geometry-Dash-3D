@@ -41,9 +41,9 @@ namespace GD3D.UI
         private static extern void openWindow(string url);
 
         /// <summary>
-        /// Transitions to the level select scene.
+        /// Transitions to the given menu scene <paramref name="index"/>.
         /// </summary>
-        public void GotoLevelSelect()
+        public void GotoMenu(Transition.SceneIndex index)
         {
             // Don't transition if we are already transitioning
             if (Transition.IsTransitioning)
@@ -51,14 +51,13 @@ namespace GD3D.UI
                 return;
             }
 
-            // Hard coded >:(
-            Transition.TransitionToScene(1);
+            Transition.TransitionToScene((int)index);
         }
 
         /// <summary>
-        /// Transitions to the icon kit scene.
+        /// Transitions to the given scene <paramref name="index"/>.
         /// </summary>
-        public void GotoIconKit()
+        public void GotoScene(int index)
         {
             // Don't transition if we are already transitioning
             if (Transition.IsTransitioning)
@@ -66,8 +65,7 @@ namespace GD3D.UI
                 return;
             }
 
-            // Hard coded >:(
-            Transition.TransitionToScene(2);
+            Transition.TransitionToScene(index);
         }
     }
 }
