@@ -39,6 +39,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -568,6 +569,28 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      Icon Kit Info: -2631341796474187803
+      Icon Kit Ball: 7710817599322067786
+      Icon Kit Wave: -5498822416554596365
+      Icon Kit Robot Selected: 1105533394606302129
+      Icon Kit Trail Selected: 3520500944809075733
+      Icon Kit Wave Selected: -6365496187228846782
+      Icon Kit Lock: -2305508448409152319
+      Icon Kit Cube Selected: -2286898304707788928
+      Icon Kit Ship Selected: 3935886971128037362
+      Icon Kit Spider Selected: 3307860777396981852
+      Icon Kit Death Effect Selected: -5603577633917251688
+      Icon Kit Spider: 3452193238593740756
+      Icon Kit Selected: 1552383816935906583
+      Icon Kit Ball Selected: -833356165823032283
+      Icon Kit Trail: 3546651307297083826
+      Icon Kit Robot: 5684880130474976867
+      Icon Kit Death Effect: 3947753033068711379
+      Icon Kit Cube: -6039725080185068879
+      Icon Kit Ship: -21347551386067121
+      Icon Kit UFO: -1480135470634559407
+      Icon Kit UFO Selected: -1680683379495993271
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

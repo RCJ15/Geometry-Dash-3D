@@ -24,6 +24,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -658,6 +659,33 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      Extreme Demon Difficulty: -5325676030462969810
+      Easy Demon Difficulty: -5585297127755453835
+      Easy Demon Difficulty Text: -2584449245744970064
+      Hard Demon Difficulty Text: -6592268696585427689
+      Medium Demon Difficulty: 1738633464881353337
+      Demon Difficulty: -8245736143259102749
+      Harder Difficulty: -5146156390636262232
+      Insane Demon Difficulty: 234449434018040553
+      Demon Difficulty Text: -7417360188573944654
+      Easy Difficulty: 7526285096809392283
+      Harder Difficulty Text: -1253886149906062295
+      Hard Difficulty: -8954138288280497320
+      Auto Difficulty Text: -3085810849566042848
+      Extreme Demon Difficulty Text: -7872424731421034754
+      Easy Difficulty Text: 3412730183171973413
+      Normal Difficulty Text: -2520559402539463984
+      Insane Difficulty: 7205671841419102823
+      NA Difficulty Text: 3907917234065981542
+      Normal Difficulty: -8947626105328338489
+      Insane Demon Difficulty Text: -6834928638082479298
+      Hard Demon Difficulty: 7992830659811164010
+      Hard Difficulty Text: -4272897395297171364
+      NA Difficulty: -2416256445244749645
+      Medium Difficulty Text: 4276160288332019816
+      Auto Difficulty: -3068024349455782146
+      Insane Difficulty Text: 56330518832496309
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

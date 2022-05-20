@@ -39,6 +39,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -232,6 +233,12 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      Main Menu Settings Button: 6076912941709590522
+      Main Menu Achievements Button: 5621224989930603618
+      Main Menu Quit Button: -6295128720306898382
+      Main Menu Newgrounds Button: 5991905433260383566
+      Main Menu Stats Button: -5715927648038490491
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
