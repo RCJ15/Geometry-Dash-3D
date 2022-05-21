@@ -16,11 +16,11 @@ If you know what causes the bug, then please describe how you can replicate it. 
 **Expected Behavior**
 Describe what you think should happen instead when this bug occurs.
 
-**Screenshots**
-Please send a screenshot of the bug in action. If you do not know how to take a screenshot and have a windows computer, then press "Windows Button + Shift + S" in order to open the Snipping Tool overlay. From then you can take the screenshot.
+**Screenshot or video**
+If you can and know how to, then also attaching a screenshot or video of the bug in action would be very appreciated.
 
 **Platform**
-Also specify which platform you play on. This will help in understanding if this only happens on certain platforms. Like: Mac or Linux (cuz I have a windows)
+Also specify which platform you play on. This will help in understanding if this only happens on certain platforms. Like: Mac or Linux (since I have a windows)
 Maybe also put in specs for your PC if it seems to be a bug due to the performance or something.
 
 **Extra Info I Should Know About**
