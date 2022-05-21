@@ -13,7 +13,8 @@ namespace GD3D.UI
 
         private void Start()
         {
-
+            // Set the last active menu scene index
+            MenuData.LastActiveMenuSceneIndex = (int)Transition.SceneIndex.levelSelect;
         }
 
         private void Update()

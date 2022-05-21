@@ -41,7 +41,7 @@ namespace GD3D.Audio
         }
 
         /// <summary>
-        /// Stops the currently playing instance-
+        /// Stops the currently playing instance.
         /// </summary>
         public static void StopInstance()
         {

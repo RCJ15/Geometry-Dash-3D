@@ -64,7 +64,18 @@ namespace GD3D.Easing
 
             Value = mappedValue;
 
-            OnUpdate?.Invoke(this);
+            try
+            {
+                OnUpdate?.Invoke(this);
+            }
+            catch (Exception)
+            {
+#if UNITY_EDITOR
+                throw;
+#else
+                Remove();
+#endif
+            }
 
             // Detect if time has reached the target time (or reached 0 if played in reverse)
             if ((Time >= TargetTime && !Reverse) || (Time <= 0 && Reverse))
@@ -106,7 +117,7 @@ namespace GD3D.Easing
             return scaledValue;
         }
 
-        #region Ease States (Saving and loading)
+#region Ease States (Saving and loading)
         /// <summary>
         /// Saves the current state of this <see cref="EaseObject"/> and converts it into a <see cref="EaseState"/>.
         /// </summary>
@@ -143,9 +154,9 @@ namespace GD3D.Easing
 
             return this;
         }
-        #endregion
+#endregion
 
-        #region Constructors
+#region Constructors
         /// <summary>
         /// Sets the id for this object and adds this <see cref="EaseObject"/> to the <see cref="EasingManager"/>.
         /// </summary>
@@ -254,9 +265,9 @@ namespace GD3D.Easing
 
             Initialize();
         }
-        #endregion
+#endregion
 
-        #region Methods
+#region Methods
         /// <summary>
         /// Resets time and value back to their starting values. <para/>
         /// So this is essentially a replay.
@@ -282,7 +293,7 @@ namespace GD3D.Easing
             return this;
         }
 
-        #region Setting Methods
+#region Setting Methods
         /// <summary>
         /// Sets <see cref="Active"/> to <paramref name="active"/>.
         /// </summary>
@@ -339,7 +350,7 @@ namespace GD3D.Easing
             return this;
         }
 
-        #region Setting Ease Data
+#region Setting Ease Data
         /// <summary>
         /// Sets <see cref="EaseData"/> to <paramref name="easeData"/>.
         /// </summary>
@@ -372,9 +383,9 @@ namespace GD3D.Easing
 
             return this;
         }
-        #endregion
+#endregion
 
-        #region Setting Time
+#region Setting Time
         /// <summary>
         /// Sets <see cref="Time"/> to <paramref name="time"/>.
         /// </summary>
@@ -396,9 +407,9 @@ namespace GD3D.Easing
 
             return this;
         }
-        #endregion
+#endregion
 
-        #region Setting Value
+#region Setting Value
         /// <summary>
         /// Sets <see cref="Value"/> to <paramref name="value"/>.
         /// </summary>
@@ -443,9 +454,9 @@ namespace GD3D.Easing
 
             return this;
         }
-        #endregion
+#endregion
 
-        #region Setting Actions
+#region Setting Actions
         /// <summary>
         /// Subscribes the given <paramref name="event"/> to <see cref="OnUpdate"/>.
         /// </summary>
@@ -471,11 +482,11 @@ namespace GD3D.Easing
 
             return this;
         }
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
         /// <summary>
         /// An enum that determines what an <see cref="EaseObject"/> will do when completed.
@@ -510,7 +521,7 @@ namespace GD3D.Easing
     [Serializable]
     public struct EaseState
     {
-        #region Default Value
+#region Default Value
         // I wish we could just set the defaut values of the individual properties and not get an error :(
         public static readonly EaseState defaultValue = new EaseState()
         {
@@ -525,7 +536,7 @@ namespace GD3D.Easing
             StartValue = 0,
             TargetValue = 1,
         };
-        #endregion
+#endregion
 
         [Header("Main Settings")]
         public bool Active;

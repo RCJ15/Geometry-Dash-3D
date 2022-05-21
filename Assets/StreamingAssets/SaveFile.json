@@ -9,15 +9,28 @@
         {
             "name": "This is a very cool level",
             "completedLevel": false,
-            "normalPercent": 0.0,
+            "normalPercent": 0.020499087870121003,
             "practicePercent": 0.0,
             "gottenCoins": [
                 false,
                 false,
                 false
             ],
-            "totalAttempts": 0,
-            "totalJumps": 48
+            "totalAttempts": 1,
+            "totalJumps": 87
+        },
+        {
+            "name": "Stereo Madness",
+            "completedLevel": false,
+            "normalPercent": 0.025335952639579774,
+            "practicePercent": 0.0,
+            "gottenCoins": [
+                false,
+                false,
+                false
+            ],
+            "totalAttempts": 1,
+            "totalJumps": 7
         }
     ]
 }

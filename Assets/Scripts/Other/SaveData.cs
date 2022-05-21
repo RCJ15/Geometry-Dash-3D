@@ -59,6 +59,14 @@ namespace GD3D
 
         private void Start()
         {
+
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode loadMode)
+        {
+            // Load when the scene is loaded
+            Load();
+
             // Get the level data instance
             LevelData levelData = LevelData.Instance;
 
@@ -67,12 +75,6 @@ namespace GD3D
                 // Get the level data for this level using the level name and cache it in a static variable so any script can reach it
                 CurrentLevelData = GetLevelData(levelData.LevelName);
             }
-        }
-
-        private void OnSceneLoaded(Scene scene, LoadSceneMode loadMode)
-        {
-            // Load when the scene is loaded
-            Load();
         }
 
         private static void OnSceneUnloaded(Scene scene)

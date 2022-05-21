@@ -59,13 +59,13 @@ namespace GD3D.Easing
         private void Update()
         {
             // Remove all ease objects in the easeObjectsToRemove queue
-            for (; _easeObjectsToRemove.Count > 0; )
+            while (_easeObjectsToRemove.Count > 0)
             {
                 _easeObjects.Remove(_easeObjectsToRemove.Dequeue());
             }
 
             // Add all ease objects in the _easeObjectsToAdd queue
-            for (; _easeObjectsToAdd.Count > 0;)
+            while (_easeObjectsToAdd.Count > 0)
             {
                 EaseObject obj = _easeObjectsToAdd.Dequeue();
 

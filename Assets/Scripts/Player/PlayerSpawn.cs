@@ -183,7 +183,7 @@ namespace GD3D.Player
         /// </summary>
         public void QuitToMenu()
         {
-            Transition.TransitionToMainMenu();
+            Transition.TransitionToLastActiveMenu();
         }
         #endregion
 

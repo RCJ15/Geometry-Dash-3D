@@ -60,7 +60,7 @@ namespace GD3D.UI
             Helpers.TimerEndOfFrame(this, () =>
             {
                 TransitionOut();
-            });
+            }, true);
 
             // Subscribe to events (static edition)
             if (!s_subscribedToEvents)
@@ -91,13 +91,13 @@ namespace GD3D.UI
         }
 
         /// <summary>
-        /// Transitions to the main menu, which is scene index 0. <para/>
+        /// Transitions to the last active menu scene. <para/>
         /// Also plays the quit to menu sound.
         /// </summary>
         /// <returns>The newly created <see cref="EaseObject"/>.</returns>
-        public static EaseObject TransitionToMainMenu()
+        public static EaseObject TransitionToLastActiveMenu()
         {
-            EaseObject ease = TransitionToScene((int)SceneIndex.mainMenu);
+            EaseObject ease = TransitionToScene(MenuData.LastActiveMenuSceneIndex);
 
             // Reset timeScale on complete
             ease.SetOnComplete((obj) =>
@@ -119,9 +119,11 @@ namespace GD3D.UI
         {
             EaseObject ease = TransitionIn();
 
+            // Load the scene asyncronously
             AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
             operation.allowSceneActivation = false;
 
+            // Only allow the scene to load when the transition is finished
             ease.SetOnComplete((obj) =>
             {
                 operation.allowSceneActivation = true;

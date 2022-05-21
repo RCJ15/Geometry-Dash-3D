@@ -10,11 +10,10 @@ namespace GD3D.UI
     /// </summary>
     public class MainMenu : MonoBehaviour
     {
-        
-
         private void Start()
         {
-        
+            // Set the last active menu scene index
+            MenuData.LastActiveMenuSceneIndex = (int)Transition.SceneIndex.mainMenu;
         }
 
         private void Update()
@@ -29,7 +28,7 @@ namespace GD3D.UI
         {
             if (Application.platform == RuntimePlatform.WebGLPlayer)
             {
-                openWindow(url);
+                OpenWindow(url);
             }
             else
             {
@@ -37,8 +36,9 @@ namespace GD3D.UI
             }
         }
 
+        // Need to use a special dll and jslib file for this to work properly
         [DllImport("__Internal")]
-        private static extern void openWindow(string url);
+        private static extern void OpenWindow(string url);
 
         /// <summary>
         /// Transitions to the given menu scene <paramref name="index"/>.

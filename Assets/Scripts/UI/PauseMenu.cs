@@ -261,7 +261,7 @@ namespace GD3D.UI
         /// </summary>
         public void QuitToMenu()
         {
-            Transition.TransitionToMainMenu();
+            Transition.TransitionToLastActiveMenu();
         }
 
         #region Toggles
