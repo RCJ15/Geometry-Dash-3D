@@ -42,7 +42,7 @@ namespace GD3D.Player
                 Key.NewKeys(GamepadKey.LeftStickRight, GamepadKey.DpadRight)),
 
             //-- Other
-            new Key("Pause",
+            new Key("Escape",
                 Key.NewKeys(KeyboardKey.Escape),
                 Key.NewKeys(GamepadKey.Start),
                 3),

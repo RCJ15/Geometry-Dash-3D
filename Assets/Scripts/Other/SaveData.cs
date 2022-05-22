@@ -95,6 +95,12 @@ namespace GD3D
         /// </summary>
         public static void Save()
         {
+            // Return if we are in WebGL since saving files is not allowed there
+            if (Application.platform == RuntimePlatform.WebGLPlayer)
+            {
+                return;
+            }
+
             // Convert save file to json
             string jsonText = JsonUtility.ToJson(SaveFile, true);
 
@@ -107,6 +113,12 @@ namespace GD3D
         /// </summary>
         public static void Load()
         {
+            // Return if we are in WebGL since loading files is not allowed there
+            if (Application.platform == RuntimePlatform.WebGLPlayer)
+            {
+                return;
+            }
+
             // Return if the file doesn't exist
             if (!File.Exists(_saveFilePath))
             {

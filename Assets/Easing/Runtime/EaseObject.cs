@@ -71,10 +71,9 @@ namespace GD3D.Easing
             catch (Exception)
             {
 #if UNITY_EDITOR
-                throw;
-#else
-                Remove();
+                Debug.LogError("An error happened whilst trying to execute update on a EaseObject. This probably happened because you left the scene whilst an object was still being eased.");
 #endif
+                Remove();
             }
 
             // Detect if time has reached the target time (or reached 0 if played in reverse)

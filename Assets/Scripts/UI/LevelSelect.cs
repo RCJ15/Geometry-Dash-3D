@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using GD3D.Level;
 using GD3D.Easing;
+using GD3D.CustomInput;
 using TMPro;
 
 namespace GD3D.UI
@@ -28,9 +29,10 @@ namespace GD3D.UI
         private Image[] _dots;
 
         [Header("Scrolling")]
-        [SerializeField] private HorizontalLayoutGroup layoutGroup;
         [SerializeField] private EaseSettings scrollEase;
         [SerializeField] private float minimumMouseMoveDistance;
+        private Transform[] _levelTransforms;
+        private int _length;
 
         [Header("Level Stats Menu")]
         [SerializeField] private Transform levelStatsMenu;
@@ -38,6 +40,7 @@ namespace GD3D.UI
         private Color _darknessOverlayActiveColor;
 
         [Space]
+        [SerializeField] private GameObject statsScreen;
         [SerializeField] private TMP_Text levelStatsNameText;
         [SerializeField] private TMP_Text totalAttemptsText;
         [SerializeField] private TMP_Text totalJumpsText;
@@ -47,15 +50,22 @@ namespace GD3D.UI
         [Space]
         [SerializeField] private EaseSettings levelStatsEase;
 
+        [Header("Coming Soon Screen")]
+        [SerializeField] private GameObject comingSoonScreen;
+        [SerializeField] private Color comingSoonBackgroundColor;
+
+        [Space]
+        [SerializeField] private GameObject comingSoonText;
+
         private long? _currentLevelStatsMenuEaseID = null;
 
         private static int s_scrollIndex;
         private int _oldScrollIndex;
 
         private float _scaleFactor;
-        private float _padding;
 
-        private float _realLeftPadding;
+        private float _levelOffset;
+
         private float _oldMouseX;
         private Vector2? _pressPoint = null;
 
@@ -65,8 +75,12 @@ namespace GD3D.UI
 
         private long? _currentDarknessOverlayEaseID = null;
 
+        private Key _quitKey;
+
         private void Start()
         {
+            _levelOffset = GetScrollOffsetPos();
+
             // Set the level color to the first levels color
             Color col = levels[s_scrollIndex].LevelBackgroundColor;
             LevelColors.ChangeColor(LevelColors.ColorType.background, col);
@@ -75,53 +89,64 @@ namespace GD3D.UI
             // Get the canvas so we can use the scale factor
             Canvas canvas = GetComponentInParent<Canvas>();
             _scaleFactor = canvas.scaleFactor;
-
-            // Calculate the needed units for the horizontal layout group
-            float width = ((RectTransform)levelTemplate.transform).rect.width;
-            _padding = Screen.width / 2 / _scaleFactor - width / 2;
-
-            _realLeftPadding = GetScrollPos();
-            layoutGroup.spacing = _padding * 2;
             
             // Cache the transform for later use
             Transform levelTransform = levelTemplate.transform;
             Transform dotTransform = dotTemplate.transform;
 
-            // Create dots array which we will fill later
-            _dots = new Image[levels.Length];
+            // Create new arrays which we will fill later
+            _dots = new Image[levels.Length + 1];
+            _levelTransforms = new Transform[levels.Length + 1];
 
             RectTransform dotRect = (RectTransform)dotTransform;
             float spacePerDot = (dotRect.rect.width + dotSpacing) * _scaleFactor;
-            float totalSize = spacePerDot * (float)(_dots.Length - 1);
+            float totalDotSize = spacePerDot * (float)(_dots.Length - 1);
+
+            _length = levels.Length + 1;
 
             // Clone multiple copies of the level object to populate the level select
-            int i = 0;
-            foreach (LevelData levelData in levels)
+            for (int i = 0; i < _length; i++)
             {
-                // Create a new level
-                LevelSelectOption newLevel = Instantiate(levelTemplate, levelTransform.position, levelTransform.rotation, levelTransform.parent).GetComponent<LevelSelectOption>();
+                // Create a new level panel
+                if (i < levels.Length)
+                {
+                    // Get the level data
+                    LevelData levelData = levels[i];
 
-                newLevel.gameObject.name = levelData.LevelName;
+                    // Create a new level
+                    Vector3 levelPos = levelTransform.position;
+                    levelPos.x = GetScrollPos(i);
 
-                // Set the data for the level
-                newLevel.LevelData = levelData;
+                    LevelSelectOption newLevel = Instantiate(levelTemplate, levelPos, levelTransform.rotation, levelTransform.parent).GetComponent<LevelSelectOption>();
+                    _levelTransforms[i] = newLevel.transform;
+
+                    newLevel.gameObject.name = levelData.LevelName;
+
+                    // Set the data for the level
+                    newLevel.LevelData = levelData;
+                }
+                // Set the coming soon screen if we are out of range
+                else
+                {
+                    Vector3 levelPos = levelTransform.position;
+                    levelPos.x = GetScrollPos(i);
+
+                    comingSoonScreen.transform.position = levelPos;
+
+                    _levelTransforms[i] = comingSoonScreen.transform;
+                }
 
                 // Also create a dot for the level
-                Image newDot = Instantiate(dotTemplate, dotTransform.position, dotTransform.rotation, dotTransform.parent).GetComponent<Image>();
-                
-                newDot.gameObject.name = $"{newLevel.gameObject.name} Dot";
-                
+                Vector3 dotPos = dotTransform.position;
+
+                dotPos.x = spacePerDot * (float)i + (((float)Screen.width / 2f) - (totalDotSize / 2));
+
+                Image newDot = Instantiate(dotTemplate, dotPos, dotTransform.rotation, dotTransform.parent).GetComponent<Image>();
+
+                newDot.gameObject.name = $"Dot ({(i + 1)})";
+
                 newDot.color = dotInactiveColor;
                 _dots[i] = newDot;
-
-                // Set position
-                Vector3 pos = dotTransform.position;
-
-                pos.x = spacePerDot * (float)i + (((float)Screen.width / 2f) - (totalSize / 2));
-                
-                newDot.transform.position = pos;
-
-                i++;
             }
 
             // Set the active dot
@@ -146,6 +171,9 @@ namespace GD3D.UI
 
             // Set the last active menu scene index
             MenuData.LastActiveMenuSceneIndex = (int)Transition.SceneIndex.levelSelect;
+
+            // Get the quit key
+            _quitKey = Player.PlayerInput.GetKey("Escape");
         }
 
         private void Update()
@@ -170,9 +198,10 @@ namespace GD3D.UI
                 if (_outOfDistance)
                 {
                     // Move the padding by the screen mouse delta divided by the scale factor
-                    _realLeftPadding += (Input.mousePosition.x - _oldMouseX) / _scaleFactor;
+                    _levelOffset += (Input.mousePosition.x - _oldMouseX) / _scaleFactor;
 
-                    s_scrollIndex = Mathf.RoundToInt((_realLeftPadding - _padding) / -layoutGroup.spacing / 2.5f);
+                    // Set the scroll index by converting the level offset into an index integer
+                    s_scrollIndex = Mathf.RoundToInt(_levelOffset / -(float)Screen.width);
                     UpdateScrollIndex(0);
                 }
             }
@@ -202,14 +231,25 @@ namespace GD3D.UI
                 _pressPoint = null;
             }
 
-            // Update padding
-            if (layoutGroup.padding.left != (int)_realLeftPadding)
+            // Update position
+            for (int i = 0; i < _levelTransforms.Length; i++)
             {
-                layoutGroup.padding.left = (int)_realLeftPadding;
-                layoutGroup.SetLayoutHorizontal();
+                Transform level = _levelTransforms[i];
+
+                Vector3 pos = level.position;
+
+                pos.x = GetScrollPos(i) + _levelOffset;
+
+                level.position = pos;
             }
 
             _oldMouseX = Input.mousePosition.x;
+
+            // Change the scene to the main menu if the quit key is pressed down
+            if (!Transition.IsTransitioning && _quitKey.Pressed(PressMode.down))
+            {
+                GotoMenu(Transition.SceneIndex.mainMenu);
+            }
         }
 
         /// <summary>
@@ -240,7 +280,15 @@ namespace GD3D.UI
             s_scrollIndex += amount;
 
             // Clamp the scroll index between 0 and the levels length so it doesn't go out of range
-            s_scrollIndex = Mathf.Clamp(s_scrollIndex, 0, levels.Length - 1);
+            if (s_scrollIndex < 0)
+            {
+                s_scrollIndex += _length;
+            }
+            else if (s_scrollIndex > _length - 1)
+            {
+                s_scrollIndex -= _length;
+            }
+            //s_scrollIndex = Mathf.Clamp(s_scrollIndex, 0, levels.Length - 1);
 
             // Deactivate the currently active dot and set the new active dot
             _activeDot.color = dotInactiveColor;
@@ -248,7 +296,8 @@ namespace GD3D.UI
             _activeDot = _dots[s_scrollIndex];
             _activeDot.color = _dotActiveColor;
 
-            Color col = levels[s_scrollIndex].LevelBackgroundColor;
+            Color col = s_scrollIndex < _length - 1 ? levels[s_scrollIndex].LevelBackgroundColor : comingSoonBackgroundColor;
+
             LevelColors.AddEase(LevelColors.ColorType.background, col, new EaseObject(0.3f));
             LevelColors.AddEase(LevelColors.ColorType.ground, col, new EaseObject(0.3f));
         }
@@ -265,21 +314,26 @@ namespace GD3D.UI
             EaseObject easeObj = scrollEase.CreateEase();
 
             // Set the OnUpdate event
-            float startValue = _realLeftPadding;
-            float targetValue = GetScrollPos();
+            float startValue = _levelOffset;
+            float targetValue = GetScrollOffsetPos();
 
             easeObj.OnUpdate += (obj) =>
             {
-                _realLeftPadding = obj.GetValue(startValue, targetValue);
+                _levelOffset = obj.GetValue(startValue, targetValue);
             };
             
             // Set the ID
             _currentScrollEaseID = easeObj.ID;
         }
 
-        private float GetScrollPos()
+        private float GetScrollOffsetPos()
         {
-            return _padding * -((float)s_scrollIndex * 5f) + _padding;
+            return -GetScrollPos(s_scrollIndex) + (Screen.width / 2f);
+        }
+
+        private float GetScrollPos(int i)
+        {
+            return ((float)Screen.width / 2f) + ((float)Screen.width * (float)i);
         }
 
         /// <summary>
@@ -299,31 +353,50 @@ namespace GD3D.UI
         /// </summary>
         public void OpenLevelStats()
         {
-            // Update the level stats screen with data from the JSON save file
-            SaveFile.LevelSaveData levelSave = null;
-            string levelName = levels[s_scrollIndex].LevelName;
-            levelSave = SaveData.SaveFile.LevelData.FirstOrDefault((levelData) => levelData.name == levelName);
-
-            // Set the name
-            levelStatsNameText.text = levelName;
-
-            // Set to default if level save is null
-            if (levelSave == null)
+            // Update the level stats screen with data from the JSON save file if we are in range
+            if (s_scrollIndex < _length - 1)
             {
-                totalAttemptsText.text = "Total Attempts<color=white>: 0";
-                totalJumpsText.text = "Total Jumps<color=white>: 0";
+                SaveFile.LevelSaveData levelSave = null;
+                string levelName = levels[s_scrollIndex].LevelName;
+                levelSave = SaveData.SaveFile.LevelData.FirstOrDefault((levelData) => levelData.name == levelName);
 
-                normalPercentText.text = "Normal<color=white>: 0%";
-                practicePercentText.text = "Practice<color=white>: 0%";
+                // Set the name
+                levelStatsNameText.text = levelName;
+
+                // Enable all the stats screen so we can see the stats
+                statsScreen.SetActive(true);
+
+                // Also disable the coming soon text
+                comingSoonText.SetActive(false);
+
+                // Set to default if level save is null
+                if (levelSave == null)
+                {
+                    totalAttemptsText.text = "Total Attempts<color=white>: 0";
+                    totalJumpsText.text = "Total Jumps<color=white>: 0";
+
+                    normalPercentText.text = "Normal<color=white>: 0%";
+                    practicePercentText.text = "Practice<color=white>: 0%";
+                }
+                else
+                {
+                    totalAttemptsText.text = $"Total Attempts<color=white>: {levelSave.totalAttempts}";
+                    totalJumpsText.text = $"Total Jumps<color=white>: {levelSave.totalJumps}";
+
+                    normalPercentText.text = $"Normal<color=white>: {ProgressBar.ToPercent(levelSave.normalPercent)}";
+                    practicePercentText.text = $"Practice<color=white>: {ProgressBar.ToPercent(levelSave.practicePercent)}";
+                }
             }
+            // If we are out of range, then we can assume we are at the coming soon screen, so show that text
             else
             {
-                totalAttemptsText.text = $"Total Attempts<color=white>: {levelSave.totalAttempts}";
-                totalJumpsText.text = $"Total Jumps<color=white>: {levelSave.totalJumps}";
+                // Disable the stats screen so we won't see the stats
+                statsScreen.SetActive(false);
 
-                normalPercentText.text = $"Normal<color=white>: {ProgressBar.ToPercent(levelSave.normalPercent)}";
-                practicePercentText.text = $"Practice<color=white>: {ProgressBar.ToPercent(levelSave.practicePercent)}";
+                // Enable the coming soon text so we can see the text
+                comingSoonText.SetActive(true);
             }
+
 
             // Create ease object from the level stats ease
             EaseObject easeObj = levelStatsEase.CreateEase();

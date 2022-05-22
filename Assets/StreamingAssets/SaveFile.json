@@ -30,7 +30,72 @@
                 false
             ],
             "totalAttempts": 1,
-            "totalJumps": 7
+            "totalJumps": 20
+        },
+        {
+            "name": "Polargeist",
+            "completedLevel": false,
+            "normalPercent": 0.0,
+            "practicePercent": 0.0,
+            "gottenCoins": [
+                false,
+                false,
+                false
+            ],
+            "totalAttempts": 0,
+            "totalJumps": 12
+        },
+        {
+            "name": "Back On Track",
+            "completedLevel": false,
+            "normalPercent": 0.0,
+            "practicePercent": 0.0,
+            "gottenCoins": [
+                false,
+                false,
+                false
+            ],
+            "totalAttempts": 0,
+            "totalJumps": 4
+        },
+        {
+            "name": "Base After Base",
+            "completedLevel": false,
+            "normalPercent": 0.0,
+            "practicePercent": 0.0,
+            "gottenCoins": [
+                false,
+                false,
+                false
+            ],
+            "totalAttempts": 0,
+            "totalJumps": 2
+        },
+        {
+            "name": "Cant Let Go",
+            "completedLevel": false,
+            "normalPercent": 0.4637821614742279,
+            "practicePercent": 0.21524249017238618,
+            "gottenCoins": [
+                false,
+                false,
+                false
+            ],
+            "totalAttempts": 23,
+            "totalJumps": 112
+        },
+        {
+            "name": "Dry Out",
+            "completedLevel": false,
+            "normalPercent": 0.0,
+            "practicePercent": 0.0,
+            "gottenCoins": [
+                false,
+                false,
+                false
+            ],
+            "totalAttempts": 0,
+            "totalJumps": 0
         }
     ]
 }

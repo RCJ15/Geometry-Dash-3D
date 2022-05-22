@@ -17,4 +17,19 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Levels/Stereo Madness.unity
     guid: c39bf003c04d9c14e9bf1c2bccf85932
+  - enabled: 1
+    path: Assets/Scenes/Levels/Back On Track.unity
+    guid: 860aadc38e6f771498ce0d2b2a1e68a9
+  - enabled: 1
+    path: Assets/Scenes/Levels/Polargeist.unity
+    guid: fcf4a7ac2280e0e4ba7bdacd2e28519f
+  - enabled: 1
+    path: Assets/Scenes/Levels/Dry Out.unity
+    guid: c3983096ad2e23e4aa929f2781f73b98
+  - enabled: 1
+    path: Assets/Scenes/Levels/Base After Base.unity
+    guid: 19957514dc677b640885708bb2f31480
+  - enabled: 1
+    path: Assets/Scenes/Levels/Cant Let Go.unity
+    guid: 5fd62fc13f78c624e8ff14ffe9ee0643
   m_configObjects: {}

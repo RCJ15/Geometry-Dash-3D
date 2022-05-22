@@ -85,7 +85,7 @@ namespace GD3D.UI
             _player = PlayerMain.Instance;
 
             // Get pause key
-            _pauseKey = PlayerInput.GetKey("Pause");
+            _pauseKey = PlayerInput.GetKey("Escape");
 
             // Set static variables
             IsPaused = false;

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GD3D.CustomInput;
 
 namespace GD3D.UI
 {
@@ -9,17 +10,24 @@ namespace GD3D.UI
     /// </summary>
     public class IconKit : MonoBehaviour
     {
-
+        private Key _quitKey;
 
         private void Start()
         {
             // Set the last active menu scene index
             MenuData.LastActiveMenuSceneIndex = (int)Transition.SceneIndex.levelSelect;
+
+            // Get the quit key
+            _quitKey = Player.PlayerInput.GetKey("Escape");
         }
 
         private void Update()
         {
-
+            // Change the scene to the main menu if the quit key is pressed down
+            if (!Transition.IsTransitioning && _quitKey.Pressed(PressMode.down))
+            {
+                GotoMenu(Transition.SceneIndex.mainMenu);
+            }
         }
 
         /// <summary>

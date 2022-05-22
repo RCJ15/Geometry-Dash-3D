@@ -199,6 +199,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Itch.io Button
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 131
+        width: 125
+        height: 125
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2957e2b631e815741bdac3b6dd47a1f5
+      internalID: 1897320665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -210,9 +231,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
+      Social Media Icons_1: -1528600669
+      Social Media Icons_2: -948318455
+      Social Media Icons_4: 69170313
       Facebook Button: 7217988292822948261
       Twitter Button: -1746429452753859635
       Twitch Button: 322711742520081369
+      Itch.io Button: 1897320665
+      Social Media Icons_3: -1186142219
       Youtube Button: -7091870358182554209
   spritePackingTag: 
   pSDRemoveMatte: 0
