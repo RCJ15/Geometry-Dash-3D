@@ -56,6 +56,7 @@ namespace GD3D.UI
 
         [Space]
         [SerializeField] private GameObject comingSoonText;
+        private Transform _comingSoonStartScreen;
 
         private long? _currentLevelStatsMenuEaseID = null;
 
@@ -105,8 +106,12 @@ namespace GD3D.UI
             _length = levels.Length + 1;
 
             // Clone multiple copies of the level object to populate the level select
+            // Also create the coming soon screen that will be on the end of the level select screen
             for (int i = 0; i < _length; i++)
             {
+                Vector3 levelPos = levelTransform.position;
+                levelPos.x = GetScrollPos(i);
+
                 // Create a new level panel
                 if (i < levels.Length)
                 {
@@ -114,9 +119,6 @@ namespace GD3D.UI
                     LevelData levelData = levels[i];
 
                     // Create a new level
-                    Vector3 levelPos = levelTransform.position;
-                    levelPos.x = GetScrollPos(i);
-
                     LevelSelectOption newLevel = Instantiate(levelTemplate, levelPos, levelTransform.rotation, levelTransform.parent).GetComponent<LevelSelectOption>();
                     _levelTransforms[i] = newLevel.transform;
 
@@ -125,12 +127,9 @@ namespace GD3D.UI
                     // Set the data for the level
                     newLevel.LevelData = levelData;
                 }
-                // Set the coming soon screen if we are out of range
+                // Set the coming soon screen if we are out of range, this means that this screen will be the last object in the array
                 else
                 {
-                    Vector3 levelPos = levelTransform.position;
-                    levelPos.x = GetScrollPos(i);
-
                     comingSoonScreen.transform.position = levelPos;
 
                     _levelTransforms[i] = comingSoonScreen.transform;
@@ -149,15 +148,24 @@ namespace GD3D.UI
                 _dots[i] = newDot;
             }
 
-            // Set the active dot
+            // Set the active dot color
             _dotActiveColor = dotTemplate.GetComponent<Image>().color;
 
+            // Set which dot is active currently
             _activeDot = _dots[s_scrollIndex];
             _activeDot.color = _dotActiveColor;
 
             // Disable the templates so they won't do anything stupid
             levelTemplate.SetActive(false);
             dotTemplate.SetActive(false);
+
+            // Create a clone of the coming soon screen and place it at index -1
+            // This coming soon screen will be used so that we can infinitely loop around the coming soon screens seamlessly
+            Vector3 comingSoonPos = levelTransform.position;
+            comingSoonPos.x = GetScrollPos(-1);
+
+            GameObject comingSoonClone = Instantiate(comingSoonScreen, comingSoonPos, Quaternion.identity, comingSoonScreen.transform.parent);
+            _comingSoonStartScreen = comingSoonClone.transform;
 
             // Hide the level stats screen
             levelStatsMenu.localScale = Vector3.zero;
@@ -224,17 +232,18 @@ namespace GD3D.UI
                 }
                 else
                 {
-                    Scroll();
+                    Scroll(_oldScrollIndex, s_scrollIndex);
                 }
 
                 _outOfDistance = false;
                 _pressPoint = null;
             }
 
-            // Update position
-            for (int i = 0; i < _levelTransforms.Length; i++)
+            // Update position of all levels and the 2 coming soon screens
+            for (int i = -1; i < _levelTransforms.Length; i++)
             {
-                Transform level = _levelTransforms[i];
+                // First coming soon screen will be chosen if the index is -1
+                Transform level = i == -1 ? _comingSoonStartScreen : _levelTransforms[i];
 
                 Vector3 pos = level.position;
 
@@ -257,9 +266,11 @@ namespace GD3D.UI
         /// </summary>
         public void ScrollLeft()
         {
+            int oldIndex = s_scrollIndex;
+
             UpdateScrollIndex(-1);
 
-            Scroll();
+            Scroll(oldIndex, s_scrollIndex);
         }
 
         /// <summary>
@@ -267,9 +278,11 @@ namespace GD3D.UI
         /// </summary>
         public void ScrollRight()
         {
+            int oldIndex = s_scrollIndex;
+
             UpdateScrollIndex(1);
 
-            Scroll();
+            Scroll(oldIndex, s_scrollIndex);
         }
 
         /// <summary>
@@ -306,19 +319,41 @@ namespace GD3D.UI
         /// <summary>
         /// Will use <see cref="EaseObject"/> in order to scroll to a certain level using the scroll index.
         /// </summary>
-        private void Scroll()
+        private void Scroll(int oldIndex, int newIndex)
         {
             CancelScrollEasing();
+
+            // Determine if we are going to loop around or not by checking if we went from the last index to the first and vice versa
+            bool loopAround = (oldIndex == _length - 1 && newIndex == 0) || (oldIndex == 0 && newIndex == _length - 1);
+            int movingDirection = (oldIndex == _length - 1 && newIndex == 0) ? 1 : -1;
 
             // Create the ease object
             EaseObject easeObj = scrollEase.CreateEase();
 
             // Set the OnUpdate event
             float startValue = _levelOffset;
-            float targetValue = GetScrollOffsetPos();
+            float targetValue = GetScrollOffsetPos(loopAround ? oldIndex + movingDirection : newIndex);
 
             easeObj.OnUpdate += (obj) =>
             {
+                // Do special looping if we are going to loop around
+                if (loopAround)
+                {
+                    // Check how far we are in the operation
+                    float t = obj.GetValue(0, 1);
+
+                    // Check if we are more than halfway
+                    if (t > 0.5f)
+                    {
+                        // Set loop around to false so we don't loop around multiple times
+                        loopAround = false;
+
+                        // Teleport to the other end of the chain and set a new target direction to move towards
+                        startValue = GetScrollOffsetPos(newIndex - movingDirection);
+                        targetValue = GetScrollOffsetPos(newIndex);
+                    }
+                }
+
                 _levelOffset = obj.GetValue(startValue, targetValue);
             };
             
@@ -328,7 +363,12 @@ namespace GD3D.UI
 
         private float GetScrollOffsetPos()
         {
-            return -GetScrollPos(s_scrollIndex) + (Screen.width / 2f);
+            return GetScrollOffsetPos(s_scrollIndex);
+        }
+
+        private float GetScrollOffsetPos(int i)
+        {
+            return -GetScrollPos(i) + (Screen.width / 2f);
         }
 
         private float GetScrollPos(int i)
