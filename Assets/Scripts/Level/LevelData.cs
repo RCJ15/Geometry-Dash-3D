@@ -39,8 +39,8 @@ namespace GD3D.Level
             // We do thsi one frame later so that the save data won't be null since it's set in start
             Helpers.TimerEndOfFrame(this, () =>
             {
-                NormalPercent = levelData.normalPercent;
-                PracticePercent = levelData.practicePercent;
+                NormalPercent = levelData.NormalPercent;
+                PracticePercent = levelData.PracticePercent;
             });
 
             // Subscribe to events
@@ -88,8 +88,8 @@ namespace GD3D.Level
         private void SaveLevelData()
         {
             // Set the level data values
-            levelData.normalPercent = NormalPercent;
-            levelData.practicePercent = PracticePercent;
+            levelData.NormalPercent = NormalPercent;
+            levelData.PracticePercent = PracticePercent;
         }
     }
 }

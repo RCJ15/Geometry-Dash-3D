@@ -398,7 +398,7 @@ namespace GD3D.UI
             {
                 SaveFile.LevelSaveData levelSave = null;
                 string levelName = levels[s_scrollIndex].LevelName;
-                levelSave = SaveData.SaveFile.LevelData.FirstOrDefault((levelData) => levelData.name == levelName);
+                levelSave = SaveData.SaveFile.LevelData.FirstOrDefault((levelData) => levelData.Name == levelName);
 
                 // Set the name
                 levelStatsNameText.text = levelName;
@@ -420,11 +420,11 @@ namespace GD3D.UI
                 }
                 else
                 {
-                    totalAttemptsText.text = $"Total Attempts<color=white>: {levelSave.totalAttempts}";
-                    totalJumpsText.text = $"Total Jumps<color=white>: {levelSave.totalJumps}";
+                    totalAttemptsText.text = $"Total Attempts<color=white>: {levelSave.TotalAttempts}";
+                    totalJumpsText.text = $"Total Jumps<color=white>: {levelSave.TotalJumps}";
 
-                    normalPercentText.text = $"Normal<color=white>: {ProgressBar.ToPercent(levelSave.normalPercent)}";
-                    practicePercentText.text = $"Practice<color=white>: {ProgressBar.ToPercent(levelSave.practicePercent)}";
+                    normalPercentText.text = $"Normal<color=white>: {ProgressBar.ToPercent(levelSave.NormalPercent)}";
+                    practicePercentText.text = $"Practice<color=white>: {ProgressBar.ToPercent(levelSave.PracticePercent)}";
                 }
             }
             // If we are out of range, then we can assume we are at the coming soon screen, so show that text

@@ -324,6 +324,7 @@ namespace GD3D.Player
     /// <summary>
     /// An enum for the different player gamemodes
     /// </summary>
+    [Serializable]
     public enum Gamemode
     {
         /// <summary>

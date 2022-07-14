@@ -41,7 +41,7 @@ namespace GD3D.UI
 
             // Update the progress bars with data from the JSON save file
             SaveFile.LevelSaveData levelSave = null;
-            levelSave = SaveData.SaveFile.LevelData.FirstOrDefault((levelData) => levelData.name == _levelName);
+            levelSave = SaveData.SaveFile.LevelData.FirstOrDefault((levelData) => levelData.Name == _levelName);
 
             if (levelSave == null)
             {
@@ -53,11 +53,11 @@ namespace GD3D.UI
             }
             else
             {
-                normalProgressBar.normalizedValue = levelSave.normalPercent;
-                practiceProgressBar.normalizedValue = levelSave.practicePercent;
+                normalProgressBar.normalizedValue = levelSave.NormalPercent;
+                practiceProgressBar.normalizedValue = levelSave.PracticePercent;
 
-                normalProgressText.text = ProgressBar.ToPercent(levelSave.normalPercent);
-                practiceProgressText.text = ProgressBar.ToPercent(levelSave.practicePercent);
+                normalProgressText.text = ProgressBar.ToPercent(levelSave.NormalPercent);
+                practiceProgressText.text = ProgressBar.ToPercent(levelSave.PracticePercent);
             }
         }
 

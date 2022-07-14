@@ -30,6 +30,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Levels/Base After Base.unity
     guid: 19957514dc677b640885708bb2f31480
   - enabled: 1
+    path: Assets/Scenes/Level Template.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
     path: Assets/Scenes/Levels/Cant Let Go.unity
     guid: 5fd62fc13f78c624e8ff14ffe9ee0643
   m_configObjects: {}

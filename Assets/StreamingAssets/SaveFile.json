@@ -1,101 +1,32 @@
 {
+    "PlayerName": "Name",
+    "StarsCollected": 0,
+    "CoinsCollected": 0,
     "MusicVolume": 1.0,
     "SFXVolume": 1.0,
     "AutoRetryEnabled": true,
     "AutoCheckpointsEnabled": true,
     "ProgressBarEnabled": false,
     "ShowPercentEnabled": false,
-    "LevelData": [
+    "PlayerColor1": {
+        "r": 0.4784314036369324,
+        "g": 0.9686275124549866,
+        "b": 0.003921568859368563
+    },
+    "PlayerColor2": {
+        "r": 0.01568627916276455,
+        "g": 0.9529411792755127,
+        "b": 0.9686275124549866
+    },
+    "IconData": [
         {
-            "name": "This is a very cool level",
-            "completedLevel": false,
-            "normalPercent": 0.020499087870121003,
-            "practicePercent": 0.0,
-            "gottenCoins": [
-                false,
-                false,
-                false
-            ],
-            "totalAttempts": 1,
-            "totalJumps": 87
+            "Gamemode": 0,
+            "Index": 0
         },
         {
-            "name": "Stereo Madness",
-            "completedLevel": false,
-            "normalPercent": 0.025335952639579774,
-            "practicePercent": 0.0,
-            "gottenCoins": [
-                false,
-                false,
-                false
-            ],
-            "totalAttempts": 1,
-            "totalJumps": 20
-        },
-        {
-            "name": "Polargeist",
-            "completedLevel": false,
-            "normalPercent": 0.0,
-            "practicePercent": 0.0,
-            "gottenCoins": [
-                false,
-                false,
-                false
-            ],
-            "totalAttempts": 0,
-            "totalJumps": 12
-        },
-        {
-            "name": "Back On Track",
-            "completedLevel": false,
-            "normalPercent": 0.0,
-            "practicePercent": 0.0,
-            "gottenCoins": [
-                false,
-                false,
-                false
-            ],
-            "totalAttempts": 0,
-            "totalJumps": 4
-        },
-        {
-            "name": "Base After Base",
-            "completedLevel": false,
-            "normalPercent": 0.0,
-            "practicePercent": 0.0,
-            "gottenCoins": [
-                false,
-                false,
-                false
-            ],
-            "totalAttempts": 0,
-            "totalJumps": 2
-        },
-        {
-            "name": "Cant Let Go",
-            "completedLevel": false,
-            "normalPercent": 0.4637821614742279,
-            "practicePercent": 0.21524249017238618,
-            "gottenCoins": [
-                false,
-                false,
-                false
-            ],
-            "totalAttempts": 23,
-            "totalJumps": 112
-        },
-        {
-            "name": "Dry Out",
-            "completedLevel": false,
-            "normalPercent": 0.0,
-            "practicePercent": 0.0,
-            "gottenCoins": [
-                false,
-                false,
-                false
-            ],
-            "totalAttempts": 0,
-            "totalJumps": 0
+            "Gamemode": 1,
+            "Index": 0
         }
-    ]
+    ],
+    "LevelData": []
 }

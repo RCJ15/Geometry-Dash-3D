@@ -171,7 +171,7 @@ namespace GD3D.Player
 
             if (SaveData.CurrentLevelData != null)
             {
-                SaveData.CurrentLevelData.totalJumps++;
+                SaveData.CurrentLevelData.TotalJumps++;
             }
         }
 

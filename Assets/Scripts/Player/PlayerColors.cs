@@ -16,8 +16,8 @@ namespace GD3D.Player
         public Color Color1 = DefaultColor1;
         public Color Color2 = DefaultColor2;
 
-        private Color StartColor1;
-        private Color StartColor2;
+        private Color _startColor1;
+        private Color _startColor2;
 
         [SerializeField] private MaterialColorData[] materials;
 
@@ -35,12 +35,20 @@ namespace GD3D.Player
 
         public int GetMaterialIndex => 0;
 
+        public override void Awake()
+        {
+            base.Awake();
+
+            Color1 = SaveData.SaveFile.PlayerColor1;
+            Color2 = SaveData.SaveFile.PlayerColor2;
+
+            _startColor1 = Color1;
+            _startColor2 = Color2;
+        }
+
         public override void Start()
         {
             base.Start();
-
-            StartColor1 = Color1;
-            StartColor2 = Color2;
 
             UpdateMaterialColors(Color1, Color2);
 
@@ -49,8 +57,9 @@ namespace GD3D.Player
             {
                 player.Movement.OnMainMenuTeleport += () =>
                 {
-                    Color1 = Random.ColorHSV();
-                    Color2 = Random.ColorHSV();
+                    // Randomize colors every time we teleport
+                    Color1 = new Color(Random.value, Random.value, Random.value);
+                    Color2 = new Color(Random.value, Random.value, Random.value);
                     UpdateMaterialColors(Color1, Color2);
                 };
             }
@@ -92,8 +101,8 @@ namespace GD3D.Player
         private void OnApplicationQuit()
         {
             // Reset the colors to the start colors
-            Color1 = StartColor1;
-            Color2 = StartColor2;
+            Color1 = _startColor1;
+            Color2 = _startColor2;
 
             UpdateMaterialColors(Color1, Color2);
         }

@@ -238,7 +238,7 @@ namespace GD3D.Player
         {
             // Increase attempt count
             _currentAttempt++;
-            SaveData.CurrentLevelData.totalAttempts++;
+            SaveData.CurrentLevelData.TotalAttempts++;
 
             // Disable the mesh
             player.Mesh.ToggleCurrentMesh(false);

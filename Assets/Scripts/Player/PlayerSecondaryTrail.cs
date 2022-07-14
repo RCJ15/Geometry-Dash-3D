@@ -33,38 +33,40 @@ namespace GD3D.Player
         public void UpdateMesh(Mesh mesh, int mainMatIndex)
         {
             // Change mesh only if it's different
-            if (_meshFilter.mesh != mesh)
+            if (_meshFilter.mesh == mesh)
             {
-                _meshFilter.mesh = mesh;
+                return;
+            }
 
-                // Expand or shrink material size if the materials or index are different
-                if (mesh.subMeshCount != _meshRenderer.materials.Length || mainMatIndex != _materialColorer.GetMaterialIndex)
+            _meshFilter.mesh = mesh;
+
+            // Expand or shrink material size if the materials or index are different
+            if (mesh.subMeshCount != _meshRenderer.materials.Length || mainMatIndex != _materialColorer.GetMaterialIndex)
+            {
+                // Create a list of materials that we will fill later
+                List<Material> materials = new List<Material>();
+
+                for (int i = 0; i < mesh.subMeshCount; i++)
                 {
-                    // Create a list of materials that we will fill later
-                    List<Material> materials = new List<Material>();
-
-                    for (int i = 0; i < mesh.subMeshCount; i++)
+                    // Add regular material if this is the mainMatIndex
+                    if (i == mainMatIndex)
                     {
-                        // Add regular material if this is the mainMatIndex
-                        if (i == mainMatIndex)
-                        {
-                            materials.Add(regularMat);
-                        }
-                        // Add invisible material
-                        else
-                        {
-                            materials.Add(invisibleMat);
-                        }
+                        materials.Add(regularMat);
                     }
-
-                    // Set materials
-                    _meshRenderer.materials = materials.ToArray();
+                    // Add invisible material
+                    else
+                    {
+                        materials.Add(invisibleMat);
+                    }
                 }
 
-                // Set material index
-                _materialColorer.SetMaterialIndex = mainMatIndex;
-                _materialColorer.UpdateColors();
+                // Set materials
+                _meshRenderer.materials = materials.ToArray();
             }
+
+            // Set material index
+            _materialColorer.SetMaterialIndex = mainMatIndex;
+            _materialColorer.UpdateColors();
         }
     }
 }

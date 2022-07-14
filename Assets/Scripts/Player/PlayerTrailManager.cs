@@ -112,7 +112,8 @@ namespace GD3D.Player
                 };
             }
 
-            print("Reminder to use icon customization for this");
+            // Reminder to use icon customization for this
+            // Actually nvm customizing trails is a bit too much for this fangame
             PlayerTrail trailToCopy = trailCopyables[0];
 
             _pool = new ObjectPool<PlayerTrail>(trailToCopy, trailAmount, 
