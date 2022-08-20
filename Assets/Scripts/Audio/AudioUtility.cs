@@ -6,7 +6,7 @@ using UnityEngine;
 namespace UnityEditor.Audio
 {
 	/// <summary>
-	/// Class that has many methods for using some internal methods from the "UnityEditor.AudioUtil" class
+	/// Class that has many methods for using some internal methods from the "UnityEditor.AudioUtil" class. Only works in the UnityEditor
 	/// </summary>
 	public static class AudioUtility
 	{

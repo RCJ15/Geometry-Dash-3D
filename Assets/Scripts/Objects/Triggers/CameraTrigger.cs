@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GD3D.Camera;
+using GD3D.GDCamera;
 using GD3D.Easing;
+using GD3D.Level;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -15,20 +16,20 @@ namespace GD3D.Objects
     public class CameraTrigger : Trigger
     {
         [Header("Camera Settings")]
-        [SerializeField] private CameraTriggerMode mode;
+        [LevelSave] [SerializeField] private CameraTriggerMode mode;
 
-        [SerializeField] private Vector3 offset = new Vector3(6, 3.5f, -10);
-        [SerializeField] private Vector3 rotation = new Vector3(15, 0, 0);
+        [LevelSave] [SerializeField] private Vector3 offset = new Vector3(6, 3.5f, -10);
+        [LevelSave] [SerializeField] private Vector3 rotation = new Vector3(15, 0, 0);
         [Range(1, 179)]
-        [SerializeField] private float fov = 60;
+        [LevelSave] [SerializeField] private float fov = 60;
 
         [Space]
-        [SerializeField] private EaseSettings easeSettings = EaseSettings.defaultValue;
+        [LevelSave] [SerializeField] private EaseSettings easeSettings = EaseSettings.defaultValue;
 
         //-- References
         private CameraBehaviour _cam;
 
-        public override void Start()
+        protected override void Start()
         {
             base.Start();
 
@@ -36,7 +37,7 @@ namespace GD3D.Objects
             _cam = CameraBehaviour.Instance;
         }
 
-        public override void OnTriggered()
+        protected override void OnTriggered()
         {
             // Create a easing that will be used by the camera behaviour later
             EaseObject obj = easeSettings.CreateEase();

@@ -5,7 +5,7 @@ using GD3D.Player;
 using GD3D.Easing;
 using GD3D.Objects;
 using GD3D.Level;
-using GD3D.Camera;
+using GD3D.GDCamera;
 
 namespace GD3D
 {

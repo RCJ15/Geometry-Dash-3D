@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using GD3D.Player;
-using System.Runtime.Serialization;
+using GD3D.Level;
 
 namespace GD3D.Objects
 {
@@ -19,7 +19,7 @@ namespace GD3D.Objects
         private bool _isActivated = false;
 
         [Header("Base Portal Settings")]
-        [SerializeField] private bool multiTrigger;
+        [LevelSave] [SerializeField] private bool multiTrigger;
 
         [Space]
         [SerializeField] private Animator spawnEffect;

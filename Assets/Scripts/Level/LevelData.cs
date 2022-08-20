@@ -11,6 +11,15 @@ namespace GD3D.Level
         //-- Instance
         public static LevelData Instance;
 
+        /// <summary>
+        /// Returns true if we are in the level editor.
+        /// </summary>
+        public static bool InLevelEditor;
+        /// <summary>
+        /// Returns true if we are both in the level editor and are playtesting the level.
+        /// </summary>
+        public static bool InPlayMode;
+
         [Header("Data")]
         public string LevelName;
 

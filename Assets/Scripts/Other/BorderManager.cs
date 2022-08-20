@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GD3D.Camera;
+using GD3D.GDCamera;
 using GD3D.Level;
 using GD3D.Player;
 using GD3D.Easing;

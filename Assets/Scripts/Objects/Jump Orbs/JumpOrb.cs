@@ -4,6 +4,7 @@ using UnityEngine;
 using GD3D.Player;
 using GD3D.CustomInput;
 using GD3D.ObjectPooling;
+using GD3D.Level;
 
 namespace GD3D.Objects
 {
@@ -23,7 +24,7 @@ namespace GD3D.Objects
         private static bool s_doneStaticUpdate = false;
 
         [Header("Jump Orb Settings")]
-        [SerializeField] private bool multiTrigger;
+        [LevelSave] [SerializeField] private bool multiTrigger;
 
         private bool ButtonPressed => _player.KeyHold || _player.InputBuffer > 0;
 
@@ -253,6 +254,18 @@ namespace GD3D.Objects
                 // Call OnPressed method
                 OnPressed();
             }
+        }
+
+        /// <summary>
+        /// Contains data about a gamemodes velocity data
+        /// </summary>
+        [System.Serializable]
+        public class GamemodeVelocityData
+        {
+            public Gamemode Gamemode;
+
+            [Space]
+            public GamemodeSizedFloat VelocityData;
         }
     }
 }

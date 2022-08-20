@@ -3089,32 +3089,32 @@ MonoBehaviour:
     StartAwarded: 1
     DifficultyFace: {fileID: 7526285096809392283, guid: 7d638f403c332264681903179b6df5d1, type: 3}
     LevelBackgroundColor: {r: 0.0044923457, g: 0, b: 0.754717, a: 1}
-    LevelBuildIndex: 3
+    LevelBuildIndex: 4
   - LevelName: Back On Track
     StartAwarded: 2
     DifficultyFace: {fileID: 7526285096809392283, guid: 7d638f403c332264681903179b6df5d1, type: 3}
     LevelBackgroundColor: {r: 0.68414843, g: 0, b: 0.6886792, a: 1}
-    LevelBuildIndex: 4
+    LevelBuildIndex: 5
   - LevelName: Polargeist
     StartAwarded: 3
     DifficultyFace: {fileID: -8947626105328338489, guid: 7d638f403c332264681903179b6df5d1, type: 3}
     LevelBackgroundColor: {r: 0.7264151, g: 0, b: 0.35849053, a: 1}
-    LevelBuildIndex: 5
+    LevelBuildIndex: 6
   - LevelName: Dry Out
     StartAwarded: 4
     DifficultyFace: {fileID: -8947626105328338489, guid: 7d638f403c332264681903179b6df5d1, type: 3}
     LevelBackgroundColor: {r: 0.7264151, g: 0, b: 0.0047790282, a: 1}
-    LevelBuildIndex: 6
+    LevelBuildIndex: 7
   - LevelName: Base After Base
     StartAwarded: 5
     DifficultyFace: {fileID: -8954138288280497320, guid: 7d638f403c332264681903179b6df5d1, type: 3}
     LevelBackgroundColor: {r: 0.8207547, g: 0.40467766, b: 0, a: 1}
-    LevelBuildIndex: 7
+    LevelBuildIndex: 8
   - LevelName: Cant Let Go
     StartAwarded: 6
     DifficultyFace: {fileID: -8954138288280497320, guid: 7d638f403c332264681903179b6df5d1, type: 3}
     LevelBackgroundColor: {r: 0.6226415, g: 0.6226415, b: 0, a: 1}
-    LevelBuildIndex: 8
+    LevelBuildIndex: 9
   levelTemplate: {fileID: 654158913}
   dotTemplate: {fileID: 1192198879}
   dotInactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}

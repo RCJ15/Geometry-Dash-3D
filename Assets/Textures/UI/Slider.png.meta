@@ -123,7 +123,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 116
+        y: 112
         width: 840
         height: 44
       alignment: 0
@@ -144,7 +144,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 11
+        y: 7
         width: 105
         height: 105
       alignment: 0
@@ -165,7 +165,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 105
-        y: 11
+        y: 7
         width: 105
         height: 105
       alignment: 0
@@ -186,7 +186,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 211
-        y: 84
+        y: 80
         width: 128
         height: 32
       alignment: 0
@@ -207,7 +207,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 339
-        y: 84
+        y: 80
         width: 128
         height: 32
       alignment: 0
@@ -219,6 +219,27 @@ TextureImporter:
       bones: []
       spriteID: 107b19a2146b1ad90800000000000000
       internalID: -7088183947501127935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slider Outline Gold
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 156
+        width: 840
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4274ad2e56f85c4baacb6040fe223a6
+      internalID: 1218450320
       vertices: []
       indices: 
       edges: []
@@ -235,6 +256,7 @@ TextureImporter:
     secondaryTextures: []
     nameFileIdTable:
       Slider Handle: 5412086268284726026
+      Slider Outline Gold: 1218450320
       Slider Fill B&W: -7088183947501127935
       Slider Handle Highlighted: 2659325523825384439
       Slider Fill: 7504960768746471891

@@ -18,7 +18,7 @@ namespace GD3D.Player
 
         private static Key[] s_defaultKeys = new Key[]
         {
-            //-- The main gameplay button
+            //-- The main gameplay button that does everything
             new Key("Click",
                 Key.NewKeys(KeyboardKey.UpArrow, KeyboardKey.W, KeyboardKey.LeftMouseButton, KeyboardKey.Space, KeyboardKey.Return, KeyboardKey.KeypadEnter),
                 Key.NewKeys(GamepadKey.AButton)),
@@ -32,22 +32,13 @@ namespace GD3D.Player
                 Key.NewKeys(KeyboardKey.X),
                 Key.NewKeys(GamepadKey.BButton)),
 
-            //-- 3D Mode
-            new Key("3D Move Left",
-                Key.NewKeys(KeyboardKey.LeftArrow, KeyboardKey.A),
-                Key.NewKeys(GamepadKey.LeftStickLeft, GamepadKey.DpadLeft)),
-
-            new Key("3D Move Right",
-                Key.NewKeys(KeyboardKey.RightArrow, KeyboardKey.D),
-                Key.NewKeys(GamepadKey.LeftStickRight, GamepadKey.DpadRight)),
-
             //-- Other
             new Key("Escape",
                 Key.NewKeys(KeyboardKey.Escape),
                 Key.NewKeys(GamepadKey.Start),
                 3),
 
-            //-- UI Navigation Keys
+            //-- Movement keys
             new Key("Left",
                 Key.NewKeys(KeyboardKey.A, KeyboardKey.LeftArrow),
                 Key.NewKeys(GamepadKey.LeftStickLeft, GamepadKey.DpadLeft),
@@ -76,6 +67,94 @@ namespace GD3D.Player
             new Key("Cancel",
                 Key.NewKeys(KeyboardKey.Backspace),
                 Key.NewKeys(GamepadKey.BButton),
+                3),
+
+            //#################
+            //## Editor Keys ##
+            //#################
+            new Key("Undo",
+                Key.NewKeys(KeyboardKey.LeftControl, KeyboardKey.Z),
+                GamepadKey.None, // Idk how this would even work on gamepad
+                3,
+                Key.CheckMode.all),
+
+            new Key("Redo",
+                Key.NewKeys(KeyboardKey.LeftControl, KeyboardKey.Y),
+                GamepadKey.None, // Who even plays a level editor with gamepad anyways?
+                3,
+                Key.CheckMode.all),
+
+            new Key("Save",
+                Key.NewKeys(KeyboardKey.LeftControl, KeyboardKey.S),
+                GamepadKey.None, // ???
+                3,
+                Key.CheckMode.all),
+
+            //-- Copy & Paste
+            new Key("Copy",
+                Key.NewKeys(KeyboardKey.LeftControl, KeyboardKey.C),
+                GamepadKey.None,
+                3,
+                Key.CheckMode.all),
+
+            new Key("Paste",
+                Key.NewKeys(KeyboardKey.LeftControl, KeyboardKey.V),
+                GamepadKey.None,
+                3,
+                Key.CheckMode.all),
+
+            new Key("Duplicate",
+                Key.NewKeys(KeyboardKey.LeftControl, KeyboardKey.D),
+                GamepadKey.None,
+                3,
+                Key.CheckMode.all),
+
+            //-- Rotate
+            new Key("Rotate Clockwise",
+                Key.NewKeys(KeyboardKey.E),
+                GamepadKey.None,
+                3),
+
+            new Key("Rotate Counter Clockwise",
+                Key.NewKeys(KeyboardKey.Q),
+                GamepadKey.None,
+                3),
+
+            //-- Build Options
+            new Key("Toggle Swipe",
+                Key.NewKeys(KeyboardKey.T),
+                GamepadKey.None,
+                3),
+
+            new Key("Toggle Rotate",
+                Key.NewKeys(KeyboardKey.R),
+                GamepadKey.None,
+                3),
+
+            new Key("Toggle Free Move",
+                Key.NewKeys(KeyboardKey.F),
+                GamepadKey.None,
+                3),
+
+            new Key("Toggle Snap",
+                Key.NewKeys(KeyboardKey.G),
+                GamepadKey.None,
+                3),
+
+            //-- Build Modes
+            new Key("Build Mode",
+                Key.NewKeys(KeyboardKey.Alpha1),
+                GamepadKey.None,
+                3),
+
+            new Key("Edit Mode",
+                Key.NewKeys(KeyboardKey.Alpha2),
+                GamepadKey.None,
+                3),
+
+            new Key("Delete Mode",
+                Key.NewKeys(KeyboardKey.Alpha3),
+                GamepadKey.None,
                 3),
         };
 

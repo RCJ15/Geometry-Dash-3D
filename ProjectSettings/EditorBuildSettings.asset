@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Menus/Icon Kit.unity
     guid: cfc65eab01d89de4a995cf9f0814fad4
   - enabled: 1
+    path: Assets/Scenes/Level Editor.unity
+    guid: 40c0c9fd04658a642a69a0311c2c7045
+  - enabled: 1
     path: Assets/Scenes/Levels/Stereo Madness.unity
     guid: c39bf003c04d9c14e9bf1c2bccf85932
   - enabled: 1
@@ -30,7 +33,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Levels/Base After Base.unity
     guid: 19957514dc677b640885708bb2f31480
   - enabled: 1
-    path: Assets/Scenes/Level Template.unity
+    path: Assets/Scenes/Level Test.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
     path: Assets/Scenes/Levels/Cant Let Go.unity

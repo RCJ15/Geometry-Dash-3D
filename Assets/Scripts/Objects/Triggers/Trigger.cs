@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PathCreation;
+using GD3D.Level;
 
 namespace GD3D.Objects
 {
@@ -10,7 +11,7 @@ namespace GD3D.Objects
     /// A trigger is an invisble object that will make something happen at a specific point during the level, like changing the background color gradually.
     /// </summary>
     [RequireComponent(typeof(AttachToPath))]
-    public abstract class Trigger : MonoBehaviour
+    public abstract class Trigger : LevelObject
     {
         //-- ID
         protected ObjectIDHandler idHandler;
@@ -19,7 +20,8 @@ namespace GD3D.Objects
         private bool _isActivated = false;
 
         [Header("General Trigger Options")]
-        [SerializeField] private bool isTouchTriggered;
+        [LevelSave] [SerializeField] private bool isTouchTriggered;
+        private SpriteRenderer _sprite;
 
         private bool _playerHasPassed;
 
@@ -33,11 +35,22 @@ namespace GD3D.Objects
         public float Distance => _attachToPath.Distance;
         protected bool CanTrigger => !_isActivated && !_player.IsDead && CustomTriggerCondition;
 
-        public virtual void Start()
+        protected override void Start()
         {
+            base.Start();
+
             // Get references
             _attachToPath = GetComponent<AttachToPath>();
             _player = PlayerMain.Instance;
+
+            // Get sprite
+            _sprite = GetComponentInChildren<SpriteRenderer>();
+
+            if (InLevelEditor)
+            {
+                // Make the sprite appear in the level editor
+                _sprite.gameObject.SetActive(true);
+            }
 
             // Subsribe to events
             _player.OnRespawn += OnRespawn;
@@ -51,7 +64,7 @@ namespace GD3D.Objects
         /// <summary>
         /// Override this to do stuff when the player dies
         /// </summary>
-        public virtual void OnRespawn(bool inPracticeMode, Checkpoint checkpoint)
+        protected virtual void OnRespawn(bool inPracticeMode, Checkpoint checkpoint)
         {
             /*
             // Execute this one frame later using this epic timer thingy I wrote :D
@@ -64,8 +77,10 @@ namespace GD3D.Objects
             _playerHasPassed = false;
         }
 
-        public virtual void Update()
+        protected override void Update()
         {
+            base.Update();
+
             // Return if this trigger is touch triggered (cuz then we check in OnCollisionEnter())
             if (isTouchTriggered || _playerHasPassed)
             {
@@ -87,7 +102,7 @@ namespace GD3D.Objects
             }
         }
 
-        public virtual void OnCollisionEnter(Collision col)
+        protected virtual void OnCollisionEnter(Collision col)
         {
             // Return if this trigger is NOT touch triggered (cuz then we check in Update())
             // Also return if this trigger cant trigger
@@ -113,13 +128,13 @@ namespace GD3D.Objects
         /// <summary>
         /// Implement this to determine what happens when this trigger is triggered
         /// </summary>
-        public abstract void OnTriggered();
+        protected abstract void OnTriggered();
 
         /// <summary>
         /// Override this to determine a custom trigger condition that has to be met in order for the player to trigger this trigger. <para/>
         /// So this must return true in order for the trigger to be triggered.
         /// </summary>
-        public virtual bool CustomTriggerCondition => true;
+        protected virtual bool CustomTriggerCondition => true;
 
 #if UNITY_EDITOR
         // Draw a trigger line in the editor

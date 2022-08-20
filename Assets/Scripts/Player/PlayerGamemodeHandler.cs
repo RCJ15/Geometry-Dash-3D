@@ -26,6 +26,13 @@ namespace GD3D.Player
         };
 
         //-- Upside down
+
+        /// <summary>
+        /// Will return -1 if the player is upside down, otherwise it'll be 1. <para/>
+        /// Multiply stuff with this for upside down behaviour.
+        /// </summary>
+        public float UpsideDownMultiplier => UpsideDown ? -1 : 1;
+
         public bool UpsideDown;
         private bool _startUpsideDown;
         private bool _oldUpsideDown;

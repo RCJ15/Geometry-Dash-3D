@@ -90,7 +90,7 @@ namespace GD3D.Player
         [Header("Main Menu")]
         public bool InMainMenu;
 
-        private UnityEngine.Camera _cam;
+        private Camera _cam;
 
         public override void Awake()
         {

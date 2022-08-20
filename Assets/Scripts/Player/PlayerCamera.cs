@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
-using GD3D.Camera;
+using GD3D.GDCamera;
 
 namespace GD3D.Player
 {

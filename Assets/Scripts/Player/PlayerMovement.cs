@@ -115,8 +115,8 @@ namespace GD3D.Player
             player.OnRespawn += OnRespawn;
             EasingManager.Instance.OnEaseObjectRemove += OnEaseObjectRemove;
 
-            leftKey = PlayerInput.GetKey("3D Move Left");
-            rightKey = PlayerInput.GetKey("3D Move Right");
+            leftKey = PlayerInput.GetKey("Left");
+            rightKey = PlayerInput.GetKey("Right");
 
             // Check if we are in the main menu
             if (player.InMainMenu)

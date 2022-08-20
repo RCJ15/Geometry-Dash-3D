@@ -4,11 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using GD3D.Easing;
 
-namespace GD3D.Camera
+namespace GD3D.GDCamera
 {
-    // Must have this here cuz otherwise it'll think I'm referencing the namespace instead
-    using Camera = UnityEngine.Camera;
-
     /// <summary>
     /// Controls how the camera should behave and move about during the game
     /// </summary>

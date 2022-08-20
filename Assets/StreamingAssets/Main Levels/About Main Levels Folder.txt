@@ -1,0 +1,6 @@
+Here is where all the main levels of the game are placed.
+
+Any JSON file placed in here will be considered a main level and thus show up in the game as a main level.
+Cool right?
+
+This means you can create a level with the level editor and then move the JSON file into this folder to have it appear as a main level in game!

@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GD3D.Camera;
+using GD3D.GDCamera;
+using GD3D.Level;
 
 namespace GD3D.Objects
 {
@@ -11,14 +12,14 @@ namespace GD3D.Objects
     public class ShakeTrigger : Trigger
     {
         [Header("Shake Settings")]
-        [SerializeField] private float strength;
-        [SerializeField] private float frequency;
-        [SerializeField] private float length;
+        [LevelSave] [SerializeField] private float strength;
+        [LevelSave] [SerializeField] private float frequency;
+        [LevelSave] [SerializeField] private float length;
 
         //-- References
         private CameraBehaviour _cam;
 
-        public override void Start()
+        protected override void Start()
         {
             base.Start();
 
@@ -26,7 +27,7 @@ namespace GD3D.Objects
             _cam = CameraBehaviour.Instance;
         }
 
-        public override void OnTriggered()
+        protected override void OnTriggered()
         {
             // Shake the camera
             _cam.Shake(strength, frequency, length);

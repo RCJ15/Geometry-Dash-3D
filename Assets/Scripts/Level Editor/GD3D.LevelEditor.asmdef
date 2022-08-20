@@ -1,0 +1,17 @@
+{
+    "name": "GD3D.LevelEditor",
+    "rootNamespace": "GD3D.LevelEditor",
+    "references": [
+        "GD3D",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

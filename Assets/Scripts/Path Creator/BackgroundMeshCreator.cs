@@ -14,6 +14,8 @@ namespace GD3D
     {
         [Header("Background settings")]
         [SerializeField] private float yOffset;
+        [SerializeField] private float distanceStep = 10;
+        [SerializeField] private float pointDistance = .4f;
         [SerializeField] private float roundDistance = .4f;
         [SerializeField] private float width = .4f;
         [SerializeField] private float height = .15f;
@@ -69,7 +71,7 @@ namespace GD3D
 
         void CreateBackgroundMesh()
         {
-            VertexPath[] paths = GetFixedPaths(roundDistance);
+            VertexPath[] paths = GetFixedPaths(roundDistance, pointDistance);
 
             int numTrisLeft = 2 * (paths[0].NumPoints - 1) + ((path.isClosedLoop) ? 2 : 0);
             int numTrisRight = 2 * (paths[1].NumPoints - 1) + ((path.isClosedLoop) ? 2 : 0);
@@ -214,31 +216,44 @@ namespace GD3D
             }
         }
 
-        private VertexPath[] GetFixedPaths(float distance)
+        private VertexPath[] GetFixedPaths(float distance, float pointDistance)
         {
-            VertexPath path = this.path;
-
             List<Vector3> rightPoints = new List<Vector3>();
             List<Vector3> leftPoints = new List<Vector3>();
 
-            int numPoints = path.NumPoints;
-            for (int i = 0; i < numPoints; i++)
+            Vector3? oldRightPos = null;
+            Vector3? oldLeftPos = null;
+
+            float dist = 0;
+            while (dist < path.length)
             {
                 Vector3 localUp = Vector3.up; // Force it to be the world up regardless
-                Vector3 localRight = Vector3.Cross(localUp, path.GetTangent(i));
+                Vector3 localRight = Vector3.Cross(localUp, path.GetDirectionAtDistance(dist));
 
-                Vector3 position = path.GetPoint(i);
+                Vector3 position = path.GetPointAtDistance(dist);
                 Vector3 positionRight = position + (localRight * Mathf.Abs(width));
                 Vector3 positionLeft = position - (localRight * Mathf.Abs(width));
 
                 if (Vector3.Distance(path.GetClosestPointOnPath(positionRight), positionRight) >= distance)
                 {
-                    rightPoints.Add(positionRight);
+                    if (!oldRightPos.HasValue || Vector3.Distance(oldRightPos.Value, positionRight) >= pointDistance)
+                    {
+                        rightPoints.Add(positionRight);
+
+                        oldRightPos = positionRight;
+                    }
                 }
                 if (Vector3.Distance(path.GetClosestPointOnPath(positionLeft), positionLeft) >= distance)
                 {
-                    leftPoints.Add(positionLeft);
+                    if (!oldLeftPos.HasValue || Vector3.Distance(oldLeftPos.Value, positionLeft) >= pointDistance)
+                    {
+                        leftPoints.Add(positionLeft);
+
+                        oldLeftPos = positionLeft;
+                    }
                 }
+
+                dist += distanceStep;
             }
 
             BezierPath leftPath = new BezierPath(leftPoints, pathCreator.bezierPath.IsClosed, pathCreator.bezierPath.Space);

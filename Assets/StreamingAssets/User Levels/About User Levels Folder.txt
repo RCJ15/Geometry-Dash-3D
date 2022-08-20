@@ -1,0 +1,5 @@
+The user levels folder is where all of your custom made levels made in the level editor end up.
+
+Levels are currently saved in JSON format and any other type of file in this folder will be ignored.
+
+If you want, you can move your level file from this folder into the main levels folder to make it appear as a main level in game.

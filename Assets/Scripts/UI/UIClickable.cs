@@ -16,6 +16,7 @@ namespace GD3D.UI
         [Tooltip("The object that'll change size when this is pressed. \nLeave this null for this object to be modified.")]
         [SerializeField] private Transform modifySize;
         [SerializeField] private bool isUnscaled;
+        [SerializeField] private float multiplier = 1;
 
         private UIClickableManager _manager;
 
@@ -94,6 +95,14 @@ namespace GD3D.UI
             }
         }
 
+        private void OnDisable()
+        {
+            // Try remove ease object
+            EasingManager.TryRemoveEaseObject(_currentEaseId);
+
+            modifySize.localScale = _startSize;
+        }
+
         private void Update()
         {
             // Detect if the mouse is on top, the left mouse button is pressed and if this object is not being sized
@@ -124,7 +133,7 @@ namespace GD3D.UI
             EasingManager.TryRemoveEaseObject(_currentEaseId);
 
             // Create new scale easing
-            EaseObject ease = modifySize.EaseScale(_startSize * _manager.SizeIncrease, 1);
+            EaseObject ease = modifySize.EaseScale(_startSize * _manager.SizeIncrease * multiplier, 1);
 
             // Set ease settings
             ease.SetSettings(_manager.EaseSettingsIn);

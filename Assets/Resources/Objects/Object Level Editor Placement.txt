@@ -1,0 +1,45 @@
+// This file will tell the Level Editor where each object should be put in the editor
+// Lines that begin with 2 slashes are comments and will be ignored
+
+CATEGORY = Blocks
+
+Basic Block
+Slab
+Grid Block
+Normal Spike
+Squished Spike
+
+CATEGORY = Special
+
+Jump Pad Yellow
+Jump Pad Purple
+Jump Pad Red
+Jump Pad Blue
+Jump Orb Yellow
+Jump Orb Purple
+Jump Orb Red
+Jump Orb Blue
+Jump Orb Green
+Jump Orb Black
+Normal Gravity Portal
+Reverse Gravity Portal
+Cube Portal
+Ship Portal
+3D Mode Portal On
+3D Mode Portal Off
+3D Mode Offset Portal
+
+CATEGORY = Decoration
+
+Pulse Antenna Small
+Pulse Antenna Medium
+Pulse Antenna Big
+
+CATEGORY = Triggers
+
+Color Trigger
+Shake Trigger
+Camera Trigger
+Secondary Trail On Trigger
+Secondary Trail Off Trigger
+Start Pos

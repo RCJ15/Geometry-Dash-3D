@@ -6,8 +6,8 @@
     "SFXVolume": 1.0,
     "AutoRetryEnabled": true,
     "AutoCheckpointsEnabled": true,
-    "ProgressBarEnabled": false,
-    "ShowPercentEnabled": false,
+    "ProgressBarEnabled": true,
+    "ShowPercentEnabled": true,
     "PlayerColor1": {
         "r": 0.4784314036369324,
         "g": 0.9686275124549866,
@@ -18,15 +18,19 @@
         "g": 0.9529411792755127,
         "b": 0.9686275124549866
     },
-    "IconData": [
+    "IconData": [],
+    "LevelData": [
         {
-            "Gamemode": 0,
-            "Index": 0
-        },
-        {
-            "Gamemode": 1,
-            "Index": 0
+            "Name": "This is a very cool level",
+            "NormalPercent": 0.23407378792762757,
+            "PracticePercent": 0.0,
+            "GottenCoins": [
+                false,
+                false,
+                false
+            ],
+            "TotalAttempts": 85,
+            "TotalJumps": 439
         }
-    ],
-    "LevelData": []
+    ]
 }

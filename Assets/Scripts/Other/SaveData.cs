@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 using GD3D.Level;
 using GD3D.Player;
 
@@ -21,6 +21,8 @@ namespace GD3D
 
         //-- Instance
         public static SaveData Instance;
+
+        [SerializeField] private AudioMixer audioMixer;
 
         //-- Static variables
         private static bool s_subscribedToEvents;
@@ -57,7 +59,7 @@ namespace GD3D
                 PlayerIcons[] allPlayerIcons = Resources.FindObjectsOfTypeAll<PlayerIcons>();
 
                 // Try create dictionary 
-                if (allPlayerIcons[0] != null)
+                if (allPlayerIcons != null && allPlayerIcons.Length > 0 && allPlayerIcons[0] != null)
                 {
                     allPlayerIcons[0].TryCreateDictionary();
                 }
@@ -78,6 +80,13 @@ namespace GD3D
                 // This bool makes sure we only subscribe once
                 s_subscribedToEvents = true;
             }
+        }
+
+        private void Start()
+        {
+            // Must call this in start because otherwise it won't work idk
+            SetMixerVolume(SaveFile.MusicVolume, "Music Volume");
+            SetMixerVolume(SaveFile.SFXVolume, "SFX Volume");
         }
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode loadMode)
@@ -197,6 +206,22 @@ namespace GD3D
                 if (level.GottenCoins.Length != 3) level.GottenCoins = new bool[] { false, false, false };
             }
         }
+
+        /// <summary>
+        /// Sets the audio parameter called <paramref name="name"/> to the given <paramref name="volume"/> converted to the logarithmic scale.
+        /// </summary>
+        private void SetMixerVolume(float volume, string name)
+        {
+            // Scale the volume to use the logarithmic scale because decibel is stupid
+            float scaledVolume = Mathf.Log10(volume) * 20;
+
+            if (volume <= 0.0f)
+            {
+                scaledVolume = -80.0f;
+            }
+
+            audioMixer.SetFloat(name, scaledVolume);
+        }
     }
 
     /// <summary>
@@ -218,8 +243,8 @@ namespace GD3D
 
         public bool AutoRetryEnabled = true;
         public bool AutoCheckpointsEnabled = true;
-        public bool ProgressBarEnabled = false;
-        public bool ShowPercentEnabled = false;
+        public bool ProgressBarEnabled = true;
+        public bool ShowPercentEnabled = true;
 
         public ColorNoAlpha PlayerColor1 = PlayerColors.DefaultColor1;
         public ColorNoAlpha PlayerColor2 = PlayerColors.DefaultColor2;

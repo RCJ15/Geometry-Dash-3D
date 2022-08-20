@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GD3D.Player;
+using GD3D.Level;
 
 namespace GD3D.Objects
 {
@@ -14,8 +15,8 @@ namespace GD3D.Objects
         [SerializeField] private Gamemode gamemode;
 
         [Header("Borders")]
-        [SerializeField] private bool haveBorders;
-        [SerializeField] private int borderDistance = 10;
+        [LevelSave] [SerializeField] private bool haveBorders;
+        [LevelSave] [SerializeField] private int borderDistance = 10;
 
         public override void OnEnterPortal()
         {

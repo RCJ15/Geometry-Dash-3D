@@ -4,7 +4,7 @@ using Cinemachine;
 using UnityEditor;
 #endif
 
-namespace GD3D.Camera
+namespace GD3D.GDCamera
 {
     /// <summary>
     /// An add-on module for Cinemachine Virtual Camera that locks the camera's orientation to the given values

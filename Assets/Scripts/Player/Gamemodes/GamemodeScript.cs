@@ -75,7 +75,7 @@ namespace GD3D.Player
         /// Will return -1 if the player is upside down, otherwise it'll be 1. <para/>
         /// Multiply stuff with this for upside down behaviour.
         /// </summary>
-        protected float UpsideDownMultiplier => UpsideDown ? -1 : 1;
+        protected float UpsideDownMultiplier => GamemodeHandler.UpsideDownMultiplier;
 
         /// <summary>
         /// Shortcut for getting <see cref="PlayerGamemodeHandler.IsSmall"/>.

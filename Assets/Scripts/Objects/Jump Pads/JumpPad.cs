@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using GD3D.Player;
 using GD3D.ObjectPooling;
+using GD3D.Level;
 
 namespace GD3D.Objects
 {
@@ -18,7 +19,7 @@ namespace GD3D.Objects
         private bool _isActivated = false;
 
         [Header("Jump Pad Settings")]
-        [SerializeField] private bool multiTrigger;
+        [LevelSave] [SerializeField] private bool multiTrigger;
 
         [Space]
         [SerializeField] private ParticleSystemRenderer particles;

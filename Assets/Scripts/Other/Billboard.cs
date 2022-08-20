@@ -20,19 +20,32 @@ namespace GD3D
         [SerializeField] private bool invert = true;
 
         [SerializeField] private float zRot;
-
-        private Transform cam;
-
-        // Start is called before the first frame update
-        void Start()
+        public float ZRot
         {
-            cam = UnityEngine.Camera.main.transform;
+            get => zRot;
+            set => zRot = value;
         }
 
-        // Update is called once per frame
+        private Transform cam;
+        private Vector3 _oldCamPos;
+
+        void Start()
+        {
+            cam = Helpers.Camera.transform;
+
+            Look(cam);
+            _oldCamPos = cam.position;
+        }
+
         void Update()
         {
+            if (_oldCamPos == cam.position)
+            {
+                return;
+            }
+
             Look(cam);
+            _oldCamPos = cam.position;
         }
 
         public void Look(Transform lookAt)

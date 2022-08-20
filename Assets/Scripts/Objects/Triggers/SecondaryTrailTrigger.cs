@@ -13,7 +13,7 @@ namespace GD3D.Objects
         [Header("Trail Setting")]
         [SerializeField] private bool enableTrail = true;
 
-        public override void OnTriggered()
+        protected override void OnTriggered()
         {
             PlayerSecondaryTrailManager.HaveTrail = enableTrail;
         }

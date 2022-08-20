@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using GD3D.Player;
 using GD3D.Easing;
+using GD3D.Level;
 using PathCreation;
 
 namespace GD3D.Objects
@@ -16,10 +17,10 @@ namespace GD3D.Objects
     {
         [Header("3D Mode Offset Settings")]
         [SerializeField] private int vertexAmount = 15;
-        [SerializeField] private float newOffset = 0;
+        [LevelSave] [SerializeField] private float newOffset = 0;
 
         [Space]
-        [SerializeField] private EaseSettings easeSettings = EaseSettings.defaultValue;
+        [LevelSave] [SerializeField] private EaseSettings easeSettings = EaseSettings.defaultValue;
 
         [Header("Line")]
         [SerializeField] private float lineDistOffset = -0.5f;

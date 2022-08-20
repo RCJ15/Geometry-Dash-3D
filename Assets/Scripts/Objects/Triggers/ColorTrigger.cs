@@ -12,11 +12,11 @@ namespace GD3D.Objects
     public class ColorTrigger : Trigger
     {
         [Header("Color Settings")]
-        [SerializeField] private Color color = Color.white;
-        [SerializeField] private LevelColors.ColorType colorType;
-        [SerializeField] private EaseSettings easeSettings = EaseSettings.defaultValue;
+        [LevelSave] [SerializeField] private Color color = Color.white;
+        [LevelSave] [SerializeField] private LevelColors.ColorType colorType;
+        [LevelSave] [SerializeField] private EaseSettings easeSettings = EaseSettings.defaultValue;
 
-        public override void OnTriggered()
+        protected override void OnTriggered()
         {
             // Create a ease object
             EaseObject obj = easeSettings.CreateEase();

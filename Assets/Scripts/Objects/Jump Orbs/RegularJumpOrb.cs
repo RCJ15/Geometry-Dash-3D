@@ -6,11 +6,15 @@ using UnityEngine;
 namespace GD3D.Objects
 {
     /// <summary>
-    /// A regular jump orb which just sets the players Y velocity to a certain value
+    /// A regular jump orb which just sets the players Y velocity to a certain value and can also invert the players gravity.
     /// </summary>
     public class RegularJumpOrb : JumpOrb
     {
         [Header("Velocity Setting")]
+        [SerializeField] private bool invertGravity;
+        [SerializeField] private float setVelocity = 0; // If 0, then gamemode velocity data is used instead
+
+        [Space]
         [SerializeField] private GamemodeVelocityData[] gamemodeVelocityData;
         private Dictionary<Gamemode, GamemodeSizedFloat> _velocityData = new Dictionary<Gamemode, GamemodeSizedFloat>();
 
@@ -39,23 +43,27 @@ namespace GD3D.Objects
 
         public override void OnPressed()
         {
-            // Get velocity
-            GamemodeSizedFloat velocity = _velocityData[gamemodeHandler.CurrentGamemode];
+            if (setVelocity != 0)
+            {
+                _player.YVelocity = setVelocity;
+            }
+            else
+            {
+                // Get velocity
+                GamemodeSizedFloat velocity = _velocityData[gamemodeHandler.CurrentGamemode];
 
-            // Set velocity
-            _player.YVelocity = velocity.GetValue(gamemodeHandler.IsSmall);
-        }
+                // Set velocity
+                _player.YVelocity = velocity.GetValue(gamemodeHandler.IsSmall);
+            }
 
-        /// <summary>
-        /// Contains data about a gamemodes velocity data
-        /// </summary>
-        [System.Serializable]
-        public class GamemodeVelocityData
-        {
-            public Gamemode Gamemode;
+            // Correct for upside down
+            _player.YVelocity *= gamemodeHandler.UpsideDownMultiplier;
 
-            [Space]
-            public GamemodeSizedFloat VelocityData;
+            // Invert gravity
+            if (invertGravity)
+            {
+                gamemodeHandler.UpsideDown = !gamemodeHandler.UpsideDown;
+            }
         }
     }
 }

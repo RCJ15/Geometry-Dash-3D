@@ -1,0 +1,13 @@
+This is the folder where the game will look for any audio files that can be used in game as songs.
+
+The game supports MP3, WAV and OGG as songs currently.
+Any other file type is simply ignored.
+
+Song files placed in subfolders of this songs folder are loaded as well.
+This is how you create song categories in game.
+For example: "Main Songs" is a category of songs used in the levels of the game.
+
+If you are not seeing your custom song in game, then try the following:
+1. Check if the file is placed in this songs folder or any subfolders of the songs folder.
+2. Check if the file ends with ".mp3", ".wav" or ".ogg".
+3. Hit the reload button in game to reload all the songs in the game.
